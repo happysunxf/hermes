@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小程序直播带货工具 - 让每个商家都能轻松开启直播带货</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'PingFang SC','Microsoft YaHei',sans-serif; color:#333; line-height:1.6; }
+.header {
+    background: linear-gradient(135deg, #B7950B 0%, #F1C40F 100%);
+    color:#fff; padding:80px 20px; text-align:center; position:relative; overflow:hidden;
+}
+.header::before {
+    content:''; position:absolute; top:-50%; left:-50%; width:200%; height:200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+}
+.header .badge {
+    display:inline-block; background:rgba(255,255,255,0.2); padding:6px 20px;
+    border-radius:50px; font-size:13px; margin-bottom:20px; backdrop-filter:blur(10px);
+}
+.header h1 { font-size:48px; font-weight:700; margin-bottom:10px; }
+.header .subtitle { font-size:22px; opacity:0.9; margin-bottom:15px; }
+.header .tagline { font-size:16px; opacity:0.75; letter-spacing:2px; }
+.hero-section {
+    background:#fff; padding:60px 20px; text-align:center;
+}
+.hero-section h2 { font-size:28px; color:#B7950B; margin-bottom:15px; }
+.hero-section p { max-width:800px; margin:0 auto; color:#666; font-size:16px; }
+.pain-section {
+    background:linear-gradient(180deg,#f8f9fa 0%,#fff 100%);
+    padding:60px 20px;
+}
+.pain-grid { max-width:900px; margin:30px auto 0; display:grid; grid-template-columns:1fr 1fr; gap:30px; }
+.pain-box { background:#fff; border-radius:16px; padding:30px; box-shadow:0 4px 20px rgba(0,0,0,0.06); border-left:4px solid #F1C40F; }
+.pain-box h3 { font-size:16px; color:#888; margin-bottom:10px; text-transform:uppercase; letter-spacing:1px; }
+.pain-box p { font-size:15px; color:#555; line-height:1.8; }
+.features-section { padding:60px 20px; background:#fff; }
+.features-section h2 { text-align:center; font-size:28px; color:#B7950B; margin-bottom:40px; }
+.features-grid { max-width:900px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+.feature-item { display:flex; gap:15px; padding:20px; border-radius:12px; background:#f8f9fa; transition:all 0.3s; }
+.feature-item:hover { transform:translateY(-2px); box-shadow:0 4px 15px rgba(0,0,0,0.08); }
+.feature-icon { flex-shrink:0; width:40px; height:40px; background:#F1C40F; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:18px; }
+.feature-text h4 { font-size:15px; color:#B7950B; margin-bottom:5px; }
+.feature-text p { font-size:13px; color:#888; }
+.pricing-section { background:linear-gradient(180deg,#f8f9fa 0%,#B7950B22 100%); padding:60px 20px; }
+.pricing-section h2 { text-align:center; font-size:28px; color:#B7950B; margin-bottom:30px; }
+.pricing-cards { max-width:800px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+.pricing-card { background:#fff; border-radius:16px; padding:30px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.06); }
+.pricing-card .label { font-size:13px; color:#888; margin-bottom:8px; }
+.pricing-card .price { font-size:32px; font-weight:700; color:#F1C40F; }
+.pricing-card .desc { font-size:13px; color:#999; margin-top:8px; }
+.target-section { padding:40px 20px; background:#fff; text-align:center; }
+.target-section h3 { font-size:16px; color:#888; margin-bottom:10px; }
+.target-section p { color:#B7950B; font-size:16px; }
+.cta-section {
+    background: linear-gradient(135deg, #B7950B 0%, #F1C40F 100%);
+    padding:60px 20px; text-align:center; color:#fff;
+}
+.cta-section h2 { font-size:28px; margin-bottom:15px; }
+.cta-section p { font-size:16px; opacity:0.85; margin-bottom:30px; }
+.cta-btn {
+    display:inline-block; background:#fff; color:#B7950B; padding:14px 40px;
+    border-radius:50px; font-size:16px; font-weight:600; text-decoration:none;
+    transition:all 0.3s;
+}
+.cta-btn:hover { transform:scale(1.05); box-shadow:0 4px 20px rgba(0,0,0,0.2); }
+.footer { background:#1a1a2e; color:rgba(255,255,255,0.5); padding:20px; text-align:center; font-size:13px; }
+@media(max-width:768px) {
+    .header h1 { font-size:32px; }
+    .pain-grid, .features-grid, .pricing-cards { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+<div class="header">
+    <div class="badge">SaaS 产品</div>
+    <h1>小程序直播带货工具</h1>
+    <div class="subtitle">让每个商家都能轻松开启直播带货</div>
+    <div class="tagline">扫码开播 · 多平台分发 · 数据分析</div>
+</div>
+
+<div class="hero-section">
+    <h2>💡 解决您的痛点</h2>
+    <p>轻量级小程序直播工具，扫码开播、弹幕管理、订单管理、多平台分发</p>
+</div>
+
+<div class="pain-section">
+    <div class="hero-section">
+        <h2>😤 行业痛点</h2>
+        <p>中小商家想直播但不懂技术、缺乏工具、无法独立完成多平台分发</p>
+    </div>
+</div>
+
+<div class="features-section">
+    <h2>✨ 核心功能</h2>
+    <div class="features-grid">
+        <div class="feature-item">
+            <div class="feature-icon"><span class="icon-check">✓</span></div>
+            <div class="feature-text">
+                <h4>开播工具</h4>
+                <p>小程序内一键开播，无需技术团队</p>
+            </div>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon"><span class="icon-check">✓</span></div>
+            <div class="feature-text">
+                <h4>弹幕管理</h4>
+                <p>实时弹幕、公屏互动、弹幕过滤</p>
+            </div>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon"><span class="icon-check">✓</span></div>
+            <div class="feature-text">
+                <h4>订单管理</h4>
+                <p>直播下单、库存同步、发货管理</p>
+            </div>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon"><span class="icon-check">✓</span></div>
+            <div class="feature-text">
+                <h4>数据看板</h4>
+                <p>在线人数、GMV、转化率实时分析</p>
+            </div>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon"><span class="icon-check">✓</span></div>
+            <div class="feature-text">
+                <h4>多平台分发</h4>
+                <p>抖音/快手/视频号一键推流</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="pricing-section">
+    <h2>💰 价格方案</h2>
+    <div class="pricing-cards">
+        <div class="pricing-card">
+            <div class="label">市场价格</div>
+            <div class="price">0.5-2万/年</div>
+            <div class="desc">按年付费，性价比高</div>
+        </div>
+        <div class="pricing-card">
+            <div class="label">适用对象</div>
+            <div class="price" style="font-size:20px;">中小商家 </div>
+            <div class="desc">中小商家 / 个体工商户</div>
+        </div>
+    </div>
+</div>
+
+<div class="cta-section">
+    <h2>🚀 立即开始</h2>
+    <p>让您的生意也能数字化升级，提升效率，降低成本</p>
+    <a href="#" class="cta-btn">联系我们试用</a>
+</div>
+
+<div class="footer">
+    © 2024 小程序直播带货工具 | 让商业更智能
+</div>
+</body>
+</html>
