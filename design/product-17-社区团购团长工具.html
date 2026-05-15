@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>社区团购团长工具 - 让团长专注卖货，其他交给系统</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'PingFang SC','Microsoft YaHei',sans-serif; color:#333; line-height:1.6; }
+.header {
+    background: linear-gradient(135deg, #117A65 0%, #1ABC9C 100%);
+    color:#fff; padding:80px 20px; text-align:center; position:relative; overflow:hidden;
+}
+.header::before {
+    content:''; position:absolute; top:-50%; left:-50%; width:200%; height:200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+}
+.header .badge {
+    display:inline-block; background:rgba(255,255,255,0.2); padding:6px 20px;
+    border-radius:50px; font-size:13px; margin-bottom:20px; backdrop-filter:blur(10px);
+}
+.header h1 { font-size:48px; font-weight:700; margin-bottom:10px; }
+.header .subtitle { font-size:22px; opacity:0.9; margin-bottom:15px; }
+.header .tagline { font-size:16px; opacity:0.75; letter-spacing:2px; }
+.hero-section {
+    background:#fff; padding:60px 20px; text-align:center;
+}
+.hero-section h2 { font-size:28px; color:#117A65; margin-bottom:15px; }
+.hero-section p { max-width:800px; margin:0 auto; color:#666; font-size:16px; }
+.pain-section {
+    background:linear-gradient(180deg,#f8f9fa 0%,#fff 100%);
+    padding:60px 20px;
+}
+.pain-grid { max-width:900px; margin:30px auto 0; display:grid; grid-template-columns:1fr 1fr; gap:30px; }
+.pain-box { background:#fff; border-radius:16px; padding:30px; box-shadow:0 4px 20px rgba(0,0,0,0.06); border-left:4px solid #1ABC9C; }
+.pain-box h3 { font-size:16px; color:#888; margin-bottom:10px; text-transform:uppercase; letter-spacing:1px; }
+.pain-box p { font-size:15px; color:#555; line-height:1.8; }
+.features-section { padding:60px 20px; background:#fff; }
+.features-section h2 { text-align:center; font-size:28px; color:#117A65; margin-bottom:40px; }
+.features-grid { max-width:900px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+.feature-item { display:flex; gap:15px; padding:20px; border-radius:12px; background:#f8f9fa; transition:all 0.3s; }
+.feature-item:hover { transform:translateY(-2px); box-shadow:0 4px 15px rgba(0,0,0,0.08); }
+.feature-icon { flex-shrink:0; width:40px; height:40px; background:#1ABC9C; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:18px; }
+.feature-text h4 { font-size:15px; color:#117A65; margin-bottom:5px; }
+.feature-text p { font-size:13px; color:#888; }
+.pricing-section { background:linear-gradient(180deg,#f8f9fa 0%,#117A6522 100%); padding:60px 20px; }
+.pricing-section h2 { text-align:center; font-size:28px; color:#117A65; margin-bottom:30px; }
+.pricing-cards { max-width:800px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+.pricing-card { background:#fff; border-radius:16px; padding:30px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.06); }
+.pricing-card .label { font-size:13px; color:#888; margin-bottom:8px; }
+.pricing-card .price { font-size:32px; font-weight:700; color:#1ABC9C; }
+.pricing-card .desc { font-size:13px; color:#999; margin-top:8px; }
+.target-section { padding:40px 20px; background:#fff; text-align:center; }
+.target-section h3 { font-size:16px; color:#888; margin-bottom:10px; }
+.target-section p { color:#117A65; font-size:16px; }
+.cta-section {
+    background: linear-gradient(135deg, #117A65 0%, #1ABC9C 100%);
+    padding:60px 20px; text-align:center; color:#fff;
+}
+.cta-section h2 { font-size:28px; margin-bottom:15px; }
+.cta-section p { font-size:16px; opacity:0.85; margin-bottom:30px; }
+.cta-btn {
+    display:inline-block; background:#fff; color:#117A65; padding:14px 40px;
+    border-radius:50px; font-size:16px; font-weight:600; text-decoration:none;
+    transition:all 0.3s;
+}
+.cta-btn:hover { transform:scale(1.05); box-shadow:0 4px 20px rgba(0,0,0,0.2); }
+.footer { background:#1a1a2e; color:rgba(255,255,255,0.5); padding:20px; text-align:center; font-size:13px; }
+@media(max-width:768px) {
+    .header h1 { font-size:32px; }
+    .pain-grid, .features-grid, .pricing-cards { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+<div class="header">
+    <div class="badge">SaaS 产品</div>
+    <h1>社区团购团长工具</h1>
+    <div class="subtitle">让团长专注卖货，其他交给系统</div>
+    <div class="tagline">订单管理 · 佣金计算 · 成员运营</div>
+</div>
+
+<div class="hero-section">
+    <h2>💡 解决您的痛点</h2>
+    <p>团长的专属管理工具，管订单、管佣金、管成员，专注卖货</p>
+</div>
+
+<div class="pain-section">
+    <div class="hero-section">
+        <h2>😤 行业痛点</h2>
+        <p>团长接单混乱、对账繁琐、佣金计算不透明、成员管理弱、推广素材难找</p>
+    </div>
+</div>
+
+<div class="features-section">
+    <h2>✨ 核心功能</h2>
+    <div class="features-grid">
+        <div class="feature-item">
+            <div class="feature-icon"><span class="icon-check">✓</span></div>
+            <div class="feature-text">
+                <h4>订单管理</h4>
+                <p>团点订单汇总、一键下单、自动对账</p>
+            </div>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon"><span class="icon-check">✓</span></div>
+            <div class="feature-text">
+                <h4>佣金计算</h4>
+                <p>佣金规则灵活配置、金额透明可查</p>
+            </div>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon"><span class="icon-check">✓</span></div>
+            <div class="feature-text">
+                <h4>成员管理</h4>
+                <p>团员列表、标签分层、精准营销</p>
+            </div>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon"><span class="icon-check">✓</span></div>
+            <div class="feature-text">
+                <h4>推广素材</h4>
+                <p>图文/视频素材库一键分享</p>
+            </div>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon"><span class="icon-check">✓</span></div>
+            <div class="feature-text">
+                <h4>数据统计</h4>
+                <p>日/周/月收益报表，收益趋势分析</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="pricing-section">
+    <h2>💰 价格方案</h2>
+    <div class="pricing-cards">
+        <div class="pricing-card">
+            <div class="label">市场价格</div>
+            <div class="price">0.2-0.8万/年</div>
+            <div class="desc">按年付费，性价比高</div>
+        </div>
+        <div class="pricing-card">
+            <div class="label">适用对象</div>
+            <div class="price" style="font-size:20px;">社区团购团长 </div>
+            <div class="desc">社区团购团长 / 美团优选团长</div>
+        </div>
+    </div>
+</div>
+
+<div class="cta-section">
+    <h2>🚀 立即开始</h2>
+    <p>让您的生意也能数字化升级，提升效率，降低成本</p>
+    <a href="#" class="cta-btn">联系我们试用</a>
+</div>
+
+<div class="footer">
+    © 2024 社区团购团长工具 | 让商业更智能
+</div>
+</body>
+</html>
