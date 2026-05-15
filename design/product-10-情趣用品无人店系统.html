@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>情趣用品无人店系统 - 安全私密，店主躺着也能赚钱</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'PingFang SC','Microsoft YaHei',sans-serif; color:#333; line-height:1.6; }
+.header {
+    background: linear-gradient(135deg, #7B241C 0%, #C0392B 100%);
+    color:#fff; padding:80px 20px; text-align:center; position:relative; overflow:hidden;
+}
+.header::before {
+    content:''; position:absolute; top:-50%; left:-50%; width:200%; height:200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+}
+.header .badge {
+    display:inline-block; background:rgba(255,255,255,0.2); padding:6px 20px;
+    border-radius:50px; font-size:13px; margin-bottom:20px; backdrop-filter:blur(10px);
+}
+.header h1 { font-size:48px; font-weight:700; margin-bottom:10px; }
+.header .subtitle { font-size:22px; opacity:0.9; margin-bottom:15px; }
+.header .tagline { font-size:16px; opacity:0.75; letter-spacing:2px; }
+.hero-section {
+    background:#fff; padding:60px 20px; text-align:center;
+}
+.hero-section h2 { font-size:28px; color:#7B241C; margin-bottom:15px; }
+.hero-section p { max-width:800px; margin:0 auto; color:#666; font-size:16px; }
+.pain-section {
+    background:linear-gradient(180deg,#f8f9fa 0%,#fff 100%);
+    padding:60px 20px;
+}
+.pain-grid { max-width:900px; margin:30px auto 0; display:grid; grid-template-columns:1fr 1fr; gap:30px; }
+.pain-box { background:#fff; border-radius:16px; padding:30px; box-shadow:0 4px 20px rgba(0,0,0,0.06); border-left:4px solid #C0392B; }
+.pain-box h3 { font-size:16px; color:#888; margin-bottom:10px; text-transform:uppercase; letter-spacing:1px; }
+.pain-box p { font-size:15px; color:#555; line-height:1.8; }
+.features-section { padding:60px 20px; background:#fff; }
+.features-section h2 { text-align:center; font-size:28px; color:#7B241C; margin-bottom:40px; }
+.features-grid { max-width:900px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+.feature-item { display:flex; gap:15px; padding:20px; border-radius:12px; background:#f8f9fa; transition:all 0.3s; }
+.feature-item:hover { transform:translateY(-2px); box-shadow:0 4px 15px rgba(0,0,0,0.08); }
+.feature-icon { flex-shrink:0; width:40px; height:40px; background:#C0392B; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:18px; }
+.feature-text h4 { font-size:15px; color:#7B241C; margin-bottom:5px; }
+.feature-text p { font-size:13px; color:#888; }
+.pricing-section { background:linear-gradient(180deg,#f8f9fa 0%,#7B241C22 100%); padding:60px 20px; }
+.pricing-section h2 { text-align:center; font-size:28px; color:#7B241C; margin-bottom:30px; }
+.pricing-cards { max-width:800px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+.pricing-card { background:#fff; border-radius:16px; padding:30px; text-align:center; box-shadow:0 4px 20px rgba(0,0,0,0.06); }
+.pricing-card .label { font-size:13px; color:#888; margin-bottom:8px; }
+.pricing-card .price { font-size:32px; font-weight:700; color:#C0392B; }
+.pricing-card .desc { font-size:13px; color:#999; margin-top:8px; }
+.target-section { padding:40px 20px; background:#fff; text-align:center; }
+.target-section h3 { font-size:16px; color:#888; margin-bottom:10px; }
+.target-section p { color:#7B241C; font-size:16px; }
+.cta-section {
+    background: linear-gradient(135deg, #7B241C 0%, #C0392B 100%);
+    padding:60px 20px; text-align:center; color:#fff;
+}
+.cta-section h2 { font-size:28px; margin-bottom:15px; }
+.cta-section p { font-size:16px; opacity:0.85; margin-bottom:30px; }
+.cta-btn {
+    display:inline-block; background:#fff; color:#7B241C; padding:14px 40px;
+    border-radius:50px; font-size:16px; font-weight:600; text-decoration:none;
+    transition:all 0.3s;
+}
+.cta-btn:hover { transform:scale(1.05); box-shadow:0 4px 20px rgba(0,0,0,0.2); }
+.footer { background:#1a1a2e; color:rgba(255,255,255,0.5); padding:20px; text-align:center; font-size:13px; }
+@media(max-width:768px) {
+    .header h1 { font-size:32px; }
+    .pain-grid, .features-grid, .pricing-cards { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+<div class="header">
+    <div class="badge">SaaS 产品</div>
+    <h1>情趣用品无人店系统</h1>
+    <div class="subtitle">安全私密，店主躺着也能赚钱</div>
+    <div class="tagline">智能门禁 · 库存预警 · 远程监控</div>
+</div>
+
+<div class="hero-section">
+    <h2>💡 解决您的痛点</h2>
+    <p>结合智能货柜+后台系统，微信扫码开门、扣款、库存预警，远程管理</p>
+</div>
+
+<div class="pain-section">
+    <div class="hero-section">
+        <h2>😤 行业痛点</h2>
+        <p>无人店防潮防损难、会员管理弱、库存管理乱、无法远程查看经营数据</p>
+    </div>
+</div>
+
+<div class="features-section">
+    <h2>✨ 核心功能</h2>
+    <div class="features-grid">
+        <div class="feature-item">
+            <div class="feature-icon"><span class="icon-check">✓</span></div>
+            <div class="feature-text">
+                <h4>微信扫码开门</h4>
+                <p>隐私保护，客户自助进店</p>
+            </div>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon"><span class="icon-check">✓</span></div>
+            <div class="feature-text">
+                <h4>扣款系统</h4>
+                <p>商品感应、自动计费、微信/支付宝扣款</p>
+            </div>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon"><span class="icon-check">✓</span></div>
+            <div class="feature-text">
+                <h4>库存管理</h4>
+                <p>库存预警、补货提醒、滞销分析</p>
+            </div>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon"><span class="icon-check">✓</span></div>
+            <div class="feature-text">
+                <h4>远程查看</h4>
+                <p>手机实时查看销售、库存、异常</p>
+            </div>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon"><span class="icon-check">✓</span></div>
+            <div class="feature-text">
+                <h4>视频监控集成</h4>
+                <p>异常行为检测、防盗报警</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="pricing-section">
+    <h2>💰 价格方案</h2>
+    <div class="pricing-cards">
+        <div class="pricing-card">
+            <div class="label">市场价格</div>
+            <div class="price">1-2万/年（含硬件）</div>
+            <div class="desc">按年付费，性价比高</div>
+        </div>
+        <div class="pricing-card">
+            <div class="label">适用对象</div>
+            <div class="price" style="font-size:20px;">情趣用品无人店 </div>
+            <div class="desc">情趣用品无人店 / 成人用品店</div>
+        </div>
+    </div>
+</div>
+
+<div class="cta-section">
+    <h2>🚀 立即开始</h2>
+    <p>让您的生意也能数字化升级，提升效率，降低成本</p>
+    <a href="#" class="cta-btn">联系我们试用</a>
+</div>
+
+<div class="footer">
+    © 2024 情趣用品无人店系统 | 让商业更智能
+</div>
+</body>
+</html>
