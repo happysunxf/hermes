@@ -1,0 +1,2864 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>笔境学堂 - 在线教育平台</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #0a0e1a;
+  --bg-secondary: #111827;
+  --bg-card: #1a2236;
+  --bg-card-hover: #212d47;
+  --border: #2a3655;
+  --border-light: #334155;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --accent: #6366f1;
+  --accent-light: #818cf8;
+  --accent-dim: rgba(99,102,241,0.15);
+  --success: #10b981;
+  --success-dim: rgba(16,185,129,0.15);
+  --warning: #f59e0b;
+  --warning-dim: rgba(245,158,11,0.15);
+  --danger: #ef4444;
+  --danger-dim: rgba(239,68,68,0.15);
+  --info: #38bdf8;
+  --info-dim: rgba(56,189,248,0.15);
+  --purple: #a78bfa;
+  --pink: #f472b6;
+  --sidebar-w: 260px;
+  --header-h: 64px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Noto Sans SC', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border-light); }
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  width: var(--sidebar-w);
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  transition: transform 0.3s ease;
+}
+
+.sidebar-logo {
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--border);
+  gap: 10px;
+}
+
+.sidebar-logo .logo-icon {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--accent), var(--purple));
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: #fff;
+}
+
+.sidebar-logo .logo-text {
+  font-size: 18px; font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-light), var(--purple));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+
+.sidebar-nav { flex: 1; overflow-y: auto; padding: 12px 0; }
+
+.nav-section { margin-bottom: 8px; }
+
+.nav-section-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 8px 20px 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  margin: 2px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-secondary);
+  font-size: 14px;
+  position: relative;
+}
+
+.nav-item .material-icons-round {
+  font-size: 20px;
+  opacity: 0.8;
+}
+
+.nav-item:hover {
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.nav-item.active {
+  background: var(--accent-dim);
+  color: var(--accent-light);
+}
+
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: -8px; top: 50%;
+  transform: translateY(-50%);
+  width: 3px; height: 20px;
+  background: var(--accent);
+  border-radius: 0 2px 2px 0;
+}
+
+.nav-badge {
+  margin-left: auto;
+  background: var(--accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+}
+
+.nav-item .material-icons-round.emoji { font-size: 18px; }
+
+.sidebar-footer {
+  padding: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.user-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.user-card:hover { background: var(--bg-card); }
+
+.user-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--pink));
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 16px;
+}
+
+.user-info { flex: 1; }
+.user-name { font-size: 14px; font-weight: 500; }
+.user-role { font-size: 12px; color: var(--text-muted); }
+
+/* Main */
+.main {
+  margin-left: var(--sidebar-w);
+  min-height: 100vh;
+}
+
+.header {
+  height: var(--header-h);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  position: sticky; top: 0;
+  z-index: 50;
+  gap: 16px;
+}
+
+.header-search {
+  flex: 1; max-width: 400px;
+  position: relative;
+}
+
+.header-search input {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 16px 8px 40px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.header-search input:focus { border-color: var(--accent); }
+
+.header-search .material-icons-round {
+  position: absolute; left: 12px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 18px;
+}
+
+.header-actions { display: flex; align-items: center; gap: 8px; }
+
+.icon-btn {
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+  position: relative;
+  color: var(--text-secondary);
+}
+
+.icon-btn:hover { background: var(--bg-card); color: var(--text-primary); }
+
+.icon-btn .badge {
+  position: absolute;
+  top: 6px; right: 6px;
+  width: 8px; height: 8px;
+  background: var(--danger);
+  border-radius: 50%;
+  border: 2px solid var(--bg-secondary);
+}
+
+.notif-panel {
+  display: none;
+  position: absolute;
+  top: calc(var(--header-h) - 8px);
+  right: 80px;
+  width: 360px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  z-index: 200;
+  overflow: hidden;
+}
+
+.notif-panel.show { display: block; }
+
+.notif-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 14px; font-weight: 500;
+}
+
+.notif-header span:last-child {
+  font-size: 12px; color: var(--accent); cursor: pointer;
+}
+
+.notif-list { max-height: 320px; overflow-y: auto; }
+
+.notif-item {
+  display: flex;
+  gap: 12px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.notif-item:hover { background: var(--bg-card-hover); }
+.notif-item:last-child { border-bottom: none; }
+
+.notif-icon {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-size: 18px;
+}
+
+.notif-icon.success { background: var(--success-dim); color: var(--success); }
+.notif-icon.warning { background: var(--warning-dim); color: var(--warning); }
+.notif-icon.info { background: var(--info-dim); color: var(--info); }
+.notif-icon.accent { background: var(--accent-dim); color: var(--accent); }
+
+.notif-text { font-size: 13px; line-height: 1.5; }
+.notif-text strong { color: var(--text-primary); }
+.notif-time { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+/* Page content */
+.page {
+  display: none;
+  padding: 24px;
+  animation: fadeIn 0.3s ease;
+}
+
+.page.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.page-title { font-size: 22px; font-weight: 700; }
+.page-subtitle { font-size: 14px; color: var(--text-secondary); margin-top: 4px; }
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  transition: all 0.2s;
+}
+
+.stat-card:hover {
+  border-color: var(--border-light);
+  background: var(--bg-card-hover);
+  transform: translateY(-2px);
+}
+
+.stat-icon {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.stat-icon.accent { background: var(--accent-dim); color: var(--accent-light); }
+.stat-icon.success { background: var(--success-dim); color: var(--success); }
+.stat-icon.warning { background: var(--warning-dim); color: var(--warning); }
+.stat-icon.purple { background: rgba(167,139,250,0.15); color: var(--purple); }
+.stat-icon.info { background: var(--info-dim); color: var(--info); }
+.stat-icon.pink { background: rgba(244,114,182,0.15); color: var(--pink); }
+.stat-icon.danger { background: var(--danger-dim); color: var(--danger); }
+
+.stat-info { flex: 1; }
+.stat-value { font-size: 26px; font-weight: 700; line-height: 1.2; }
+.stat-label { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+
+.stat-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  margin-top: 6px;
+}
+
+.stat-trend.up { background: var(--success-dim); color: var(--success); }
+.stat-trend.down { background: var(--danger-dim); color: var(--danger); }
+
+/* Grid layout */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+@media(max-width:1200px) {
+  .grid-3 { grid-template-columns: 1fr 1fr; }
+}
+
+@media(max-width:900px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+}
+
+/* Cards */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-title {
+  font-size: 15px; font-weight: 600;
+}
+
+.card-body { padding: 20px; }
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+.btn-primary:hover { background: var(--accent-light); }
+
+.btn-secondary {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover { border-color: var(--border-light); background: var(--border); }
+
+.btn-success {
+  background: var(--success);
+  color: #fff;
+}
+
+.btn-danger {
+  background: var(--danger-dim);
+  color: var(--danger);
+}
+
+.btn-sm { padding: 5px 12px; font-size: 12px; }
+
+/* Tables */
+.table-wrap { overflow-x: auto; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+thead th {
+  text-align: left;
+  padding: 10px 14px;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+}
+
+tbody td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+
+tbody tr:hover td { background: rgba(255,255,255,0.02); }
+tbody tr:last-child td { border-bottom: none; }
+
+/* Tags/Badges */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.tag-accent { background: var(--accent-dim); color: var(--accent-light); }
+.tag-success { background: var(--success-dim); color: var(--success); }
+.tag-warning { background: var(--warning-dim); color: var(--warning); }
+.tag-danger { background: var(--danger-dim); color: var(--danger); }
+.tag-info { background: var(--info-dim); color: var(--info); }
+
+/* Progress bar */
+.progress-bar {
+  height: 6px;
+  background: var(--bg-primary);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 1s ease;
+}
+
+.progress-fill.accent { background: linear-gradient(90deg, var(--accent), var(--accent-light)); }
+.progress-fill.success { background: var(--success); }
+.progress-fill.warning { background: var(--warning); }
+
+/* Avatar */
+.avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 600; font-size: 14px;
+  flex-shrink: 0;
+}
+
+.avatar-sm { width: 28px; height: 28px; font-size: 11px; }
+.avatar-lg { width: 48px; height: 48px; font-size: 18px; }
+
+.avatar-gradient-1 { background: linear-gradient(135deg, var(--accent), var(--purple)); color: #fff; }
+.avatar-gradient-2 { background: linear-gradient(135deg, var(--success), #06b6d4); color: #fff; }
+.avatar-gradient-3 { background: linear-gradient(135deg, var(--warning), var(--danger)); color: #fff; }
+.avatar-gradient-4 { background: linear-gradient(135deg, var(--pink), var(--purple)); color: #fff; }
+.avatar-gradient-5 { background: linear-gradient(135deg, var(--info), var(--accent)); color: #fff; }
+
+/* Pills/Select */
+select {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 14px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  cursor: pointer;
+}
+
+/* Charts area */
+.chart-placeholder {
+  position: relative;
+  height: 240px;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 0 20px;
+}
+
+.chart-bar {
+  flex: 1;
+  border-radius: 6px 6px 0 0;
+  transition: height 1s ease;
+  position: relative;
+  cursor: pointer;
+  min-height: 20px;
+}
+
+.chart-bar:hover { opacity: 0.85; }
+
+.chart-bar .chart-label {
+  position: absolute;
+  bottom: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.chart-bar .chart-value {
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.chart-bar:hover .chart-value { opacity: 1; }
+
+/* Pie chart */
+.pie-wrap {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.pie-chart {
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.pie-legend { flex: 1; }
+
+.pie-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 13px;
+}
+
+.pie-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Activity feed */
+.activity-list { display: flex; flex-direction: column; gap: 16px; }
+
+.activity-item {
+  display: flex;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.activity-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+.activity-text { color: var(--text-secondary); line-height: 1.6; }
+.activity-text strong { color: var(--text-primary); }
+
+/* Modals */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 500;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s;
+}
+
+.modal-overlay.show { display: flex; }
+
+.modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  width: 540px;
+  max-width: 90vw;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 48px rgba(0,0,0,0.4);
+}
+
+.modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-title { font-size: 17px; font-weight: 600; }
+
+.modal-close {
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: all 0.2s;
+}
+
+.modal-close:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+
+.modal-body { padding: 24px; }
+
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Form elements */
+.form-group { margin-bottom: 18px; }
+
+.form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: var(--text-secondary);
+}
+
+.form-control {
+  width: 100%;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 9px 14px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border 0.2s;
+}
+
+.form-control:focus { border-color: var(--accent); }
+
+textarea.form-control { resize: vertical; min-height: 80px; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+/* Toast */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-size: 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  animation: slideIn 0.3s ease;
+  min-width: 280px;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.toast.success { border-left: 3px solid var(--success); }
+.toast.error { border-left: 3px solid var(--danger); }
+.toast.warning { border-left: 3px solid var(--warning); }
+.toast.info { border-left: 3px solid var(--accent); }
+
+/* Course cards */
+.course-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.course-card:hover {
+  border-color: var(--border-light);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+}
+
+.course-thumb {
+  height: 140px;
+  position: relative;
+  overflow: hidden;
+}
+
+.course-thumb-bg {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 40px;
+}
+
+.course-thumb .course-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.6));
+}
+
+.course-thumb .course-tag {
+  position: absolute;
+  top: 10px; left: 10px;
+}
+
+.course-progress-wrap {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 8px 12px;
+}
+
+.course-progress-wrap .progress-bar { margin-bottom: 4px; }
+
+.course-content { padding: 16px; }
+
+.course-title {
+  font-size: 15px; font-weight: 600;
+  margin-bottom: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.course-meta {
+  display: flex;
+  gap: 14px;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.course-meta span { display: flex; align-items: center; gap: 4px; }
+
+.course-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.course-price { font-size: 16px; font-weight: 700; color: var(--warning); }
+
+/* Teacher cards */
+.teacher-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.teacher-card:hover {
+  border-color: var(--border-light);
+  transform: translateY(-3px);
+}
+
+.teacher-avatar {
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  margin: 0 auto 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+}
+
+.teacher-name { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.teacher-subject { font-size: 13px; color: var(--text-muted); margin-bottom: 10px; }
+
+.teacher-stats {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* Calendar */
+.calendar-wrap { display: flex; gap: 24px; }
+
+.calendar-main { flex: 1; }
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.calendar-nav {
+  display: flex;
+  gap: 6px;
+}
+
+.calendar-nav button {
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.calendar-nav button:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.calendar-day-name {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  padding: 8px 0;
+  letter-spacing: 0.5px;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+  gap: 2px;
+}
+
+.calendar-day:hover { background: var(--bg-card-hover); }
+
+.calendar-day.other-month { color: var(--text-muted); opacity: 0.4; }
+.calendar-day.today { background: var(--accent-dim); color: var(--accent-light); font-weight: 600; }
+.calendar-day.has-event::after {
+  content: '';
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.calendar-day.has-event.warning::after { background: var(--warning); }
+.calendar-day.has-event.success::after { background: var(--success); }
+.calendar-day.has-event.danger::after { background: var(--danger); }
+
+.calendar-events {
+  width: 280px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  flex-shrink: 0;
+}
+
+.calendar-events-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.event-item {
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  border-left: 3px solid;
+  background: var(--bg-primary);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.event-item:hover { background: var(--bg-card-hover); }
+
+.event-time { font-size: 11px; color: var(--text-muted); margin-bottom: 3px; }
+.event-title { font-size: 13px; font-weight: 500; }
+.event-teacher { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+/* Gradebook */
+.grade-cell {
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.grade-a { background: var(--success-dim); color: var(--success); }
+.grade-b { background: var(--info-dim); color: var(--info); }
+.grade-c { background: var(--warning-dim); color: var(--warning); }
+.grade-d { background: var(--danger-dim); color: var(--danger); }
+
+/* Schedule timeline */
+.schedule-timeline {
+  position: relative;
+  padding-left: 24px;
+}
+
+.schedule-timeline::before {
+  content: '';
+  position: absolute;
+  left: 7px; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--border);
+}
+
+.schedule-item {
+  position: relative;
+  padding: 12px 0 12px 20px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.schedule-item:hover { border-color: var(--border-light); transform: translateX(4px); }
+
+.schedule-item::before {
+  content: '';
+  position: absolute;
+  left: -24px; top: 18px;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  border: 2px solid;
+  background: var(--bg-primary);
+}
+
+.schedule-item.accent::before { border-color: var(--accent); }
+.schedule-item.warning::before { border-color: var(--warning); }
+.schedule-item.success::before { border-color: var(--success); }
+.schedule-item.info::before { border-color: var(--info); }
+
+.schedule-time {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.schedule-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.schedule-meta { font-size: 12px; color: var(--text-secondary); }
+
+/* Certificates */
+.cert-card {
+  background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-card-hover) 100%);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s;
+}
+
+.cert-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.3);
+}
+
+.cert-card::before {
+  content: '';
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  opacity: 0.1;
+}
+
+.cert-card.accent::before { background: var(--accent); }
+.cert-card.success::before { background: var(--success); }
+.cert-card.warning::before { background: var(--warning); }
+
+.cert-icon {
+  font-size: 36px;
+  margin-bottom: 12px;
+}
+
+.cert-title { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+.cert-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 14px; }
+.cert-date { font-size: 12px; color: var(--text-muted); }
+
+/* Payment list */
+.payment-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.payment-item:last-child { border-bottom: none; }
+
+.payment-icon {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+}
+
+.payment-info { flex: 1; }
+.payment-title { font-size: 14px; font-weight: 500; }
+.payment-desc { font-size: 12px; color: var(--text-muted); }
+
+.payment-amount {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.payment-amount.positive { color: var(--success); }
+.payment-amount.negative { color: var(--danger); }
+
+/* Tab system */
+.tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+
+.tab {
+  padding: 10px 18px;
+  font-size: 14px;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  margin-bottom: -1px;
+}
+
+.tab:hover { color: var(--text-secondary); }
+.tab.active { color: var(--accent-light); border-bottom-color: var(--accent); }
+
+/* Mobile */
+@media(max-width: 768px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  .header-search { display: none; }
+  .calendar-wrap { flex-direction: column; }
+  .calendar-events { width: 100%; }
+  .form-row { grid-template-columns: 1fr; }
+  .calendar-day { font-size: 11px; }
+}
+
+/* Misc */
+.text-success { color: var(--success) !important; }
+.text-warning { color: var(--warning) !important; }
+.text-danger { color: var(--danger) !important; }
+.text-info { color: var(--info) !important; }
+.text-muted { color: var(--text-muted) !important; }
+.text-sm { font-size: 12px !important; }
+.font-bold { font-weight: 700 !important; }
+.mb-2 { margin-bottom: 8px; }
+.mb-3 { margin-bottom: 12px; }
+.mb-4 { margin-bottom: 16px; }
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-2 { gap: 8px; }
+.gap-3 { gap: 12px; }
+.gap-4 { gap: 16px; }
+.w-full { width: 100%; }
+.text-right { text-align: right; }
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+}
+
+.empty-state .material-icons-round {
+  font-size: 48px;
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.search-highlight {
+  background: rgba(99,102,241,0.3);
+  border-radius: 2px;
+}
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">笔</div>
+    <div class="logo-text">笔境学堂</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+      <div class="nav-section-title">总览</div>
+      <div class="nav-item active" data-page="dashboard" onclick="navigate('dashboard')">
+        <span class="material-icons-round">dashboard</span>
+        控制台
+      </div>
+      <div class="nav-item" data-page="courses" onclick="navigate('courses')">
+        <span class="material-icons-round">menu_book</span>
+        课程管理
+        <span class="nav-badge">4</span>
+      </div>
+      <div class="nav-item" data-page="students" onclick="navigate('students')">
+        <span class="material-icons-round">school</span>
+        学生管理
+      </div>
+      <div class="nav-item" data-page="teachers" onclick="navigate('teachers')">
+        <span class="material-icons-round">psychology</span>
+        教师管理
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">教学</div>
+      <div class="nav-item" data-page="schedule" onclick="navigate('schedule')">
+        <span class="material-icons-round">calendar_month</span>
+        直播课表
+        <span class="nav-badge">3</span>
+      </div>
+      <div class="nav-item" data-page="assignments" onclick="navigate('assignments')">
+        <span class="material-icons-round">assignment</span>
+        作业管理
+      </div>
+      <div class="nav-item" data-page="gradebook" onclick="navigate('gradebook')">
+        <span class="material-icons-round">grade</span>
+        成绩册
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">运营</div>
+      <div class="nav-item" data-page="payments" onclick="navigate('payments')">
+        <span class="material-icons-round">payments</span>
+        费用管理
+      </div>
+      <div class="nav-item" data-page="certificates" onclick="navigate('certificates')">
+        <span class="material-icons-round">workspace_premium</span>
+        证书管理
+      </div>
+      <div class="nav-item" data-page="progress" onclick="navigate('progress')">
+        <span class="material-icons-round">trending_up</span>
+        学习进度
+      </div>
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-card">
+      <div class="user-avatar">林</div>
+      <div class="user-info">
+        <div class="user-name">林雅婷</div>
+        <div class="user-role">超级管理员</div>
+      </div>
+      <span class="material-icons-round text-muted" style="font-size:18px">chevron_right</span>
+    </div>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+  <header class="header">
+    <div class="header-search">
+      <span class="material-icons-round">search</span>
+      <input type="text" placeholder="搜索课程、学生、教师、作业..." id="globalSearch" oninput="handleSearch(this.value)">
+    </div>
+    <div class="header-actions">
+      <div class="icon-btn" onclick="toggleNotifications()">
+        <span class="material-icons-round">notifications</span>
+        <span class="badge"></span>
+      </div>
+      <div class="icon-btn">
+        <span class="material-icons-round">settings</span>
+      </div>
+      <div class="icon-btn" onclick="toggleSidebar()">
+        <span class="material-icons-round">menu</span>
+      </div>
+    </div>
+
+    <div class="notif-panel" id="notifPanel">
+      <div class="notif-header">
+        <span>通知中心</span>
+        <span onclick="markAllRead()">全部已读</span>
+      </div>
+      <div class="notif-list">
+        <div class="notif-item">
+          <div class="notif-icon success"><span class="material-icons-round">check_circle</span></div>
+          <div>
+            <div class="notif-text"><strong>陈思琪</strong> 完成了《唐诗鉴赏》课程学习，获得满分证书</div>
+            <div class="notif-time">3 分钟前</div>
+          </div>
+        </div>
+        <div class="notif-item">
+          <div class="notif-icon warning"><span class="material-icons-round">schedule</span></div>
+          <div>
+            <div class="notif-text"><strong>《大学语文》</strong> 直播课将在 15 分钟后开始</div>
+            <div class="notif-time">12 分钟前</div>
+          </div>
+        </div>
+        <div class="notif-item">
+          <div class="notif-icon accent"><span class="material-icons-round">person_add</span></div>
+          <div>
+            <div class="notif-text">新学员 <strong>王雨萱</strong> 报名了《现代汉语基础》课程</div>
+            <div class="notif-time">1 小时前</div>
+          </div>
+        </div>
+        <div class="notif-item">
+          <div class="notif-icon info"><span class="material-icons-round">payments</span></div>
+          <div>
+            <div class="notif-text">张明远 成功支付了课程费用 ¥2,980</div>
+            <div class="notif-time">2 小时前</div>
+          </div>
+        </div>
+        <div class="notif-item">
+          <div class="notif-icon success"><span class="material-icons-round">school</span></div>
+          <div>
+            <div class="notif-text"><strong>李晓东</strong> 作业批改完成，等级：A</div>
+            <div class="notif-time">3 小时前</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Dashboard -->
+  <div class="page active" id="page-dashboard">
+    <div class="page-header">
+      <div>
+        <div class="page-title">控制台</div>
+        <div class="page-subtitle">欢迎回来，林雅婷 — 今天是 2026 年 5 月 17 日</div>
+      </div>
+      <button class="btn btn-primary" onclick="openModal('addCourseModal')">
+        <span class="material-icons-round" style="font-size:16px">add</span>
+        新建课程
+      </button>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon accent"><span class="material-icons-round">menu_book</span></div>
+        <div class="stat-info">
+          <div class="stat-value">48</div>
+          <div class="stat-label">在线课程</div>
+          <div class="stat-trend up"><span class="material-icons-round" style="font-size:12px">arrow_upward</span> 本月+6</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon success"><span class="material-icons-round">people</span></div>
+        <div class="stat-info">
+          <div class="stat-value">2,847</div>
+          <div class="stat-label">注册学生</div>
+          <div class="stat-trend up"><span class="material-icons-round" style="font-size:12px">arrow_upward</span> 本月+183</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon purple"><span class="material-icons-round">psychology</span></div>
+        <div class="stat-info">
+          <div class="stat-value">32</div>
+          <div class="stat-label">授课教师</div>
+          <div class="stat-trend up"><span class="material-icons-round" style="font-size:12px">arrow_upward</span> 本月+2</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon warning"><span class="material-icons-round">payments</span></div>
+        <div class="stat-info">
+          <div class="stat-value">¥128,450</div>
+          <div class="stat-label">本月收入</div>
+          <div class="stat-trend up"><span class="material-icons-round" style="font-size:12px">arrow_upward</span> 比上月+12.3%</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon info"><span class="material-icons-round">live_tv</span></div>
+        <div class="stat-info">
+          <div class="stat-value">18</div>
+          <div class="stat-label">本周直播课</div>
+          <div class="stat-trend down"><span class="material-icons-round" style="font-size:12px">arrow_downward</span> 比上周-2</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon pink"><span class="material-icons-round">workspace_premium</span></div>
+        <div class="stat-info">
+          <div class="stat-value">156</div>
+          <div class="stat-label">已颁发证书</div>
+          <div class="stat-trend up"><span class="material-icons-round" style="font-size:12px">arrow_upward</span> 本月+24</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📈 课程报名趋势</div>
+          <select style="font-size:12px; padding:4px 10px;" onchange="updateChart(this.value)">
+            <option>最近7天</option>
+            <option>最近30天</option>
+            <option>最近3个月</option>
+          </select>
+        </div>
+        <div class="card-body">
+          <div class="chart-placeholder" id="enrollChart"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🎓 课程类别分布</div>
+        </div>
+        <div class="card-body">
+          <div class="pie-wrap">
+            <canvas class="pie-chart" id="categoryPie" width="140" height="140"></canvas>
+            <div class="pie-legend">
+              <div class="pie-legend-item"><div class="pie-dot" style="background:var(--accent)"></div> 语文文学 · 38%</div>
+              <div class="pie-legend-item"><div class="pie-dot" style="background:var(--success)"></div> 数学逻辑 · 25%</div>
+              <div class="pie-legend-item"><div class="pie-dot" style="background:var(--warning)"></div> 英语口语 · 20%</div>
+              <div class="pie-legend-item"><div class="pie-dot" style="background:var(--purple)"></div> 历史社科 · 12%</div>
+              <div class="pie-legend-item"><div class="pie-dot" style="background:var(--pink)"></div> 艺术修养 · 5%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:20px;">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📋 最近活动</div>
+          <span class="text-sm text-muted">查看更多 →</span>
+        </div>
+        <div class="card-body">
+          <div class="activity-list">
+            <div class="activity-item">
+              <div class="activity-dot" style="background:var(--success)"></div>
+              <div class="activity-text"><strong>陈思琪</strong> 完成了《唐诗鉴赏》第 12 讲并通过测验（得分 98分）</div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot" style="background:var(--accent)"></div>
+              <div class="activity-text"><strong>王雨萱</strong> 新报名了《现代汉语基础》，已缴费 ¥1,980</div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot" style="background:var(--warning)"></div>
+              <div class="activity-text"><strong>张伟老师</strong> 上传了新作业「古文阅读理解（三）」</div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot" style="background:var(--info)"></div>
+              <div class="activity-text"><strong>《大学英语四级》</strong> 直播课将在明天 19:00 开始，已有 45 人预约</div>
+            </div>
+            <div class="activity-item">
+              <div class="activity-dot" style="background:var(--purple)"></div>
+              <div class="activity-text"><strong>刘芳老师</strong> 批改了 12 份作业，平均评级 A-</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🔴 今日直播课</div>
+        </div>
+        <div class="card-body" style="padding-top:12px;">
+          <div class="schedule-item accent" style="margin-bottom:0">
+            <div class="schedule-time">09:00 - 10:30</div>
+            <div class="schedule-title">《大学语文》精讲 — 现代散文专题</div>
+            <div class="schedule-meta">👨‍🏫 张伟老师 · 已报名 62 人 · 直播中 🔴</div>
+          </div>
+          <div class="schedule-item warning" style="margin-top:12px; margin-bottom:0">
+            <div class="schedule-time">14:00 - 15:30</div>
+            <div class="schedule-title">《高等数学》冲刺班 — 极限与连续</div>
+            <div class="schedule-meta">👩‍🏫 李娜老师 · 已报名 48 人 · 即将开始</div>
+          </div>
+          <div class="schedule-item success" style="margin-top:12px; margin-bottom:0">
+            <div class="schedule-time">19:00 - 20:30</div>
+            <div class="schedule-title">《英语口语》实战训练 — 情景对话</div>
+            <div class="schedule-meta">👨‍🏫 外教 Michael · 已报名 35 人 · 预约中</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Courses -->
+  <div class="page" id="page-courses">
+    <div class="page-header">
+      <div>
+        <div class="page-title">课程管理</div>
+        <div class="page-subtitle">共 48 门课程，32 门正在授课中</div>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <select id="courseFilter" onchange="filterCourses()">
+          <option value="">全部类别</option>
+          <option>语文文学</option>
+          <option>数学逻辑</option>
+          <option>英语口语</option>
+          <option>历史社科</option>
+        </select>
+        <button class="btn btn-primary" onclick="openModal('addCourseModal')">
+          <span class="material-icons-round" style="font-size:16px">add</span> 新建课程
+        </button>
+      </div>
+    </div>
+
+    <div id="courseGrid" class="grid-3" style="margin-bottom:20px;"></div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">📊 课程详情列表</div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>课程名称</th>
+              <th>授课教师</th>
+              <th>类别</th>
+              <th>学生数</th>
+              <th>进度</th>
+              <th>价格</th>
+              <th>状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="courseTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Students -->
+  <div class="page" id="page-students">
+    <div class="page-header">
+      <div>
+        <div class="page-title">学生管理</div>
+        <div class="page-subtitle">共 2,847 名学生，其中 1,203 人正在学习中</div>
+      </div>
+      <button class="btn btn-primary" onclick="openModal('addStudentModal')">
+        <span class="material-icons-round" style="font-size:16px">person_add</span> 添加学生
+      </button>
+    </div>
+
+    <div class="stats-grid" style="margin-bottom:24px;">
+      <div class="stat-card">
+        <div class="stat-icon success"><span class="material-icons-round">school</span></div>
+        <div class="stat-info">
+          <div class="stat-value">1,203</div>
+          <div class="stat-label">学习中</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon warning"><span class="material-icons-round">emoji_events</span></div>
+        <div class="stat-info">
+          <div class="stat-value">342</div>
+          <div class="stat-label">已完成</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon danger"><span class="material-icons-round">hourglass_empty</span></div>
+        <div class="stat-info">
+          <div class="stat-value">1,302</div>
+          <div class="stat-label">未激活</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">学生列表</div>
+        <input type="text" placeholder="搜索学生姓名或手机号..." class="form-control" style="width:260px;" oninput="searchStudents(this.value)" id="studentSearch">
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>学生</th>
+              <th>手机号</th>
+              <th>所在班级</th>
+              <th>注册课程</th>
+              <th>学习进度</th>
+              <th>最近活跃</th>
+              <th>状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="studentTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Teachers -->
+  <div class="page" id="page-teachers">
+    <div class="page-header">
+      <div>
+        <div class="page-title">教师管理</div>
+        <div class="page-subtitle">共 32 位教师，28 位正在授课</div>
+      </div>
+      <button class="btn btn-primary" onclick="openModal('addTeacherModal')">
+        <span class="material-icons-round" style="font-size:16px">person_add</span> 添加教师
+      </button>
+    </div>
+
+    <div class="grid-4" id="teacherGrid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px;"></div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">教师列表</div></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>教师</th>
+              <th>科目</th>
+              <th>授课课程</th>
+              <th>学生数</th>
+              <th>评分</th>
+              <th>入职时间</th>
+              <th>状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="teacherTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Schedule -->
+  <div class="page" id="page-schedule">
+    <div class="page-header">
+      <div>
+        <div class="page-title">直播课表</div>
+        <div class="page-subtitle">本周共 18 场直播课，已预约 847 人次</div>
+      </div>
+      <button class="btn btn-primary" onclick="openModal('addScheduleModal')">
+        <span class="material-icons-round" style="font-size:16px">add</span> 安排直播课
+      </button>
+    </div>
+
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-body">
+        <div class="calendar-wrap">
+          <div class="calendar-main">
+            <div class="calendar-header">
+              <div class="card-title" id="calendarMonth">2026年5月</div>
+              <div class="calendar-nav">
+                <button onclick="changeMonth(-1)"><span class="material-icons-round">chevron_left</span></button>
+                <button onclick="changeMonth(1)"><span class="material-icons-round">chevron_right</span></button>
+              </div>
+            </div>
+            <div class="calendar-grid" id="calendarGrid"></div>
+          </div>
+          <div class="calendar-events">
+            <div class="calendar-events-title" id="eventsTitle">5月17日 · 周日</div>
+            <div id="eventsList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">📅 本周直播课列表</div></div>
+      <div class="card-body" style="padding-top:12px;">
+        <div id="weekScheduleList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assignments -->
+  <div class="page" id="page-assignments">
+    <div class="page-header">
+      <div>
+        <div class="page-title">作业管理</div>
+        <div class="page-subtitle">共 156 份作业，87 份已批改，12 份待批改</div>
+      </div>
+      <button class="btn btn-primary" onclick="openModal('addAssignmentModal')">
+        <span class="material-icons-round" style="font-size:16px">add</span> 布置作业
+      </button>
+    </div>
+
+    <div class="tabs" id="assignmentTabs">
+      <div class="tab active" onclick="switchTab(this, 'pending')">待批改 (12)</div>
+      <div class="tab" onclick="switchTab(this, 'graded')">已批改 (87)</div>
+      <div class="tab" onclick="switchTab(this, 'all')">全部作业 (156)</div>
+    </div>
+
+    <div class="card">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>作业名称</th>
+              <th>所属课程</th>
+              <th>布置教师</th>
+              <th>布置时间</th>
+              <th>提交人数</th>
+              <th>平均分</th>
+              <th>状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="assignmentTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gradebook -->
+  <div class="page" id="page-gradebook">
+    <div class="page-header">
+      <div>
+        <div class="page-title">成绩册</div>
+        <div class="page-subtitle">查看所有学生的课程成绩与排名</div>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <select id="gradeCourse" onchange="filterGrades()">
+          <option value="">全部课程</option>
+          <option>大学语文</option>
+          <option>高等数学</option>
+          <option>英语口语</option>
+          <option>现代汉语基础</option>
+          <option>唐诗鉴赏</option>
+        </select>
+        <select>
+          <option>按姓名</option>
+          <option>按成绩</option>
+          <option>按课程</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="stats-grid" style="margin-bottom:24px;">
+      <div class="stat-card">
+        <div class="stat-icon success"><span class="material-icons-round">star</span></div>
+        <div class="stat-info">
+          <div class="stat-value">86.4</div>
+          <div class="stat-label">班级平均分</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon accent"><span class="material-icons-round">emoji_events</span></div>
+        <div class="stat-info">
+          <div class="stat-value">94</div>
+          <div class="stat-label">最高分</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon danger"><span class="material-icons-round">trending_down</span></div>
+        <div class="stat-info">
+          <div class="stat-value">62</div>
+          <div class="stat-label">最低分</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon info"><span class="material-icons-round">people</span></div>
+        <div class="stat-info">
+          <div class="stat-value">A</div>
+          <div class="stat-label">整体评级</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">📊 成绩列表 — 大学语文</div></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>排名</th>
+              <th>学生</th>
+              <th>平时作业 (30%)</th>
+              <th>期中考试 (30%)</th>
+              <th>期末考试 (40%)</th>
+              <th>总评</th>
+              <th>评级</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="gradeTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payments -->
+  <div class="page" id="page-payments">
+    <div class="page-header">
+      <div>
+        <div class="page-title">费用管理</div>
+        <div class="page-subtitle">总收入 ¥2,847,320，已入账 ¥2,156,780，待确认 ¥690,540</div>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <select>
+          <option>全部状态</option>
+          <option>已支付</option>
+          <option>待支付</option>
+          <option>已退款</option>
+        </select>
+        <button class="btn btn-secondary">
+          <span class="material-icons-round" style="font-size:16px">download</span> 导出报表
+        </button>
+      </div>
+    </div>
+
+    <div class="stats-grid" style="margin-bottom:24px;">
+      <div class="stat-card">
+        <div class="stat-icon success"><span class="material-icons-round">account_balance_wallet</span></div>
+        <div class="stat-info">
+          <div class="stat-value">¥2,156,780</div>
+          <div class="stat-label">已入账</div>
+          <div class="stat-trend up"><span class="material-icons-round" style="font-size:12px">arrow_upward</span> +¥187,320</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon warning"><span class="material-icons-round">schedule</span></div>
+        <div class="stat-info">
+          <div class="stat-value">¥690,540</div>
+          <div class="stat-label">待确认</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon danger"><span class="material-icons-round">undo</span></div>
+        <div class="stat-info">
+          <div class="stat-value">¥12,450</div>
+          <div class="stat-label">已退款</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon info"><span class="material-icons-round">receipt_long</span></div>
+        <div class="stat-info">
+          <div class="stat-value">1,247</div>
+          <div class="stat-label">总订单数</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">💳 交易记录</div></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>订单号</th>
+              <th>学员</th>
+              <th>课程</th>
+              <th>金额</th>
+              <th>方式</th>
+              <th>时间</th>
+              <th>状态</th>
+            </tr>
+          </thead>
+          <tbody id="paymentTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div class="page" id="page-progress">
+    <div class="page-header">
+      <div>
+        <div class="page-title">学习进度</div>
+        <div class="page-subtitle">追踪所有学生的课程学习进度</div>
+      </div>
+      <select>
+        <option>全部课程</option>
+        <option>大学语文</option>
+        <option>高等数学</option>
+      </select>
+    </div>
+
+    <div class="grid-2" style="margin-bottom:24px;">
+      <div class="card">
+        <div class="card-header"><div class="card-title">📊 整体完成率</div></div>
+        <div class="card-body">
+          <div style="display:flex; align-items:center; gap:30px;">
+            <div style="position:relative; width:120px; height:120px;">
+              <svg viewBox="0 0 120 120" style="transform:rotate(-90deg);">
+                <circle cx="60" cy="60" r="50" fill="none" stroke="var(--bg-primary)" stroke-width="10"/>
+                <circle cx="60" cy="60" r="50" fill="none" stroke="var(--accent)" stroke-width="10"
+                  stroke-dasharray="314" stroke-dashoffset="94" stroke-linecap="round"/>
+              </svg>
+              <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column;">
+                <div style="font-size:28px; font-weight:700;">70%</div>
+                <div style="font-size:11px; color:var(--text-muted);">完成率</div>
+              </div>
+            </div>
+            <div style="flex:1;">
+              <div class="mb-3">
+                <div class="flex justify-between text-sm mb-2">
+                  <span class="text-muted">视频观看</span><span class="text-success font-bold">82%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill accent" style="width:82%"></div></div>
+              </div>
+              <div class="mb-3">
+                <div class="flex justify-between text-sm mb-2">
+                  <span class="text-muted">作业完成</span><span class="text-warning font-bold">65%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill warning" style="width:65%"></div></div>
+              </div>
+              <div class="mb-3">
+                <div class="flex justify-between text-sm mb-2">
+                  <span class="text-muted">直播参与</span><span class="text-info font-bold">78%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill success" style="width:78%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-sm mb-2">
+                  <span class="text-muted">测验通过</span><span class="font-bold" style="color:var(--purple)">71%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width:71%; background:var(--purple)"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">🏆 学习之星 TOP 5</div></div>
+        <div class="card-body">
+          <div id="progressTopList"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">📋 课程进度详情</div></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>课程</th>
+              <th>授课教师</th>
+              <th>学生进度</th>
+              <th>平均进度</th>
+              <th>完成人数</th>
+              <th>测验均分</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="progressTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Certificates -->
+  <div class="page" id="page-certificates">
+    <div class="page-header">
+      <div>
+        <div class="page-title">证书管理</div>
+        <div class="page-subtitle">共颁发 156 张证书，其中本月 24 张</div>
+      </div>
+      <button class="btn btn-primary" onclick="openModal('addCertificateModal')">
+        <span class="material-icons-round" style="font-size:16px">add</span> 颁发证书
+      </button>
+    </div>
+
+    <div class="grid-3" id="certGrid" style="margin-bottom:24px;"></div>
+
+    <div class="card">
+      <div class="card-header"><div class="card-title">📜 证书列表</div></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>证书编号</th>
+              <th>学员</th>
+              <th>课程</th>
+              <th>评级</th>
+              <th>颁发日期</th>
+              <th>有效期至</th>
+              <th>状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="certTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modals -->
+<div class="modal-overlay" id="addCourseModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">新建课程</div>
+      <div class="modal-close" onclick="closeModal('addCourseModal')"><span class="material-icons-round">close</span></div>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">课程名称</label>
+        <input type="text" class="form-control" placeholder="如：大学语文全程班">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">课程类别</label>
+          <select class="form-control">
+            <option>语文文学</option>
+            <option>数学逻辑</option>
+            <option>英语口语</option>
+            <option>历史社科</option>
+            <option>艺术修养</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">授课教师</label>
+          <select class="form-control">
+            <option>张伟</option>
+            <option>李娜</option>
+            <option>刘芳</option>
+            <option>外教 Michael</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">课程价格 (¥)</label>
+          <input type="number" class="form-control" placeholder="1980">
+        </div>
+        <div class="form-group">
+          <label class="form-label">课程节数</label>
+          <input type="number" class="form-control" placeholder="30">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">课程简介</label>
+        <textarea class="form-control" placeholder="简要描述课程内容、学习目标..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('addCourseModal')">取消</button>
+      <button class="btn btn-primary" onclick="saveCourse()">创建课程</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="addStudentModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">添加学生</div>
+      <div class="modal-close" onclick="closeModal('addStudentModal')"><span class="material-icons-round">close</span></div>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">姓名</label>
+          <input type="text" class="form-control" placeholder="学生姓名">
+        </div>
+        <div class="form-group">
+          <label class="form-label">手机号</label>
+          <input type="tel" class="form-control" placeholder="手机号码">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">性别</label>
+          <select class="form-control">
+            <option>男</option>
+            <option>女</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">所在学校</label>
+          <input type="text" class="form-control" placeholder="如：清华大学">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">报读课程</label>
+        <select class="form-control">
+          <option>大学语文全程班</option>
+          <option>高等数学冲刺</option>
+          <option>英语口语实战</option>
+          <option>现代汉语基础</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('addStudentModal')">取消</button>
+      <button class="btn btn-primary" onclick="saveStudent()">添加学生</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="addTeacherModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">添加教师</div>
+      <div class="modal-close" onclick="closeModal('addTeacherModal')"><span class="material-icons-round">close</span></div>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">姓名</label>
+          <input type="text" class="form-control" placeholder="教师姓名">
+        </div>
+        <div class="form-group">
+          <label class="form-label">教授科目</label>
+          <select class="form-control">
+            <option>语文</option>
+            <option>数学</option>
+            <option>英语</option>
+            <option>历史</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">手机号</label>
+          <input type="tel" class="form-control" placeholder="手机号码">
+        </div>
+        <div class="form-group">
+          <label class="form-label">教龄</label>
+          <input type="number" class="form-control" placeholder="5">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">个人简介</label>
+        <textarea class="form-control" placeholder="教师简介..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('addTeacherModal')">取消</button>
+      <button class="btn btn-primary" onclick="saveTeacher()">添加教师</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="addScheduleModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">安排直播课</div>
+      <div class="modal-close" onclick="closeModal('addScheduleModal')"><span class="material-icons-round">close</span></div>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">课程名称</label>
+        <input type="text" class="form-control" placeholder="直播课主题">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">上课日期</label>
+          <input type="date" class="form-control" value="2026-05-17">
+        </div>
+        <div class="form-group">
+          <label class="form-label">上课时间</label>
+          <input type="time" class="form-control" value="14:00">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">授课教师</label>
+          <select class="form-control">
+            <option>张伟</option>
+            <option>李娜</option>
+            <option>刘芳</option>
+            <option>外教 Michael</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">课时长 (分钟)</label>
+          <input type="number" class="form-control" value="90">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">课程简介</label>
+        <textarea class="form-control" placeholder="本次课程内容简介..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('addScheduleModal')">取消</button>
+      <button class="btn btn-primary" onclick="saveSchedule()">安排直播</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="addAssignmentModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">布置作业</div>
+      <div class="modal-close" onclick="closeModal('addAssignmentModal')"><span class="material-icons-round">close</span></div>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">作业名称</label>
+          <input type="text" class="form-control" placeholder="如：第三单元测验">
+        </div>
+        <div class="form-group">
+          <label class="form-label">所属课程</label>
+          <select class="form-control">
+            <option>大学语文</option>
+            <option>高等数学</option>
+            <option>英语口语</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">截止日期</label>
+        <input type="date" class="form-control" value="2026-05-24">
+      </div>
+      <div class="form-group">
+        <label class="form-label">作业要求</label>
+        <textarea class="form-control" placeholder="作业内容与要求..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('addAssignmentModal')">取消</button>
+      <button class="btn btn-primary" onclick="saveAssignment()">发布作业</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="addCertificateModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">颁发证书</div>
+      <div class="modal-close" onclick="closeModal('addCertificateModal')"><span class="material-icons-round">close</span></div>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">学员姓名</label>
+          <input type="text" class="form-control" placeholder="学员姓名">
+        </div>
+        <div class="form-group">
+          <label class="form-label">课程名称</label>
+          <select class="form-control">
+            <option>大学语文</option>
+            <option>高等数学</option>
+            <option>英语口语</option>
+            <option>现代汉语基础</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">评级</label>
+          <select class="form-control">
+            <option>A (优秀)</option>
+            <option>B (良好)</option>
+            <option>C (合格)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">有效期至</label>
+          <input type="date" class="form-control" value="2029-05-17">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('addCertificateModal')">取消</button>
+      <button class="btn btn-primary" onclick="saveCertificate()">颁发证书</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ===== DATA =====
+const courses = [
+  { id:1, name:'大学语文全程班', teacher:'张伟', cat:'语文文学', students:128, progress:72, price:2980, color:'#6366f1', bg:'linear-gradient(135deg,#6366f1,#818cf8)' },
+  { id:2, name:'高等数学冲刺', teacher:'李娜', cat:'数学逻辑', students:96, progress:58, price:3280, color:'#10b981', bg:'linear-gradient(135deg,#10b981,#06b6d4)' },
+  { id:3, name:'英语口语实战', teacher:'Michael', cat:'英语口语', students:84, progress:85, price:3580, color:'#f59e0b', bg:'linear-gradient(135deg,#f59e0b,#f97316)' },
+  { id:4, name:'现代汉语基础', teacher:'刘芳', cat:'语文文学', students:110, progress:63, price:2680, color:'#a78bfa', bg:'linear-gradient(135deg,#a78bfa,#f472b6)' },
+  { id:5, name:'唐诗鉴赏专题', teacher:'张伟', cat:'语文文学', students:76, progress:90, price:1980, color:'#38bdf8', bg:'linear-gradient(135deg,#38bdf8,#6366f1)' },
+  { id:6, name:'线性代数入门', teacher:'李娜', cat:'数学逻辑', students:68, progress:45, price:2880, color:'#f472b6', bg:'linear-gradient(135deg,#f472b6,#a78bfa)' },
+];
+
+const teachers = [
+  { name:'张伟', subject:'语文', courses:3, students:304, rating:4.9, years:12, color:'#6366f1', icon:'📚' },
+  { name:'李娜', subject:'数学', courses:2, students:164, rating:4.8, years:8, color:'#10b981', icon:'📐' },
+  { name:'刘芳', subject:'语文', courses:2, students:186, rating:4.9, years:10, color:'#a78bfa', icon:'✒️' },
+  { name:'Michael', subject:'英语', courses:2, students:152, rating:5.0, years:6, color:'#f59e0b', icon:'🌍' },
+  { name:'赵敏', subject:'历史', courses:1, students:98, rating:4.7, years:15, color:'#38bdf8', icon:'📜' },
+  { name:'孙强', subject:'数学', courses:1, students:72, rating:4.6, years:5, color:'#f472b6', icon:'🔢' },
+];
+
+const students = [
+  { name:'陈思琪', tel:'138****6721', school:'北京市第四中学', courses:2, progress:92, active:'2分钟前', status:'学习中' },
+  { name:'王雨萱', tel:'139****8834', school:'上海市第三中学', courses:1, progress:45, active:'1小时前', status:'学习中' },
+  { name:'张明远', tel:'137****2201', school:'清华大学附属中学', courses:3, progress:78, active:'今天', status:'学习中' },
+  { name:'李晓东', tel:'136****4456', school:'广州市第二中学', courses:2, progress:88, active:'30分钟前', status:'学习中' },
+  { name:'刘芳', tel:'135****7789', school:'深圳市外国语学校', courses:1, progress:35, active:'昨天', status:'学习中' },
+  { name:'赵子涵', tel:'133****1122', school:'杭州市学军中学', courses:2, progress:65, active:'3小时前', status:'学习中' },
+];
+
+const assignments = [
+  { name:'第三单元古文阅读', course:'大学语文', teacher:'张伟', time:'2026-05-10 14:30', submitted:45, avg:82, status:'待批改' },
+  { name:'高数第三章测验', course:'高等数学', teacher:'李娜', time:'2026-05-08 10:00', submitted:38, avg:76, status:'待批改' },
+  { name:'英语口语情景对话', course:'英语口语', teacher:'Michael', time:'2026-05-12 19:00', submitted:42, avg:88, status:'待批改' },
+  { name:'现代汉语语音练习', course:'现代汉语基础', teacher:'刘芳', time:'2026-05-05 16:00', submitted:52, avg:91, status:'已批改' },
+  { name:'唐诗背诵检查', course:'唐诗鉴赏', teacher:'张伟', time:'2026-04-28 09:00', submitted:60, avg:95, status:'已批改' },
+  { name:'线性代数矩阵运算', course:'线性代数', teacher:'李娜', time:'2026-04-25 11:00', submitted:35, avg:74, status:'已批改' },
+];
+
+const grades = [
+  { rank:1, name:'陈思琪', hw:96, mid:94, fin:98, total:96, grade:'A' },
+  { rank:2, name:'张明远', hw:92, mid:90, fin:95, total:92, grade:'A' },
+  { rank:3, name:'李晓东', hw:88, mid:92, fin:88, total:89, grade:'B' },
+  { rank:4, name:'王雨萱', hw:85, mid:87, fin:90, total:87, grade:'B' },
+  { rank:5, name:'赵子涵', hw:82, mid:85, fin:84, total:84, grade:'B' },
+  { rank:6, name:'刘芳', hw:78, mid:80, fin:82, total:80, grade:'C' },
+  { rank:7, name:'周杰', hw:75, mid:78, fin:76, total:76, grade:'C' },
+  { rank:8, name:'吴婷', hw:72, mid:74, fin:70, total:72, grade:'C' },
+];
+
+const payments = [
+  { id:'PAY202605001', name:'王雨萱', course:'现代汉语基础', amount:1980, method:'微信支付', time:'2026-05-17 09:23', status:'已支付' },
+  { id:'PAY202605002', name:'张明远', course:'大学语文全程班', amount:2980, method:'支付宝', time:'2026-05-16 18:45', status:'已支付' },
+  { id:'PAY202605003', name:'李晓东', course:'高等数学冲刺', amount:3280, method:'银行卡', time:'2026-05-16 14:20', status:'已支付' },
+  { id:'PAY202605004', name:'陈思琪', course:'唐诗鉴赏专题', amount:1980, method:'微信支付', time:'2026-05-15 20:10', status:'已支付' },
+  { id:'PAY202605005', name:'刘芳', course:'英语口语实战', amount:3580, method:'支付宝', time:'2026-05-14 11:30', status:'待支付' },
+  { id:'PAY202605006', name:'赵子涵', course:'线性代数入门', amount:2880, method:'微信支付', time:'2026-05-13 16:50', status:'已退款' },
+];
+
+const certificates = [
+  { id:'CERT-2026-001', name:'陈思琪', course:'唐诗鉴赏', rating:'A', date:'2026-05-15', expire:'2029-05-15', status:'有效', type:'success', icon:'🎓' },
+  { id:'CERT-2026-002', name:'张明远', course:'大学语文', rating:'A', date:'2026-05-10', expire:'2029-05-10', status:'有效', type:'accent', icon:'🏆' },
+  { id:'CERT-2026-003', name:'李晓东', course:'现代汉语基础', rating:'B', date:'2026-05-08', expire:'2029-05-08', status:'有效', type:'warning', icon:'📜' },
+  { id:'CERT-2026-004', name:'王雨萱', course:'英语口语', rating:'A', date:'2026-04-28', expire:'2029-04-28', status:'有效', type:'success', icon:'🎓' },
+  { id:'CERT-2026-005', name:'赵子涵', course:'高等数学', rating:'B', date:'2026-04-20', expire:'2029-04-20', status:'有效', type:'warning', icon:'🏆' },
+  { id:'CERT-2026-006', name:'刘芳', course:'唐诗鉴赏', rating:'C', date:'2026-04-15', expire:'2029-04-15', status:'已过期', type:'danger', icon:'📜' },
+];
+
+const liveEvents = [
+  { date:'2026-05-17', time:'09:00-10:30', title:'《大学语文》精讲 — 现代散文专题', teacher:'张伟', students:62, type:'accent', status:'直播中' },
+  { date:'2026-05-17', time:'14:00-15:30', title:'《高等数学》冲刺班 — 极限与连续', teacher:'李娜', students:48, type:'warning', status:'即将开始' },
+  { date:'2026-05-17', time:'19:00-20:30', title:'《英语口语》实战训练 — 情景对话', teacher:'Michael', students:35, type:'success', status:'预约中' },
+  { date:'2026-05-18', time:'09:00-10:30', title:'《现代汉语》基础语法精讲', teacher:'刘芳', students:55, type:'accent', status:'预约中' },
+  { date:'2026-05-18', time:'14:00-15:30', title:'《大学英语四级》词汇速记', teacher:'Michael', students:42, type:'info', status:'预约中' },
+  { date:'2026-05-18', time:'19:00-20:30', title:'《唐诗鉴赏》第8讲 — 杜甫诗作', teacher:'张伟', students:38, type:'success', status:'预约中' },
+  { date:'2026-05-19', time:'10:00-11:30', title:'《线性代数》矩阵运算专题', teacher:'李娜', students:30, type:'warning', status:'预约中' },
+  { date:'2026-05-19', time:'15:00-16:30', title:'《中国近代史》五四运动', teacher:'赵敏', students:45, type:'accent', status:'预约中' },
+];
+
+// ===== NAVIGATION =====
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  const pageEl = document.getElementById('page-' + page);
+  if (pageEl) pageEl.classList.add('active');
+
+  const navItem = document.querySelector(`.nav-item[data-page="${page}"]`);
+  if (navItem) navItem.classList.add('active');
+
+  // Populate data on navigate
+  if (page === 'courses') renderCourses();
+  if (page === 'students') renderStudents();
+  if (page === 'teachers') renderTeachers();
+  if (page === 'assignments') renderAssignments();
+  if (page === 'gradebook') renderGrades();
+  if (page === 'payments') renderPayments();
+  if (page === 'certificates') renderCertificates();
+  if (page === 'schedule') { renderCalendar(); renderWeekSchedule(); }
+  if (page === 'progress') renderProgress();
+}
+
+// ===== RENDER FUNCTIONS =====
+function renderCourses() {
+  const grid = document.getElementById('courseGrid');
+  grid.innerHTML = courses.slice(0,6).map(c => `
+    <div class="course-card">
+      <div class="course-thumb">
+        <div class="course-thumb-bg" style="background:${c.bg}; color:#fff; font-size:32px; font-weight:700;">${c.name.charAt(0)}</div>
+        <div class="course-overlay"></div>
+        <div class="course-thumb" style="position:absolute; top:10px; left:10px;">
+          <span class="tag tag-accent">${c.cat}</span>
+        </div>
+      </div>
+      <div class="course-content">
+        <div class="course-title">${c.name}</div>
+        <div class="course-meta">
+          <span><span class="material-icons-round" style="font-size:12px">person</span> ${c.teacher}</span>
+          <span><span class="material-icons-round" style="font-size:12px">people</span> ${c.students}人</span>
+        </div>
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-muted">${c.progress}% 完成</span>
+          <span class="course-price">¥${c.price}</span>
+        </div>
+        <div class="progress-bar" style="margin-top:8px;">
+          <div class="progress-fill accent" style="width:${c.progress}%"></div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  const table = document.getElementById('courseTable');
+  table.innerHTML = courses.map(c => `
+    <tr>
+      <td><div style="font-weight:500">${c.name}</div></td>
+      <td>${c.teacher}</td>
+      <td><span class="tag tag-accent">${c.cat}</span></td>
+      <td>${c.students}</td>
+      <td>
+        <div class="flex items-center gap-2">
+          <div class="progress-bar" style="width:80px;">
+            <div class="progress-fill accent" style="width:${c.progress}%"></div>
+          </div>
+          <span class="text-sm">${c.progress}%</span>
+        </div>
+      </td>
+      <td>¥${c.price}</td>
+      <td><span class="tag tag-success">授课中</span></td>
+      <td>
+        <button class="btn btn-sm btn-secondary" onclick="showToast('已编辑: ${c.name}', 'info')">编辑</button>
+        <button class="btn btn-sm btn-danger" onclick="showToast('已删除: ${c.name}', 'error')">删除</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function renderStudents() {
+  const table = document.getElementById('studentTable');
+  table.innerHTML = students.map((s, i) => `
+    <tr>
+      <td>
+        <div class="flex items-center gap-2">
+          <div class="avatar avatar-gradient-${i%5+1}">${s.name.charAt(0)}</div>
+          <div style="font-weight:500">${s.name}</div>
+        </div>
+      </td>
+      <td>${s.tel}</td>
+      <td>${s.school}</td>
+      <td>${s.courses}</td>
+      <td>
+        <div class="flex items-center gap-2">
+          <div class="progress-bar" style="width:80px;">
+            <div class="progress-fill success" style="width:${s.progress}%"></div>
+          </div>
+          <span class="text-sm">${s.progress}%</span>
+        </div>
+      </td>
+      <td>${s.active}</td>
+      <td><span class="tag tag-success">${s.status}</span></td>
+      <td>
+        <button class="btn btn-sm btn-secondary">查看</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function renderTeachers() {
+  const grid = document.getElementById('teacherGrid');
+  grid.innerHTML = teachers.slice(0,4).map(t => `
+    <div class="teacher-card">
+      <div class="teacher-avatar avatar-gradient-${teachers.indexOf(t)%5+1}" style="font-size:28px;">${t.icon}</div>
+      <div class="teacher-name">${t.name}</div>
+      <div class="teacher-subject">${t.subject} · ${t.years}年教龄</div>
+      <div class="teacher-stats">
+        <span>📚 ${t.courses} 门课</span>
+        <span>⭐ ${t.rating}</span>
+      </div>
+    </div>
+  `).join('');
+
+  const table = document.getElementById('teacherTable');
+  table.innerHTML = teachers.map(t => `
+    <tr>
+      <td>
+        <div class="flex items-center gap-2">
+          <div class="avatar avatar-gradient-${teachers.indexOf(t)%5+1}">${t.icon}</div>
+          <div style="font-weight:500">${t.name}</div>
+        </div>
+      </td>
+      <td><span class="tag tag-info">${t.subject}</span></td>
+      <td>${t.courses}</td>
+      <td>${t.students}</td>
+      <td><span class="text-warning">⭐ ${t.rating}</span></td>
+      <td class="text-muted">${2014 + (10 - t.years)} 年</td>
+      <td><span class="tag tag-success">授课中</span></td>
+      <td>
+        <button class="btn btn-sm btn-secondary">编辑</button>
+        <button class="btn btn-sm btn-secondary">课程</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function renderAssignments() {
+  const table = document.getElementById('assignmentTable');
+  table.innerHTML = assignments.map(a => `
+    <tr>
+      <td style="font-weight:500">${a.name}</td>
+      <td>${a.course}</td>
+      <td>${a.teacher}</td>
+      <td class="text-muted">${a.time}</td>
+      <td>${a.submitted}/60</td>
+      <td>${a.avg}分</td>
+      <td><span class="tag ${a.status === '待批改' ? 'tag-warning' : 'tag-success'}">${a.status}</span></td>
+      <td>
+        <button class="btn btn-sm btn-primary" onclick="showToast('正在批改作业...', 'info')">批改</button>
+        <button class="btn btn-sm btn-secondary">查看</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function renderGrades() {
+  const table = document.getElementById('gradeTable');
+  table.innerHTML = grades.map(g => `
+    <tr>
+      <td><span class="font-bold">#${g.rank}</span></td>
+      <td>
+        <div class="flex items-center gap-2">
+          <div class="avatar avatar-gradient-${g.rank%5+1}">${g.name.charAt(0)}</div>
+          <div style="font-weight:500">${g.name}</div>
+        </div>
+      </td>
+      <td><span class="grade-cell grade-${g.hw >= 90 ? 'a' : g.hw >= 80 ? 'b' : g.hw >= 70 ? 'c' : 'd'}">${g.hw}</span></td>
+      <td><span class="grade-cell grade-${g.mid >= 90 ? 'a' : g.mid >= 80 ? 'b' : g.mid >= 70 ? 'c' : 'd'}">${g.mid}</span></td>
+      <td><span class="grade-cell grade-${g.fin >= 90 ? 'a' : g.fin >= 80 ? 'b' : g.fin >= 70 ? 'c' : 'd'}">${g.fin}</span></td>
+      <td><span class="font-bold">${g.total}</span></td>
+      <td><span class="grade-cell grade-${g.grade === 'A' ? 'a' : g.grade === 'B' ? 'b' : 'c'}">${g.grade}</span></td>
+      <td>
+        <button class="btn btn-sm btn-secondary">详情</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function renderPayments() {
+  const table = document.getElementById('paymentTable');
+  table.innerHTML = payments.map(p => `
+    <tr>
+      <td class="text-muted text-sm">${p.id}</td>
+      <td style="font-weight:500">${p.name}</td>
+      <td>${p.course}</td>
+      <td><span class="font-bold text-success">+¥${p.amount}</span></td>
+      <td>${p.method}</td>
+      <td class="text-muted text-sm">${p.time}</td>
+      <td><span class="tag ${p.status === '已支付' ? 'tag-success' : p.status === '待支付' ? 'tag-warning' : 'tag-danger'}">${p.status}</span></td>
+    </tr>
+  `).join('');
+}
+
+function renderCertificates() {
+  const grid = document.getElementById('certGrid');
+  grid.innerHTML = certificates.slice(0,3).map(c => `
+    <div class="cert-card ${c.type}">
+      <div style="font-size:36px; margin-bottom:12px;">${c.icon}</div>
+      <div class="cert-title">${c.course} 毕业证书</div>
+      <div class="cert-desc">授予 <strong>${c.name}</strong>，评级：<span class="text-warning font-bold">${c.rating}</span></div>
+      <div class="cert-date">颁发于 ${c.date}</div>
+    </div>
+  `).join('');
+
+  const table = document.getElementById('certTable');
+  table.innerHTML = certificates.map(c => `
+    <tr>
+      <td class="text-muted text-sm">${c.id}</td>
+      <td style="font-weight:500">${c.name}</td>
+      <td>${c.course}</td>
+      <td><span class="grade-cell grade-${c.rating === 'A' ? 'a' : 'b'}">${c.rating}</span></td>
+      <td class="text-muted text-sm">${c.date}</td>
+      <td class="text-muted text-sm">${c.expire}</td>
+      <td><span class="tag ${c.status === '有效' ? 'tag-success' : 'tag-danger'}">${c.status}</span></td>
+      <td>
+        <button class="btn btn-sm btn-secondary">查看</button>
+        <button class="btn btn-sm btn-secondary">下载</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ===== CALENDAR =====
+let currentMonth = 4; // 0-indexed, 4 = May
+let currentYear = 2026;
+const monthNames = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+
+function renderCalendar() {
+  const grid = document.getElementById('calendarGrid');
+  const monthLabel = document.getElementById('calendarMonth');
+
+  monthLabel.textContent = `${currentYear}年 ${monthNames[currentMonth]}`;
+
+  const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  const daysInPrevMonth = new Date(currentYear, currentMonth, 0).getDate();
+
+  const dayNames = ['日','一','二','三','四','五','六'];
+  let html = dayNames.map(d => `<div class="calendar-day-name">${d}</div>`).join('');
+
+  // prev month days
+  for (let i = firstDay - 1; i >= 0; i--) {
+    html += `<div class="calendar-day other-month">${daysInPrevMonth - i}</div>`;
+  }
+
+  const today = 17;
+  const eventsOnDay = { 17: ['accent','warning','success'], 18: ['accent','info','success'], 19: ['warning','accent'] };
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const isToday = (currentMonth === 4 && d === today) ? 'today' : '';
+    const hasEvent = eventsOnDay[d] ? 'has-event ' + (eventsOnDay[d][0]) : '';
+    html += `<div class="calendar-day ${isToday} ${hasEvent}" onclick="selectDay(${d})">${d}</div>`;
+  }
+
+  // next month
+  const totalCells = firstDay + daysInMonth;
+  const remaining = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
+  for (let i = 1; i <= remaining; i++) {
+    html += `<div class="calendar-day other-month">${i}</div>`;
+  }
+
+  grid.innerHTML = html;
+  selectDay(17);
+}
+
+function changeMonth(dir) {
+  currentMonth += dir;
+  if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+  if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+  renderCalendar();
+}
+
+function selectDay(day) {
+  const eventsTitle = document.getElementById('eventsTitle');
+  eventsTitle.textContent = `${currentMonth + 1}月${day}日 · 周${['日','一','二','三','四','五','六'][new Date(currentYear, currentMonth, day).getDay()]}`;
+
+  const dayEvents = liveEvents.filter(e => {
+    const d = parseInt(e.date.split('-')[2]);
+    return d === day;
+  });
+
+  const list = document.getElementById('eventsList');
+  if (dayEvents.length === 0) {
+    list.innerHTML = '<div class="empty-state" style="padding:20px;"><div class="text-muted text-sm">当日无直播课程</div></div>';
+  } else {
+    list.innerHTML = dayEvents.map(e => `
+      <div class="event-item" style="border-left-color:var(--${e.type === 'accent' ? 'accent' : e.type === 'warning' ? 'warning' : e.type === 'info' ? 'info' : 'success'})">
+        <div class="event-time">${e.time}</div>
+        <div class="event-title">${e.title}</div>
+        <div class="event-teacher">${e.teacher} · ${e.students}人 · <span class="text-${e.type === 'accent' ? 'info' : 'warning'}">${e.status}</span></div>
+      </div>
+    `).join('');
+  }
+}
+
+function renderWeekSchedule() {
+  const list = document.getElementById('weekScheduleList');
+  list.innerHTML = liveEvents.slice(0,5).map(e => `
+    <div class="schedule-item ${e.type === 'accent' ? 'accent' : e.type === 'warning' ? 'warning' : e.type === 'info' ? 'info' : 'success'}">
+      <div class="schedule-time">${e.date} ${e.time}</div>
+      <div class="schedule-title">${e.title}</div>
+      <div class="schedule-meta">👨‍🏫 ${e.teacher} · 已报名 ${e.students} 人 · <span class="text-${e.type === 'accent' ? 'info' : 'warning'}">${e.status}</span></div>
+    </div>
+  `).join('');
+}
+
+// ===== PROGRESS =====
+function renderProgress() {
+  const list = document.getElementById('progressTopList');
+  const topStudents = [
+    { name:'陈思琪', progress:98, avatar:'陈' },
+    { name:'张明远', progress:95, avatar:'张' },
+    { name:'李晓东', progress:92, avatar:'李' },
+    { name:'王雨萱', progress:89, avatar:'王' },
+    { name:'赵子涵', progress:86, avatar:'赵' },
+  ];
+  list.innerHTML = topStudents.map((s, i) => `
+    <div class="flex items-center gap-3" style="padding:8px 0; border-bottom:1px solid var(--border);">
+      <div style="font-weight:700; width:20px; color:${i===0?'var(--warning)':i===1?'var(--text-muted)':i===2?'var(--warning)':''}">${i+1}</div>
+      <div class="avatar avatar-sm avatar-gradient-${i+1}">${s.avatar}</div>
+      <div style="flex:1; font-size:13px; font-weight:500;">${s.name}</div>
+      <div style="font-size:13px; font-weight:600; color:var(--success)">${s.progress}%</div>
+    </div>
+  `).join('');
+
+  const table = document.getElementById('progressTable');
+  table.innerHTML = courses.slice(0,4).map(c => `
+    <tr>
+      <td style="font-weight:500">${c.name}</td>
+      <td>${c.teacher}</td>
+      <td>
+        <div class="flex items-center gap-2">
+          <div class="progress-bar" style="width:100px;">
+            <div class="progress-fill accent" style="width:${c.progress}%"></div>
+          </div>
+          <span class="text-sm">${c.progress}%</span>
+        </div>
+      </td>
+      <td><span class="text-success">${c.progress - 5}%</span></td>
+      <td>${Math.round(c.students * c.progress / 100)}/${c.students}</td>
+      <td><span class="text-warning">${75 + Math.floor(Math.random()*15)}分</span></td>
+      <td><button class="btn btn-sm btn-secondary">详情</button></td>
+    </tr>
+  `).join('');
+}
+
+// ===== ENROLLMENT CHART =====
+function renderEnrollmentChart(data) {
+  const chart = document.getElementById('enrollChart');
+  const labels = ['周一','周二','周三','周四','周五','周六','周日'];
+  const colors = ['#6366f1','#10b981','#f59e0b','#38bdf8','#a78bfa','#f472b6','#ef4444'];
+
+  chart.innerHTML = data.map((v, i) => `
+    <div class="chart-bar" style="height:${v}%; background:${colors[i]};">
+      <div class="chart-value">${v}</div>
+      <div class="chart-label">${labels[i]}</div>
+    </div>
+  `).join('');
+}
+
+function updateChart(range) {
+  const data = range === '最近7天'
+    ? [42,58,67,55,73,89,95]
+    : range === '最近30天'
+    ? Array.from({length:7}, () => 30 + Math.floor(Math.random()*60))
+    : Array.from({length:7}, () => 40 + Math.floor(Math.random()*50));
+  renderEnrollmentChart(data);
+}
+
+// ===== MODALS =====
+function openModal(id) {
+  document.getElementById(id).classList.add('show');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+}
+
+// ===== TOAST =====
+function showToast(msg, type='info') {
+  const container = document.getElementById('toastContainer');
+  const icons = { success:'check_circle', error:'error', warning:'warning', info:'info' };
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<span class="material-icons-round" style="font-size:20px; color:var(--${type})">${icons[type]}</span> ${msg}`;
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 3500);
+}
+
+// ===== SAVE FUNCTIONS =====
+function saveCourse() {
+  closeModal('addCourseModal');
+  showToast('课程创建成功！', 'success');
+}
+
+function saveStudent() {
+  closeModal('addStudentModal');
+  showToast('学生添加成功！', 'success');
+}
+
+function saveTeacher() {
+  closeModal('addTeacherModal');
+  showToast('教师添加成功！', 'success');
+}
+
+function saveSchedule() {
+  closeModal('addScheduleModal');
+  showToast('直播课安排成功！', 'success');
+}
+
+function saveAssignment() {
+  closeModal('addAssignmentModal');
+  showToast('作业发布成功！', 'success');
+}
+
+function saveCertificate() {
+  closeModal('addCertificateModal');
+  showToast('证书颁发成功！', 'success');
+}
+
+// ===== NOTIFICATIONS =====
+function toggleNotifications() {
+  document.getElementById('notifPanel').classList.toggle('show');
+}
+
+function markAllRead() {
+  document.querySelector('.badge').style.display = 'none';
+  showToast('所有通知已标记为已读', 'info');
+}
+
+// ===== SIDEBAR =====
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// ===== SEARCH =====
+function handleSearch(q) {
+  if (!q) return;
+  const lower = q.toLowerCase();
+  if (['课程','course'].some(k => lower.includes(k))) navigate('courses');
+  if (['学生','同学'].some(k => lower.includes(k))) navigate('students');
+  if (['教师','老师'].some(k => lower.includes(k))) navigate('teachers');
+  if (['直播','课表'].some(k => lower.includes(k))) navigate('schedule');
+  if (['作业'].some(k => lower.includes(k))) navigate('assignments');
+  if (['成绩','分数'].some(k => lower.includes(k))) navigate('gradebook');
+  if (['支付','费用'].some(k => lower.includes(k))) navigate('payments');
+  if (['证书'].some(k => lower.includes(k))) navigate('certificates');
+}
+
+function searchStudents(q) {
+  if (!q) { renderStudents(); return; }
+  const filtered = students.filter(s => s.name.includes(q) || s.tel.includes(q));
+  const table = document.getElementById('studentTable');
+  table.innerHTML = filtered.map((s, i) => `
+    <tr>
+      <td>
+        <div class="flex items-center gap-2">
+          <div class="avatar avatar-gradient-${i%5+1}">${s.name.charAt(0)}</div>
+          <div style="font-weight:500">${s.name}</div>
+        </div>
+      </td>
+      <td>${s.tel}</td>
+      <td>${s.school}</td>
+      <td>${s.courses}</td>
+      <td>
+        <div class="flex items-center gap-2">
+          <div class="progress-bar" style="width:80px;">
+            <div class="progress-fill success" style="width:${s.progress}%"></div>
+          </div>
+          <span class="text-sm">${s.progress}%</span>
+        </div>
+      </td>
+      <td>${s.active}</td>
+      <td><span class="tag tag-success">${s.status}</span></td>
+      <td>
+        <button class="btn btn-sm btn-secondary">查看</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ===== TABS =====
+function switchTab(el, tab) {
+  el.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  showToast(`切换到${tab}视图`, 'info');
+}
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', () => {
+  renderCourses();
+  renderCalendar();
+  renderEnrollmentChart([42,58,67,55,73,89,95]);
+  renderWeekSchedule();
+  renderProgress();
+
+  // Close modals on outside click
+  document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) overlay.classList.remove('show');
+    });
+  });
+
+  // Close notif panel on outside click
+  document.addEventListener('click', (e) => {
+    const panel = document.getElementById('notifPanel');
+    if (!e.target.closest('.icon-btn') && !e.target.closest('.notif-panel')) {
+      panel.classList.remove('show');
+    }
+  });
+});
+</script>
+</body>
+</html>

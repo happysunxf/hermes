@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>良缘序 · 婚礼策划CRM</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--bg2:#161b22;--bg3:#21262d;--border:#30363d;--text:#e6edf3;--text2:#8b949e;--accent:#f78166;--accent2:#58a6ff;--green:#3fb950;--yellow:#d29922;--purple:#bc8cff;--pink:#ff7eb6}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
+.app{display:flex;height:100vh}
+/* sidebar */
+.sidebar{width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0}
+.logo{padding:20px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),var(--pink));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.logo-text{font-size:16px;font-weight:700;color:var(--text)}
+.logo-sub{font-size:10px;color:var(--text2)}
+.nav{flex:1;padding:12px 8px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;color:var(--text2);cursor:pointer;transition:.2s;font-size:14px;margin-bottom:2px}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:rgba(247,129,102,0.15);color:var(--accent)}
+.nav-item .icon{font-size:16px;width:20px;text-align:center}
+.nav-item .badge{background:var(--accent);color:#fff;font-size:11px;padding:1px 6px;border-radius:10px;margin-left:auto}
+.user-card{padding:12px 16px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--purple));display:flex;align-items:center;justify-content:center;font-size:14px}
+.user-info{font-size:12px}
+.user-name{color:var(--text);font-weight:600}
+.user-role{color:var(--text2)}
+/* main */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:56px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:16px;flex-shrink:0}
+.topbar-title{font-size:16px;font-weight:600}
+.topbar-search{flex:1;max-width:360px;position:relative}
+.topbar-search input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 12px 8px 36px;color:var(--text);font-size:13px;outline:none}
+.topbar-search input:focus{border-color:var(--accent2)}
+.topbar-search .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text2)}
+.topbar-actions{display:flex;gap:8px}
+.topbar-btn{width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:.2s}
+.topbar-btn:hover{background:var(--bg3);color:var(--text);border-color:var(--text2)}
+/* content */
+.content{flex:1;overflow-y:auto;padding:24px;display:none}
+.content.active{display:block}
+.page-header{margin-bottom:24px}
+.page-title{font-size:22px;font-weight:700;margin-bottom:4px}
+.page-sub{color:var(--text2);font-size:13px}
+/* cards */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px}
+.stat-card .label{font-size:12px;color:var(--text2);margin-bottom:8px}
+.stat-card .value{font-size:28px;font-weight:700;margin-bottom:4px}
+.stat-card .sub{font-size:12px;color:var(--text2)}
+.stat-card.accent{border-color:rgba(247,129,102,0.3)}
+.stat-card.accent .value{color:var(--accent)}
+.stat-card.blue{border-color:rgba(88,166,255,0.3)}
+.stat-card.blue .value{color:var(--accent2)}
+.stat-card.green{border-color:rgba(63,185,80,0.3)}
+.stat-card.green .value{color:var(--green)}
+.stat-card.yellow{border-color:rgba(210,153,34,0.3)}
+.stat-card.yellow .value{color:var(--yellow)}
+/* table */
+.table-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.table-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.table-title{font-size:14px;font-weight:600}
+.table-actions{display:flex;gap:8px}
+.btn{padding:6px 14px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px;cursor:pointer;transition:.2s}
+.btn:hover{background:var(--bg3)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{background:#e56f5a}
+table{width:100%;border-collapse:collapse}
+th,td{padding:12px 16px;text-align:left;font-size:13px;border-bottom:1px solid var(--border)}
+th{background:var(--bg);color:var(--text2);font-weight:500;font-size:12px}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,0.02)}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px}
+.tag.new{background:rgba(63,185,80,0.15);color:var(--green)}
+.tag.active{background:rgba(88,166,255,0.15);color:var(--accent2)}
+.tag.pending{background:rgba(210,153,34,0.15);color:var(--yellow)}
+.tag.completed{background:rgba(188,140,255,0.15);color:var(--purple)}
+.tag.paid{background:rgba(63,185,80,0.15);color:var(--green)}
+.tag.unpaid{background:rgba(247,129,102,0.15);color:var(--accent)}
+.tag.confirmed{background:rgba(63,185,80,0.15);color:var(--green)}
+.tag.cancelled{background:rgba(247,129,102,0.15);color:var(--accent)}
+.tag.wedding{background:rgba(255,126,182,0.15);color:var(--pink)}
+.tag.banquet{background:rgba(210,153,34,0.15);color:var(--yellow)}
+.tag.photo{background:rgba(188,140,255,0.15);color:var(--purple)}
+/* grid layouts */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+/* detail panel */
+.detail-panel{position:fixed;top:0;right:-480px;width:480px;height:100vh;background:var(--bg2);border-left:1px solid var(--border);z-index:100;transition:right .3s;overflow-y:auto}
+.detail-panel.open{right:0}
+.detail-header{padding:20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--bg2)}
+.detail-title{font-size:16px;font-weight:600}
+.close-btn{width:32px;height:32px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text2);cursor:pointer;font-size:16px}
+.detail-body{padding:20px}
+.detail-section{margin-bottom:24px}
+.detail-section-title{font-size:13px;font-weight:600;color:var(--text2);margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.info-item label{font-size:11px;color:var(--text2);display:block;margin-bottom:4px}
+.info-item span{font-size:13px}
+.info-row{display:flex;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+.info-row .label{color:var(--text2);width:100px;flex-shrink:0}
+.info-row .val{flex:1}
+.progress-bar{background:var(--bg);border-radius:4px;height:8px;margin-top:8px}
+.progress-bar .fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--pink));transition:width .5s}
+.payment-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+.payment-item:last-child{border-bottom:none}
+.schedule-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.schedule-item:last-child{border-bottom:none}
+.schedule-date{width:48px;height:48px;background:var(--bg);border-radius:8px;text-align:center;flex-shrink:0}
+.schedule-date .day{font-size:18px;font-weight:700;line-height:1.2}
+.schedule-date .month{font-size:10px;color:var(--text2)}
+.schedule-info{flex:1}
+.schedule-info h4{font-size:13px;margin-bottom:4px}
+.schedule-info p{font-size:12px;color:var(--text2)}
+.vendor-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border")}
+.vendor-item:last-child{border-bottom:none}
+.vendor-logo{width:40px;height:40px;border-radius:8px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.vendor-info{flex:1}
+.vendor-info h4{font-size:13px;margin-bottom:2px}
+.vendor-info p{font-size:11px;color:var(--text2)}
+.seat-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin-top:12px}
+.seat{aspect-ratio:1;background:var(--bg);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer;transition:.2s;border:1px solid var(--border)}
+.seat:hover{border-color:var(--accent2)}
+.seat.taken{background:rgba(247,129,102,0.2);border-color:var(--accent);color:var(--accent)}
+.seat.vip{background:rgba(188,140,255,0.2);border-color:var(--purple);color:var(--purple)}
+.seat.empty{color:var(--text2)}
+/* tabs */
+.tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px}
+.tab{padding:10px 16px;font-size:13px;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:.2s}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+/* modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;display:none;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:12px;width:500px;max-height:80vh;overflow-y:auto}
+.modal-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.modal-title{font-size:15px;font-weight:600}
+.modal-body{padding:20px}
+.form-group{margin-bottom:16px}
+.form-label{font-size:12px;color:var(--text2);margin-bottom:6px;display:block}
+.form-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text);font-size:13px;outline:none}
+.form-input:focus{border-color:var(--accent2)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-actions{display:flex;justify-content:flex-end;gap:8px;padding:16px 20px;border-top:1px solid var(--border)}
+/* toast */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:10px;font-size:13px;z-index:300;transform:translateY(100px);opacity:0;transition:.3s}
+.toast.show{transform:translateY(0);opacity:1}
+.toast .t-icon{font-size:18px}
+.toast.success .t-icon{color:var(--green)}
+/* chart area */
+.chart-row{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:24px}
+.chart-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px}
+.chart-title{font-size:14px;font-weight:600;margin-bottom:16px}
+.chart-bars{display:flex;align-items:flex-end;gap:8px;height:120px;padding-top:20px}
+.chart-bar{width:32px;background:linear-gradient(180deg,var(--accent),rgba(247,129,102,0.3));border-radius:4px 4px 0 0;transition:height .5s;position:relative}
+.chart-bar::after{content:attr(data-label);position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--text2);white-space:nowrap}
+.chart-bar:hover{filter:brightness(1.2)}
+.donut-chart{width:120px;height:120px;border-radius:50%;position:relative;margin:0 auto}
+.donut-legend{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:12px}
+.legend-dot{width:8px;height:8px;border-radius:50%}
+/* calendar */
+.calendar{min-height:200px}
+.cal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.cal-nav{width:28px;height:28px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
+.cal-day{font-size:11px;color:var(--text2);padding:4px}
+.cal-date{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:6px;font-size:12px;cursor:pointer;margin:0 auto;transition:.2s}
+.cal-date:hover{background:var(--bg3)}
+.cal-date.today{border:1px solid var(--accent);color:var(--accent)}
+.cal-date.has-event{background:rgba(247,129,102,0.15);color:var(--accent)}
+.cal-date.event-wedding{background:rgba(255,126,182,0.15);color:var(--pink)}
+/* scrollbar */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--text2)}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- sidebar -->
+  <div class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">💒</div>
+      <div>
+        <div class="logo-text">良缘序</div>
+        <div class="logo-sub">婚礼策划CRM</div>
+      </div>
+    </div>
+    <nav class="nav">
+      <div class="nav-item active" data-page="dashboard"><span class="icon">📊</span>数据看板</div>
+      <div class="nav-item" data-page="leads"><span class="icon">👥</span>潜客管理<span class="badge">8</span></div>
+      <div class="nav-item" data-page="events"><span class="icon">📅</span>婚礼档期</div>
+      <div class="nav-item" data-page="vendors"><span class="icon">🤝</span>供应商</div>
+      <div class="nav-item" data-page="banquet"><span class="icon">🍽️</span>宴会规划</div>
+      <div class="nav-item" data-page="photo"><span class="icon">📷</span>摄影摄像</div>
+      <div class="nav-item" data-page="rsvp"><span class="icon">📬</span>宾客回复<span class="badge">12</span></div>
+      <div class="nav-item" data-page="seating"><span class="icon">🪑</span>桌位安排</div>
+      <div class="nav-item" data-page="payments"><span class="icon">💰</span>款项收支</div>
+    </nav>
+    <div class="user-card">
+      <div class="avatar">囍</div>
+      <div class="user-info">
+        <div class="user-name">林晓梅</div>
+        <div class="user-role">婚礼策划师</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- main -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbarTitle">数据看板</div>
+      <div class="topbar-search">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="搜索客户、订单、供应商..." id="searchInput">
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-btn" title="通知">🔔</button>
+        <button class="topbar-btn" title="设置">⚙️</button>
+      </div>
+    </div>
+
+    <!-- dashboard -->
+    <div class="content active" id="page-dashboard">
+      <div class="page-header">
+        <div class="page-title">数据看板</div>
+        <div class="page-sub">实时掌握婚礼业务全貌 · 2026年5月</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card accent">
+          <div class="label">在跟潜客</div>
+          <div class="value">47</div>
+          <div class="sub">本月新增 +12</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="label">进行中婚礼</div>
+          <div class="value">18</div>
+          <div class="sub">本月完成 +3</div>
+        </div>
+        <div class="stat-card green">
+          <div class="label">本月营收</div>
+          <div class="value">¥286万</div>
+          <div class="sub">同比 +23%</div>
+        </div>
+        <div class="stat-card yellow">
+          <div class="label">待收款</div>
+          <div class="value">¥54万</div>
+          <div class="sub">逾期 ¥3.2万</div>
+        </div>
+      </div>
+      <div class="chart-row">
+        <div class="chart-card">
+          <div class="chart-title">月度签约趋势</div>
+          <div class="chart-bars" id="trendChart">
+            <div class="chart-bar" data-height="60" data-label="1月" style="height:60%"></div>
+            <div class="chart-bar" data-height="75" data-label="2月" style="height:75%"></div>
+            <div class="chart-bar" data-height="55" data-label="3月" style="height:55%"></div>
+            <div class="chart-bar" data-height="90" data-label="4月" style="height:90%"></div>
+            <div class="chart-bar" data-height="100" data-label="5月" style="height:100%"></div>
+            <div class="chart-bar" data-height="70" data-label="6月" style="height:70%"></div>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">订单类型分布</div>
+          <div style="display:flex;gap:16px;align-items:center;margin-top:20px">
+            <div style="width:100px;height:100px;border-radius:50%;border:12px solid var(--accent);border-top-color:var(--green);border-right-color:var(--yellow);border-bottom-color:var(--purple);transform:rotate(45deg)"></div>
+            <div class="donut-legend">
+              <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>婚宴策划 45%</div>
+              <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>全程执行 28%</div>
+              <div class="legend-item"><div class="legend-dot" style="background:var(--yellow)"></div>单项服务 18%</div>
+              <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>求婚策划 9%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">近期婚礼进度</div>
+          <div class="table-actions">
+            <button class="btn">查看全部</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>新人</th><th>婚期</th><th>类型</th><th>进度</th><th>状态</th></tr></thead>
+          <tbody id="recentTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- leads -->
+    <div class="content" id="page-leads">
+      <div class="page-header">
+        <div class="page-title">潜客管理</div>
+        <div class="page-sub">客户线索的全生命周期管理</div>
+      </div>
+      <div class="stat-row" style="grid-template-columns:repeat(5,1fr)">
+        <div class="stat-card"><div class="label">总潜客</div><div class="value">128</div></div>
+        <div class="stat-card blue"><div class="label">已邀约</div><div class="value">34</div></div>
+        <div class="stat-card green"><div class="label">已签约</div><div class="value">18</div></div>
+        <div class="stat-card yellow"><div class="label">跟进中</div><div class="value">52</div></div>
+        <div class="stat-card accent"><div class="label">流失</div><div class="value">24</div></div>
+      </div>
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">潜客列表</div>
+          <div class="table-actions">
+            <button class="btn" onclick="openModal('addLead')">+ 新增潜客</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>姓名</th><th>联系方式</th><th>婚期</th><th>预算</th><th>来源</th><th>状态</th><th>跟进人</th><th>操作</th></tr></thead>
+          <tbody id="leadsTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- events -->
+    <div class="content" id="page-events">
+      <div class="page-header">
+        <div class="page-title">婚礼档期</div>
+        <div class="page-sub">全年婚礼日程一览 · 当前在办 18 场</div>
+      </div>
+      <div class="grid-2">
+        <div class="table-card">
+          <div class="table-header"><div class="table-title">本月婚礼</div></div>
+          <table>
+            <thead><tr><th>日期</th><th>新人</th><th>场地</th><th>类型</th></tr></thead>
+            <tbody id="eventsTable1"></tbody>
+          </table>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">婚期日历 · 2026年5月</div>
+          <div class="calendar">
+            <div class="cal-header">
+              <button class="cal-nav">‹</button>
+              <span style="font-size:13px;font-weight:600">2026年5月</span>
+              <button class="cal-nav">›</button>
+            </div>
+            <div class="cal-grid">
+              <div class="cal-day">日</div><div class="cal-day">一</div><div class="cal-day">二</div><div class="cal-day">三</div><div class="cal-day">四</div><div class="cal-day">五</div><div class="cal-day">六</div>
+              <div class="cal-date"></div><div class="cal-date"></div><div class="cal-date"></div><div class="cal-date"></div><div class="cal-date"></div><div class="cal-date"></div><div class="cal-date">1</div>
+              <div class="cal-date">2</div><div class="cal-date">3</div><div class="cal-date">4</div><div class="cal-date has-event">5</div><div class="cal-date">6</div><div class="cal-date">7</div><div class="cal-date">8</div>
+              <div class="cal-date">9</div><div class="cal-date has-event">10</div><div class="cal-date">11</div><div class="cal-date">12</div><div class="cal-date">13</div><div class="cal-date">14</div><div class="cal-date">15</div>
+              <div class="cal-date">16</div><div class="cal-date has-event">17</div><div class="cal-date today">18</div><div class="cal-date has-event">19</div><div class="cal-date">20</div><div class="cal-date event-wedding">21</div><div class="cal-date">22</div>
+              <div class="cal-date">23</div><div class="cal-date has-event">24</div><div class="cal-date">25</div><div class="cal-date">26</div><div class="cal-date">27</div><div class="cal-date event-wedding">28</div><div class="cal-date">29</div>
+              <div class="cal-date">30</div><div class="cal-date has-event">31</div>
+            </div>
+          </div>
+          <div style="margin-top:16px;display:flex;gap:16px;font-size:12px">
+            <div><span style="display:inline-block;width:12px;height:12px;background:rgba(247,129,102,0.15);border-radius:3px;margin-right:4px;vertical-align:middle"></span>婚礼策划</div>
+            <div><span style="display:inline-block;width:12px;height:12px;background:rgba(255,126,182,0.15);border-radius:3px;margin-right:4px;vertical-align:middle"></span>婚宴</div>
+          </div>
+        </div>
+      </div>
+      <div class="table-card" style="margin-top:16px">
+        <div class="table-header">
+          <div class="table-title">全览排期</div>
+          <div class="table-actions"><button class="btn" onclick="openModal('addEvent')">+ 添加档期</button></div>
+        </div>
+        <table>
+          <thead><tr><th>婚期</th><th>新人</th><th>场地</th><th>类型</th><th>策划师</th><th>筹备进度</th><th>状态</th></tr></thead>
+          <tbody id="eventsTable2"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- vendors -->
+    <div class="content" id="page-vendors">
+      <div class="page-header">
+        <div class="page-title">供应商管理</div>
+        <div class="page-sub">合作商家与资源配置</div>
+      </div>
+      <div class="grid-3" style="margin-bottom:20px">
+        <div class="stat-card"><div class="label">合作供应商</div><div class="value" style="font-size:20px">42</div><div class="sub">本月新增 +2</div></div>
+        <div class="stat-card green"><div class="label">空闲档期</div><div class="value" style="font-size:20px">16</div><div class="sub">可即时预约</div></div>
+        <div class="stat-card yellow"><div class="label">本月采购</div><div class="value" style="font-size:20px">¥38万</div><div class="sub">成本控制良好</div></div>
+      </div>
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">供应商列表</div>
+          <div class="table-actions"><button class="btn" onclick="openModal('addVendor')">+ 新增供应商</button></div>
+        </div>
+        <table>
+          <thead><tr><th>商家</th><th>类型</th><th>联系人</th><th>电话</th><th>档期</th><th>评分</th><th>状态</th><th>操作</th></tr></thead>
+          <tbody id="vendorsTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- banquet -->
+    <div class="content" id="page-banquet">
+      <div class="page-header">
+        <div class="page-title">宴会规划</div>
+        <div class="page-sub">婚宴场地、桌数、菜单一体化管理</div>
+      </div>
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">宴会详情</div>
+          <div class="table-actions"><button class="btn" onclick="openModal('addBanquet')">+ 新增宴会</button></div>
+        </div>
+        <table>
+          <thead><tr><th>新人</th><th>酒店/场地</th><th>日期</th><th>桌数</th><th>每桌单价</th><th>菜单</th><th>总价</th><th>已付</th><th>状态</th></tr></thead>
+          <tbody id="banquetTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- photo -->
+    <div class="content" id="page-photo">
+      <div class="page-header">
+        <div class="page-title">摄影摄像</div>
+        <div class="page-sub">婚礼影像服务全程跟踪</div>
+      </div>
+      <div class="stat-row" style="grid-template-columns:repeat(4,1fr)">
+        <div class="stat-card"><div class="label">合作摄影师</div><div class="value" style="font-size:20px">12</div></div>
+        <div class="stat-card blue"><div class="label">本月订单</div><div class="value" style="font-size:20px">15</div></div>
+        <div class="stat-card green"><div class="label">待交付</div><div class="value" style="font-size:20px">8</div></div>
+        <div class="stat-card yellow"><div class="label">已完成</div><div class="value" style="font-size:20px">7</div></div>
+      </div>
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">摄影订单</div>
+          <div class="table-actions"><button class="btn" onclick="openModal('addPhoto')">+ 新增订单</button></div>
+        </div>
+        <table>
+          <thead><tr><th>新人</th><th>摄影师</th><th>套餐</th><th>婚期</th><th>精修</th><th>原片</th><th>交付日</th><th>状态</th></tr></thead>
+          <tbody id="photoTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- rsvp -->
+    <div class="content" id="page-rsvp">
+      <div class="page-header">
+        <div class="page-title">宾客回复 (RSVP)</div>
+        <div class="page-sub">宾客邀约与回复跟踪 · 待回复 12 人</div>
+      </div>
+      <div class="stat-row" style="grid-template-columns:repeat(4,1fr)">
+        <div class="stat-card"><div class="label">已发送邀请</div><div class="value" style="font-size:20px">320</div></div>
+        <div class="stat-card green"><div class="label">已确认</div><div class="value" style="font-size:20px">256</div></div>
+        <div class="stat-card yellow"><div class="label">待回复</div><div class="value" style="font-size:20px">42</div></div>
+        <div class="stat-card accent"><div class="label">已婉拒</div><div class="value" style="font-size:20px">22</div></div>
+      </div>
+      <div class="grid-2">
+        <div class="table-card">
+          <div class="table-header">
+            <div class="table-title">按婚礼分组</div>
+            <div class="table-actions"><button class="btn">发送催复</button></div>
+          </div>
+          <table>
+            <thead><tr><th>新人</th><th>婚期</th><th>已确认/已发</th><th>出席率</th></tr></thead>
+            <tbody id="rsvpGroupTable"></tbody>
+          </table>
+        </div>
+        <div class="table-card">
+          <div class="table-header">
+            <div class="table-title">最新回复动态</div>
+          </div>
+          <div style="padding:12px">
+            <div id="rsvpFeed" style="display:flex;flex-direction:column;gap:8px"></div>
+          </div>
+        </div>
+      </div>
+      <div class="table-card" style="margin-top:16px">
+        <div class="table-header">
+          <div class="table-title">宾客明细</div>
+          <div class="table-actions"><button class="btn" onclick="openModal('addGuest')">+ 批量导入</button></div>
+        </div>
+        <table>
+          <thead><tr><th>姓名</th><th>关系</th><th>所属新人</th><th>联系方式</th><th>人数</th><th>回复状态</th><th>备注</th></tr></thead>
+          <tbody id="rsvpTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- seating -->
+    <div class="content" id="page-seating">
+      <div class="page-header">
+        <div class="page-title">桌位安排</div>
+        <div class="page-sub">可视化宴会桌位管理</div>
+      </div>
+      <div class="grid-2">
+        <div class="table-card">
+          <div class="table-header">
+            <div class="table-title">宴会桌位配置</div>
+            <div class="table-actions">
+              <select style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:6px 10px;color:var(--text);font-size:12px">
+                <option>选择婚礼...</option>
+                <option>张浩林 & 李雨晴 — 5月5日</option>
+                <option>王俊凯 & 陈雅琳 — 5月10日</option>
+                <option>陈伟明 & 黄丽华 — 5月17日</option>
+                <option>刘建华 & 孙晓婷 — 5月19日</option>
+              </select>
+            </div>
+          </div>
+          <table>
+            <thead><tr><th>桌号</th><th>桌名</th><th>类型</th><th>人数</th><th>已安排</th><th>空位</th></tr></thead>
+            <tbody id="seatingTable"></tbody>
+          </table>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">桌位可视化 — 主厅</div>
+          <div class="seat-grid" id="seatGrid"></div>
+          <div style="margin-top:16px;display:flex;gap:16px;font-size:12px">
+            <div><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:rgba(247,129,102,0.2);border:1px solid var(--accent);margin-right:4px;vertical-align:middle"></span>已占</div>
+            <div><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:rgba(188,140,255,0.2);border:1px solid var(--purple);margin-right:4px;vertical-align:middle"></span>VIP</div>
+            <div><span style="display:inline-block;width:12px;height:12px;background:var(--bg);border:1px solid var(--border);margin-right:4px;vertical-align:middle"></span>空位</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- payments -->
+    <div class="content" id="page-payments">
+      <div class="page-header">
+        <div class="page-title">款项收支</div>
+        <div class="page-sub">婚礼项目款项全流程管理</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card green"><div class="label">已收款</div><div class="value">¥286万</div><div class="sub">共 42 笔</div></div>
+        <div class="stat-card yellow"><div class="label">待收款</div><div class="value">¥54万</div><div class="sub">共 18 笔</div></div>
+        <div class="stat-card accent"><div class="label">逾期款</div><div class="value">¥3.2万</div><div class="sub">共 2 笔</div></div>
+        <div class="stat-card"><div class="label">本月支出</div><div class="value">¥112万</div><div class="sub">成本 39%</div></div>
+      </div>
+      <div class="grid-2">
+        <div class="table-card">
+          <div class="table-header">
+            <div class="table-title">待收款项</div>
+            <div class="table-actions"><button class="btn primary" onclick="openModal('addPayment')">+ 登记收款</button></div>
+          </div>
+          <table>
+            <thead><tr><th>新人</th><th>婚礼日期</th><th>金额</th><th>期次</th><th>到期日</th><th>逾期</th></tr></thead>
+            <tbody id="pendingPayments"></tbody>
+          </table>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">回款进度追踪</div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div class="info-row"><span class="label">张浩林 & 李雨晴</span><span class="val" style="color:var(--green)">¥8.8万 已清</span></div>
+            <div class="progress-bar"><div class="fill" style="width:100%"></div></div>
+            <div class="info-row"><span class="label">王俊凯 & 陈雅琳</span><span class="val" style="color:var(--yellow)">¥12.6万 / ¥15万</span></div>
+            <div class="progress-bar"><div class="fill" style="width:84%"></div></div>
+            <div class="info-row"><span class="label">陈伟明 & 黄丽华</span><span class="val" style="color:var(--yellow)">¥9万 / ¥14万</span></div>
+            <div class="progress-bar"><div class="fill" style="width:64%"></div></div>
+            <div class="info-row"><span class="label">刘建华 & 孙晓婷</span><span class="val" style="color:var(--text2)">¥3万 / ¥11万</span></div>
+            <div class="progress-bar"><div class="fill" style="width:27%"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="table-card" style="margin-top:16px">
+        <div class="table-header">
+          <div class="table-title">款项明细</div>
+          <div class="table-actions"><button class="btn">导出报表</button></div>
+        </div>
+        <table>
+          <thead><tr><th>新人</th><th>婚礼日期</th><th>类型</th><th>金额</th><th>期次</th><th>支付方式</th><th>到账日</th><th>状态</th></tr></thead>
+          <tbody id="paymentsTable"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- detail panel -->
+  <div class="detail-panel" id="detailPanel">
+    <div class="detail-header">
+      <div class="detail-title" id="detailTitle">客户详情</div>
+      <button class="close-btn" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="detail-body" id="detailBody"></div>
+  </div>
+</div>
+
+<!-- modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">新增</div>
+      <button class="close-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="form-actions">
+      <button class="btn" onclick="closeModal()">取消</button>
+      <button class="btn primary" onclick="saveForm()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- toast -->
+<div class="toast" id="toast">
+  <span class="t-icon">✓</span>
+  <span class="t-msg" id="toastMsg">操作成功</span>
+</div>
+
+<script>
+// ===== DATA =====
+const couples = [
+  {id:1,name:'张浩林',partner:'李雨晴',date:'2026-05-05',venue:'香格里拉大酒店',budget:'15万',planner:'林晓梅',progress:100,status:'completed'},
+  {id:2,name:'王俊凯',partner:'陈雅琳',date:'2026-05-10',venue:'jw万豪酒店',budget:'18万',planner:'林晓梅',progress:85,status:'active'},
+  {id:3,name:'陈伟明',partner:'黄丽华',date:'2026-05-17',venue:'索菲特大酒店',budget:'12万',planner:'王芳',progress:60,status:'active'},
+  {id:4,name:'刘建华',partner:'孙晓婷',date:'2026-05-19',venue:'瑞吉酒店',budget:'20万',planner:'林晓梅',progress:30,status:'active'},
+  {id:5,name:'赵志远',partner:'周雪梅',date:'2026-05-21',venue:'希尔顿酒店',budget:'14万',planner:'王芳',progress:10,status:'new'},
+  {id:6,name:'李强',partner:'吴小燕',date:'2026-06-03',venue:'喜来登酒店',budget:'16万',planner:'林晓梅',progress:5,status:'new'},
+  {id:7,name:'周明',partner:'郑晓丽',date:'2026-06-15',venue:'威斯汀酒店',budget:'22万',planner:'王芳',progress:0,status:'new'},
+  {id:8,name:'吴磊',partner:'钱文静',date:'2026-04-20',venue:'凯宾斯基',budget:'13万',planner:'林晓梅',progress:100,status:'completed'},
+];
+
+const leads = [
+  {name:'方世玉',phone:'138****2234',wedding:'2026-07-15',budget:'18万',source:'小红书',status:'跟进中',handler:'林晓梅'},
+  {name:'陶然',phone:'139****8812',wedding:'2026-08-20',budget:'25万',source:'朋友推荐',status:'已邀约',handler:'王芳'},
+  {name:'莫晓峰',phone:'136****5567',wedding:'2026-09-01',budget:'20万',source:'婚礼秀',status:'跟进中',handler:'林晓梅'},
+  {name:'何静怡',phone:'137****9901',wedding:'2026-10-12',budget:'15万',source:'抖音',status:'已签约',handler:'王芳'},
+  {name:'蒋文博',phone:'135****3321',wedding:'2026-11-05',budget:'30万',source:'官网',status:'跟进中',handler:'林晓梅'},
+  {name:'高圆圆',phone:'138****7788',wedding:'2027-01-18',budget:'22万',source:'小红书',status:'已邀约',handler:'王芳'},
+  {name:'杨浩然',phone:'139****4456',wedding:'2026-12-09',budget:'16万',source:'朋友推荐',status:'跟进中',handler:'林晓梅'},
+  {name:'马薇薇',phone:'136****1123',wedding:'2026-08-30',budget:'19万',source:'大众点评',status:'流失',handler:'王芳'},
+];
+
+const vendors = [
+  {name:'花语轩花艺',type:'花艺',contact:'陈经理',phone:'138****2345',schedule:'5/7',rating:'★★★★★',status:'active'},
+  {name:'艾诺婚礼摄影',type:'摄影',contact:'张老师',phone:'139****8765',schedule:'5/8',rating:'★★★★☆',status:'active'},
+  {name:'金嗓子乐队',type:'乐队',contact:'李老师',phone:'137****3456',schedule:'满',rating:'★★★★★',status:'busy'},
+  {name:'星光灯光音响',type:'灯光音响',contact:'王总',phone:'135****9876',schedule:'5/10',rating:'★★★★☆',status:'active'},
+  {name:'甜蜜时光蛋糕',type:'甜品台',contact:'赵师傅',phone:'136****6543',schedule:'5/12',rating:'★★★☆☆',status:'active'},
+  {name:'红妆造型工作室',type:'化妆',contact:'刘老师',phone:'138****4321',schedule:'5/15',rating:'★★★★★',status:'active'},
+];
+
+const banquetData = [
+  {couple:'张浩林 & 李雨晴',venue:'香格里拉大酒店',date:'2026-05-05',tables:30,price:4688,menu:'龙凤呈祥宴',total:140640,paid:140640,status:'paid'},
+  {couple:'王俊凯 & 陈雅琳',venue:'jw万豪酒店',date:'2026-05-10',tables:35,price:5288,menu:'金玉满堂宴',total:185080,paid:111048,status:'partial'},
+  {couple:'陈伟明 & 黄丽华',venue:'索菲特大酒店',date:'2026-05-17',tables:25,price:3888,menu:'百年好合宴',total:97200,paid:58320,status:'partial'},
+  {couple:'刘建华 & 孙晓婷',venue:'瑞吉酒店',date:'2026-05-19',tables:40,price:5888,menu:'至尊御宴',total:235520,paid:117760,status:'partial'},
+];
+
+const photoData = [
+  {couple:'张浩林 & 李雨晴',photographer:'艾诺-张老师',package:'双机位精修',date:'2026-05-05',retouched:300,raw:1860,delivery:'2026-05-20',status:'completed'},
+  {couple:'王俊凯 & 陈雅琳',photographer:'定格-李老师',package:'三机位电影感',date:'2026-05-10',retouched:450,raw:2400,delivery:'2026-05-25',status:'inprogress'},
+  {couple:'陈伟明 & 黄丽华',photographer:'光影-王老师',package:'双机位纪实',date:'2026-05-17',retouched:200,raw:1200,delivery:'2026-06-01',status:'pending'},
+  {couple:'刘建华 & 孙晓婷',photographer:'艾诺-张老师',package:'四机位全程',date:'2026-05-19',retouched:0,raw:0,delivery:'待定',status:'scheduled'},
+];
+
+const guests = [
+  {name:'李明辉',relation:'新郎挚友',couple:'张浩林 & 李雨晴',phone:'138****1234',count:1,rsvp:'confirmed',note:''},
+  {name:'王丽娜',relation:'新娘闺蜜',couple:'张浩林 & 李雨晴',phone:'139****5678',count:1,rsvp:'confirmed',note:'素食'},
+  {name:'陈志强',relation:'新郎父亲',couple:'张浩林 & 李雨晴',phone:'136****9012',count:2,rsvp:'confirmed',note:''},
+  {name:'张美玲',relation:'新娘母亲',couple:'张浩林 & 李雨晴',phone:'137****3456',count:2,rsvp:'pending',note:''},
+  {name:'刘德华',relation:'同事',couple:'王俊凯 & 陈雅琳',phone:'138****7890',count:1,rsvp:'confirmed',note:''},
+  {name:'周润发',relation:'新郎领导',couple:'王俊凯 & 陈雅琳',phone:'139****2345',count:3,rsvp:'pending',note:'需预留贵宾席'},
+  {name:'赵雅芝',relation:'新娘姑妈',couple:'王俊凯 & 陈雅琳',phone:'135****6789',count:2,rsvp:'declined',note:'届时不在国内'},
+];
+
+const seatingData = [
+  {desk:'A1',name:'主桌',type:'VIP',capacity:12,seated:12,empty:0},
+  {desk:'A2',name:'证婚桌',type:'VIP',capacity:8,seated:7,empty:1},
+  {desk:'B1',name:'挚友席',type:'普通',capacity:10,seated:9,empty:1},
+  {desk:'B2',name:'挚友席',type:'普通',capacity:10,seated:8,empty:2},
+  {desk:'C1',name:'亲戚席',type:'普通',capacity:10,seated:10,empty:0},
+  {desk:'C2',name:'亲戚席',type:'普通',capacity:10,seated:6,empty:4},
+  {desk:'D1',name:'同事席',type:'普通',capacity:10,seated:7,empty:3},
+  {desk:'D2',name:'同事席',type:'普通',capacity:10,seated:5,empty:5},
+];
+
+// ===== NAVIGATION =====
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const page = item.dataset.page;
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    item.classList.add('active');
+    document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    document.getElementById('topbarTitle').textContent = item.textContent.trim();
+  });
+});
+
+// ===== RENDER TABLES =====
+function renderDashboard() {
+  const tbody = document.getElementById('recentTable');
+  tbody.innerHTML = couples.slice(0,5).map(c => `
+    <tr onclick="openDetail(${c.id})" style="cursor:pointer">
+      <td>${c.name} & ${c.partner}</td>
+      <td>${c.date}</td>
+      <td><span class="tag wedding">婚礼策划</span></td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;background:var(--bg);height:6px;border-radius:3px"><div style="width:${c.progress}%;height:100%;background:${c.progress===100?'var(--green)':c.progress>50?'var(--accent2)':'var(--yellow)'};border-radius:3px"></div></div><span style="font-size:11px;color:var(--text2)">${c.progress}%</span></div></td>
+      <td><span class="tag ${c.status==='completed'?'completed':c.status==='active'?'active':'new'}">${c.status==='completed'?'已完成':c.status==='active'?'进行中':'新签'}</span></td>
+    </tr>`).join('');
+}
+
+function renderLeads() {
+  const tbody = document.getElementById('leadsTable');
+  tbody.innerHTML = leads.map((l,i) => `
+    <tr onclick="openLeadDetail(${i})" style="cursor:pointer">
+      <td>${l.name}</td><td>${l.phone}</td><td>${l.wedding}</td><td>${l.budget}</td>
+      <td>${l.source}</td>
+      <td><span class="tag ${l.status==='已签约'?'confirmed':l.status==='流失'?'cancelled':l.status==='已邀约'?'active':'pending'}">${l.status}</span></td>
+      <td>${l.handler}</td>
+      <td><button class="btn" style="padding:4px 8px;font-size:11px" onclick="event.stopPropagation();showToast('已复制微信')">跟进</button></td>
+    </tr>`).join('');
+}
+
+function renderEvents() {
+  const t1 = document.getElementById('eventsTable1');
+  t1.innerHTML = couples.slice(0,5).map(c => `
+    <tr><td>${c.date}</td><td>${c.name} & ${c.partner}</td><td>${c.venue}</td><td><span class="tag wedding">婚礼策划</span></td></tr>`).join('');
+  const t2 = document.getElementById('eventsTable2');
+  t2.innerHTML = couples.map(c => `
+    <tr onclick="openDetail(${c.id})" style="cursor:pointer">
+      <td>${c.date}</td><td>${c.name} & ${c.partner}</td><td>${c.venue}</td><td><span class="tag wedding">婚礼策划</span></td>
+      <td>${c.planner}</td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;background:var(--bg);height:6px;border-radius:3px"><div style="width:${c.progress}%;height:100%;background:${c.progress===100?'var(--green)':c.progress>50?'var(--accent2)':'var(--yellow)'};border-radius:3px"></div></div><span style="font-size:11px;color:var(--text2)">${c.progress}%</span></div></td>
+      <td><span class="tag ${c.status==='completed'?'completed':c.status==='active'?'active':'new'}">${c.status==='completed'?'已完成':c.status==='active'?'进行中':'新签'}</span></td>
+    </tr>`).join('');
+}
+
+function renderVendors() {
+  const tbody = document.getElementById('vendorsTable');
+  tbody.innerHTML = vendors.map((v,i) => `
+    <tr>
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="vendor-logo">${v.type==='花艺'?'🌸':v.type==='摄影'?'📷':v.type==='乐队'?'🎵':v.type==='灯光音响'?'💡':v.type==='甜品台'?'🎂':'💄'}</div>${v.name}</div></td>
+      <td><span class="tag photo">${v.type}</span></td>
+      <td>${v.contact}</td><td>${v.phone}</td><td>${v.schedule}</td><td style="color:var(--yellow)">${v.rating}</td>
+      <td><span class="tag ${v.status==='active'?'active':'pending'}">${v.status==='active'?'可用':'已约满'}</span></td>
+      <td><button class="btn" style="padding:4px 8px;font-size:11px" onclick="showToast('已发送询价')">询价</button></td>
+    </tr>`).join('');
+}
+
+function renderBanquet() {
+  const tbody = document.getElementById('banquetTable');
+  tbody.innerHTML = banquetData.map(b => `
+    <tr>
+      <td>${b.couple}</td><td>${b.venue}</td><td>${b.date}</td><td>${b.tables}桌</td><td>¥${b.price.toLocaleString()}</td>
+      <td>${b.menu}</td><td style="font-weight:600">¥${b.total.toLocaleString()}</td>
+      <td style="color:var(--green)">¥${b.paid.toLocaleString()}</td>
+      <td><span class="tag ${b.status==='paid'?'paid':'unpaid'}">${b.status==='paid'?'已付清':'部分支付'}</span></td>
+    </tr>`).join('');
+}
+
+function renderPhoto() {
+  const tbody = document.getElementById('photoTable');
+  tbody.innerHTML = photoData.map(p => `
+    <tr>
+      <td>${p.couple}</td><td>${p.photographer}</td><td>${p.package}</td><td>${p.date}</td>
+      <td>${p.retouched}张</td><td>${p.raw}张</td><td>${p.delivery}</td>
+      <td><span class="tag ${p.status==='completed'?'completed':p.status==='inprogress'?'active':p.status==='pending'?'pending':'new'}">${p.status==='completed'?'已完成':p.status==='inprogress'?'制作中':p.status==='pending'?'待制作':'已排期'}</span></td>
+    </tr>`).join('');
+}
+
+function renderRSVP() {
+  const gTable = document.getElementById('rsvpTable');
+  gTable.innerHTML = guests.map(g => `
+    <tr>
+      <td>${g.name}</td><td>${g.relation}</td><td>${g.couple}</td><td>${g.phone}</td>
+      <td>${g.count}人</td>
+      <td><span class="tag ${g.rsvp==='confirmed'?'confirmed':g.rsvp==='declined'?'cancelled':'pending'}">${g.rsvp==='confirmed'?'已确认':g.rsvp==='declined'?'已婉拒':'待回复'}</span></td>
+      <td>${g.note}</td>
+    </tr>`).join('');
+
+  const groupData = [
+    {couple:'张浩林 & 李雨晴',date:'2026-05-05',confirmed:28,total:30},
+    {couple:'王俊凯 & 陈雅琳',date:'2026-05-10',confirmed:18,total:22},
+    {couple:'陈伟明 & 黄丽华',date:'2026-05-17',confirmed:12,total:15},
+  ];
+  const gGroup = document.getElementById('rsvpGroupTable');
+  gGroup.innerHTML = groupData.map(g => `
+    <tr>
+      <td>${g.couple}</td><td>${g.date}</td><td>${g.confirmed}/${g.total}</td>
+      <td><div style="display:flex;align-items:center;gap:8px"><div style="flex:1;background:var(--bg);height:6px;border-radius:3px"><div style="width:${(g.confirmed/g.total*100).toFixed(0)}%;height:100%;background:var(--green);border-radius:3px"></div></div><span style="font-size:11px;color:var(--green)">${(g.confirmed/g.total*100).toFixed(0)}%</span></div></td>
+    </tr>`).join('');
+
+  const feed = document.getElementById('rsvpFeed');
+  feed.innerHTML = [
+    {name:'王丽娜',r:'confirmed',t:'刚刚'},
+    {name:'刘德华',r:'confirmed',t:'5分钟前'},
+    {name:'周润发',r:'pending',t:'10分钟前'},
+    {name:'赵雅芝',r:'declined',t:'20分钟前'},
+    {name:'陈志强',r:'confirmed',t:'30分钟前'},
+  ].map(f => `
+    <div style="display:flex;align-items:center;gap:8px;padding:8px;background:var(--bg);border-radius:6px;font-size:12px">
+      <span class="tag ${f.r==='confirmed'?'confirmed':f.r==='declined'?'cancelled':'pending'}" style="font-size:10px">${f.r==='confirmed'?'✓确认':f.r==='declined'?'✕婉拒':'⏳待复'}</span>
+      <span>${f.name}</span>
+      <span style="color:var(--text2);margin-left:auto">${f.t}</span>
+    </div>`).join('');
+}
+
+function renderSeating() {
+  const tbody = document.getElementById('seatingTable');
+  tbody.innerHTML = seatingData.map(s => `
+    <tr>
+      <td>${s.desk}</td><td>${s.name}</td><td><span class="tag ${s.type==='VIP'?'confirmed':'pending'}">${s.type}</span></td>
+      <td>${s.capacity}人</td><td>${s.seated}人</td><td>${s.empty}空</td>
+    </tr>`).join('');
+
+  const grid = document.getElementById('seatGrid');
+  let html = '';
+  for(let i=1;i<=40;i++){
+    const seat = seatingData.find(s => s.desk==='A1') && i<=12 ? 'taken' : i===1 ? 'vip' : Math.random()>0.6 ? 'taken' : '';
+    html += `<div class="seat ${seat}">${i<=12?'A1-'+i:'T'+(i-12)}</div>`;
+  }
+  grid.innerHTML = html;
+}
+
+function renderPayments() {
+  const pending = document.getElementById('pendingPayments');
+  pending.innerHTML = [
+    {couple:'王俊凯 & 陈雅琳',date:'2026-05-10',amount:74032,installment:'3/4期',due:'2026-05-08',overdue:2},
+    {couple:'陈伟明 & 黄丽华',date:'2026-05-17',amount:38880,installment:'2/3期',due:'2026-05-12',overdue:5},
+    {couple:'刘建华 & 孙晓婷',date:'2026-05-19',amount:117760,installment:'2/4期',due:'2026-05-15',overdue:2},
+  ].map(p => `
+    <tr>
+      <td>${p.couple}</td><td>${p.date}</td><td style="font-weight:600;color:var(--accent)">¥${p.amount.toLocaleString()}</td>
+      <td>${p.installment}</td><td>${p.due}</td>
+      <td><span class="tag ${p.overdue>0?'unpaid':''}" style="${p.overdue>0?'color:var(--accent)':''}">${p.overdue>0?p.overdue+'天':'-'}</span></td>
+    </tr>`).join('');
+
+  const tbody = document.getElementById('paymentsTable');
+  tbody.innerHTML = [
+    {couple:'张浩林 & 李雨晴',date:'2026-05-05',type:'收款',amount:140640,installment:'4/4期',method:'银行转账',payDate:'2026-04-28',status:'paid'},
+    {couple:'王俊凯 & 陈雅琳',date:'2026-05-10',type:'收款',amount:111048,installment:'3/4期',method:'银行转账',payDate:'2026-04-20',status:'paid'},
+    {couple:'陈伟明 & 黄丽华',date:'2026-05-17',type:'收款',amount:58320,installment:'2/3期',method:'支付宝',payDate:'2026-04-15',status:'paid'},
+    {couple:'刘建华 & 孙晓婷',date:'2026-05-19',type:'收款',amount:117760,installment:'2/4期',method:'银行转账',payDate:'2026-04-10',status:'paid'},
+    {couple:'花语轩花艺',date:'2026-05-01',type:'付款',amount:12800,installment:'',method:'银行转账',payDate:'2026-05-01',status:'paid'},
+    {couple:'艾诺婚礼摄影',date:'2026-05-03',type:'付款',amount:22000,installment:'',method:'银行转账',payDate:'2026-05-03',status:'paid'},
+  ].map(p => `
+    <tr>
+      <td>${p.couple}</td><td>${p.date}</td><td><span class="tag ${p.type==='收款'?'confirmed':'unpaid'}" style="font-size:11px">${p.type}</span></td>
+      <td style="font-weight:600;color:${p.type==='收款'?'var(--green)':'var(--accent)'}">${p.type==='收款'?'+':'-'}¥${p.amount.toLocaleString()}</td>
+      <td>${p.installment||'-'}</td><td>${p.method}</td><td>${p.payDate}</td>
+      <td><span class="tag paid">已到账</span></td>
+    </tr>`).join('');
+}
+
+// ===== DETAIL PANEL =====
+function openDetail(id) {
+  const c = couples.find(x => x.id === id);
+  if (!c) return;
+  document.getElementById('detailTitle').textContent = `${c.name} & ${c.partner}`;
+  document.getElementById('detailBody').innerHTML = `
+    <div class="detail-section">
+      <div class="detail-section-title">基本信息</div>
+      <div class="info-row"><span class="label">新人姓名</span><span class="val">${c.name} & ${c.partner}</span></div>
+      <div class="info-row"><span class="label">婚礼日期</span><span class="val">${c.date}</span></div>
+      <div class="info-row"><span class="label">婚礼场地</span><span class="val">${c.venue}</span></div>
+      <div class="info-row"><span class="label">预算范围</span><span class="val">${c.budget}</span></div>
+      <div class="info-row"><span class="label">负责策划</span><span class="val">${c.planner}</span></div>
+      <div class="info-row"><span class="label">当前状态</span><span class="val"><span class="tag ${c.status==='completed'?'completed':c.status==='active'?'active':'new'}">${c.status==='completed'?'已完成':c.status==='active'?'进行中':'新签'}</span></span></div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-title">筹备进度</div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px;font-size:12px">
+        <span style="color:var(--text2)">总体进度</span><span style="color:var(--accent)">${c.progress}%</span>
+      </div>
+      <div class="progress-bar"><div class="fill" style="width:${c.progress}%"></div></div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-title">阶段任务</div>
+      ${[
+        {task:'方案确认',done:true},{task:'场地预定',done:true},{task:'供应商签约',done:c.progress>30},
+        {task:'婚宴菜单',done:c.progress>50},{task:'婚礼彩排',done:c.progress>80},{task:'婚礼执行',done:c.progress===100},
+      ].map(t=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px">
+        <span style="color:${t.done?'var(--green)':'var(--text2)'}">${t.done?'✓':'○'}</span>
+        <span style="${t.done?'':'color:var(--text2)'}">${t.task}</span>
+      </div>`).join('')}
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-title">回款情况</div>
+      ${[{label:'已付',amount:c.progress===100?parseInt(c.budget)*10000:Math.round(parseInt(c.budget)*10000*c.progress/100),color:'var(--green)'},
+         {label:'待付',amount:parseInt(c.budget)*10000-Math.round(parseInt(c.budget)*10000*c.progress/100),color:'var(--text2)'}]
+        .map(p=>`<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid var(--border)">
+          <span style="color:var(--text2)">${p.label}</span><span style="color:${p.color};font-weight:600">¥${p.amount.toLocaleString()}</span>
+        </div>`).join('')}
+    </div>
+  `;
+  document.getElementById('detailPanel').classList.add('open');
+}
+
+function openLeadDetail(idx) {
+  const l = leads[idx];
+  document.getElementById('detailTitle').textContent = l.name;
+  document.getElementById('detailBody').innerHTML = `
+    <div class="detail-section">
+      <div class="detail-section-title">客户信息</div>
+      <div class="info-row"><span class="label">姓名</span><span class="val">${l.name}</span></div>
+      <div class="info-row"><span class="label">电话</span><span class="val">${l.phone}</span></div>
+      <div class="info-row"><span class="label">婚期</span><span class="val">${l.wedding}</span></div>
+      <div class="info-row"><span class="label">预算</span><span class="val">${l.budget}</span></div>
+      <div class="info-row"><span class="label">来源</span><span class="val">${l.source}</span></div>
+      <div class="info-row"><span class="label">状态</span><span class="val"><span class="tag ${l.status==='已签约'?'confirmed':l.status==='流失'?'cancelled':l.status==='已邀约'?'active':'pending'}">${l.status}</span></span></div>
+      <div class="info-row"><span class="label">跟进人</span><span class="val">${l.handler}</span></div>
+    </div>
+    <div class="detail-section">
+      <div class="detail-section-title">跟进记录</div>
+      ${[{date:'2026-05-10',note:'电话沟通，了解需求，婚期暂定明年五一',handler:'林晓梅'},
+         {date:'2026-05-08',note:'通过小红书线索分配，首次微信回复',handler:'林晓梅'}]
+        .map(r=>`<div style="padding:8px 0;border-bottom:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:4px">
+            <span>${r.date}</span><span>${r.handler}</span>
+          </div>
+          <div style="font-size:13px">${r.note}</div>
+        </div>`).join('')}
+    </div>
+  `;
+  document.getElementById('detailPanel').classList.add('open');
+}
+
+function closeDetail() {
+  document.getElementById('detailPanel').classList.remove('open');
+}
+
+// ===== MODAL =====
+function openModal(type) {
+  const titles = {addLead:'新增潜客',addEvent:'添加档期',addVendor:'新增供应商',addBanquet:'新增宴会',addPhoto:'新增摄影订单',addGuest:'批量导入宾客',addPayment:'登记收款'};
+  document.getElementById('modalTitle').textContent = titles[type] || '新增';
+  document.getElementById('modalBody').innerHTML = getFormHTML(type);
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function getFormHTML(type) {
+  const forms = {
+    addLead:`<div class="form-group"><label class="form-label">姓名</label><input class="form-input" placeholder="请输入客户姓名"></div>
+      <div class="form-row"><div class="form-group"><label class="form-label">电话</label><input class="form-input" placeholder="手机号"></div>
+      <div class="form-group"><label class="form-label">婚期</label><input class="form-input" type="date"></div></div>
+      <div class="form-row"><div class="form-group"><label class="form-label">预算</label><input class="form-input" placeholder="如：15万"></div>
+      <div class="form-group"><label class="form-label">来源</label><select class="form-input"><option>小红书</option><option>抖音</option><option>朋友推荐</option><option>婚礼秀</option><option>官网</option></select></div></div>
+      <div class="form-group"><label class="form-label">备注</label><textarea class="form-input" rows="3" placeholder="其他需求或备注..."></textarea></div>`,
+    addEvent:`<div class="form-row"><div class="form-group"><label class="form-label">新郎姓名</label><input class="form-input" placeholder=""></div>
+      <div class="form-group"><label class="form-label">新娘姓名</label><input class="form-input" placeholder=""></div></div>
+      <div class="form-row"><div class="form-group"><label class="form-label">婚期</label><input class="form-input" type="date"></div>
+      <div class="form-group"><label class="form-label">场地</label><input class="form-input" placeholder="酒店/场地名称"></div></div>
+      <div class="form-row"><div class="form-group"><label class="form-label">预算</label><input class="form-input" placeholder="如：15万"></div>
+      <div class="form-group"><label class="form-label">策划师</label><select class="form-input"><option>林晓梅</option><option>王芳</option></select></div></div>
+      <div class="form-group"><label class="form-label">备注</label><textarea class="form-input" rows="2" placeholder=""></textarea></div>`,
+    addVendor:`<div class="form-group"><label class="form-label">商家名称</label><input class="form-input" placeholder=""></div>
+      <div class="form-row"><div class="form-group"><label class="form-label">类型</label><select class="form-input"><option>花艺</option><option>摄影</option><option>乐队</option><option>灯光音响</option><option>甜品台</option><option>化妆</option></select></div>
+      <div class="form-group"><label class="form-label">联系人</label><input class="form-input" placeholder=""></div></div>
+      <div class="form-group"><label class="form-label">电话</label><input class="form-input" placeholder=""></div>
+      <div class="form-group"><label class="form-label">合作报价</label><input class="form-input" placeholder="如：8000元/场"></div>
+      <div class="form-group"><label class="form-label">备注</label><textarea class="form-input" rows="2"></textarea></div>`,
+    addBanquet:`<div class="form-group"><label class="form-label">所属婚礼</label><select class="form-input"><option>王俊凯 & 陈雅琳 — 5月10日</option><option>陈伟明 & 黄丽华 — 5月17日</option><option>刘建华 & 孙晓婷 — 5月19日</option></select></div>
+      <div class="form-group"><label class="form-label">酒店/场地</label><input class="form-input" placeholder=""></div>
+      <div class="form-row"><div class="form-group"><label class="form-label">桌数</label><input class="form-input" type="number" placeholder=""></div>
+      <div class="form-group"><label class="form-label">每桌单价</label><input class="form-input" placeholder=""></div></div>
+      <div class="form-group"><label class="form-label">菜单名称</label><input class="form-input" placeholder="如：龙凤呈祥宴"></div>`,
+    addPhoto:`<div class="form-group"><label class="form-label">所属婚礼</label><select class="form-input"><option>陈伟明 & 黄丽华 — 5月17日</option><option>刘建华 & 孙晓婷 — 5月19日</option></select></div>
+      <div class="form-row"><div class="form-group"><label class="form-label">摄影师</label><select class="form-input"><option>艾诺-张老师</option><option>定格-李老师</option><option>光影-王老师</option></select></div>
+      <div class="form-group"><label class="form-label">套餐类型</label><select class="form-input"><option>双机位精修</option><option>三机位电影感</option><option>四机位全程</option></select></div></div>
+      <div class="form-row"><div class="form-group"><label class="form-label">精修数量</label><input class="form-input" type="number" placeholder="张"></div>
+      <div class="form-group"><label class="form-label">交付日期</label><input class="form-input" type="date"></div></div>`,
+    addGuest:`<div class="form-group"><label class="form-label">所属婚礼</label><select class="form-input"><option>王俊凯 & 陈雅琳 — 5月10日</option><option>陈伟明 & 黄丽华 — 5月17日</option></select></div>
+      <div class="form-group"><label class="form-label">上传宾客名单</label>
+      <div style="border:1px dashed var(--border);border-radius:8px;padding:24px;text-align:center;color:var(--text2);font-size:13px;cursor:pointer">
+        📁 点击选择文件 或 拖拽文件到此处<br><span style="font-size:11px;margin-top:4px;display:block">支持 Excel、CSV 格式</span>
+      </div></div>
+      <div class="form-group"><label class="form-label">或手动粘贴名单</label><textarea class="form-input" rows="4" placeholder="每行一个，格式：姓名,电话,关系,人数"></textarea></div>`,
+    addPayment:`<div class="form-group"><label class="form-label">所属婚礼</label><select class="form-input"><option>王俊凯 & 陈雅琳 — 5月10日</option><option>陈伟明 & 黄丽华 — 5月17日</option><option>刘建华 & 孙晓婷 — 5月19日</option></select></div>
+      <div class="form-row"><div class="form-group"><label class="form-label">金额</label><input class="form-input" placeholder=""></div>
+      <div class="form-group"><label class="form-label">期次</label><select class="form-input"><option>第1期</option><option>第2期</option><option>第3期</option><option>第4期</option><option>尾款</option></select></div></div>
+      <div class="form-row"><div class="form-group"><label class="form-label">支付方式</label><select class="form-input"><option>银行转账</option><option>支付宝</option><option>微信</option><option>现金</option></select></div>
+      <div class="form-group"><label class="form-label">到账日期</label><input class="form-input" type="date"></div></div>
+      <div class="form-group"><label class="form-label">备注</label><input class="form-input" placeholder="如：银行备注"></div>`,
+  };
+  return forms[type] || '';
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+function saveForm() {
+  closeModal();
+  showToast('保存成功');
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+  document.getElementById('toastMsg').textContent = msg;
+  document.getElementById('toast').classList.add('show');
+  setTimeout(() => document.getElementById('toast').classList.remove('show'), 2500);
+}
+
+// ===== SEARCH =====
+document.getElementById('searchInput').addEventListener('input', function(e) {
+  const q = e.target.value.trim().toLowerCase();
+  if (!q) return;
+  const results = couples.filter(c => (c.name + c.partner + c.venue).toLowerCase().includes(q));
+  if (results.length > 0) {
+    openDetail(results[0].id);
+  }
+});
+
+// ===== INIT =====
+renderDashboard();
+renderLeads();
+renderEvents();
+renderVendors();
+renderBanquet();
+renderPhoto();
+renderRSVP();
+renderSeating();
+renderPayments();
+
+// animate bars
+document.querySelectorAll('.chart-bar').forEach(bar => {
+  const h = bar.getAttribute('data-height');
+  bar.style.height = '0%';
+  setTimeout(() => { bar.style.height = h + '%'; }, 300);
+  bar.addEventListener('mouseenter', function() {
+    const label = this.getAttribute('data-label');
+    this.style.filter = 'brightness(1.3)';
+  });
+  bar.addEventListener('mouseleave', function() {
+    this.style.filter = '';
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,2951 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>妙笔AI - 智能写作平台</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #111827;
+            --bg-tertiary: #1a2235;
+            --bg-card: #141924;
+            --bg-hover: #1e293b;
+            --accent: #6366f1;
+            --accent-light: #818cf8;
+            --accent-glow: rgba(99, 102, 241, 0.3);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #1e293b;
+            --border-light: #334155;
+            --sidebar-width: 260px;
+            --header-height: 64px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+        ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-logo {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-logo .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+
+        .sidebar-logo h1 {
+            font-size: 20px;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--accent-light), #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px 12px;
+            overflow-y: auto;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 8px 12px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 4px;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(99, 102, 241, 0.05));
+            color: var(--accent-light);
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 24px;
+            background: var(--accent);
+            border-radius: 0 2px 2px 0;
+        }
+
+        .nav-item .icon {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .nav-item .badge {
+            margin-left: auto;
+            background: var(--accent);
+            color: white;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .nav-item .sub-icon {
+            font-size: 12px;
+            margin-left: auto;
+            transition: transform 0.2s;
+        }
+
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .user-card {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .user-card:hover {
+            background: var(--bg-hover);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #f472b6, #c084fc);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .user-plan {
+            font-size: 12px;
+            color: var(--accent-light);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            height: var(--header-height);
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 16px;
+            width: 320px;
+            transition: all 0.2s;
+        }
+
+        .search-box:focus-within {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .search-box input {
+            background: none;
+            border: none;
+            outline: none;
+            color: var(--text-primary);
+            font-size: 14px;
+            width: 100%;
+        }
+
+        .search-box input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-box .icon {
+            color: var(--text-muted);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+        }
+
+        .header-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .header-btn.primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .header-btn.primary:hover {
+            background: var(--accent-light);
+        }
+
+        .credits-display {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05));
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+
+        .credits-display .icon {
+            color: var(--accent-light);
+        }
+
+        .credits-display span {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .credits-display .value {
+            color: var(--accent-light);
+            font-weight: 600;
+        }
+
+        /* Content Area */
+        .content-area {
+            padding: 24px;
+        }
+
+        /* Page Sections */
+        .page-section {
+            display: none;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        /* Dashboard */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .stat-icon.purple { background: rgba(139, 92, 246, 0.15); }
+        .stat-icon.green { background: rgba(16, 185, 129, 0.15); }
+        .stat-icon.orange { background: rgba(245, 158, 11, 0.15); }
+        .stat-icon.blue { background: rgba(59, 130, 246, 0.15); }
+
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .stat-trend.up { color: var(--success); }
+        .stat-trend.down { color: var(--danger); }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* Charts */
+        .charts-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .chart-container {
+            height: 260px;
+            position: relative;
+        }
+
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            height: 200px;
+            padding: 0 10px;
+        }
+
+        .chart-bar-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        .chart-bar {
+            width: 32px;
+            background: linear-gradient(180deg, var(--accent-light), var(--accent));
+            border-radius: 4px 4px 0 0;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .chart-bar:hover {
+            filter: brightness(1.2);
+            transform: scaleY(1.05);
+            transform-origin: bottom;
+        }
+
+        .chart-label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .chart-value {
+            font-size: 11px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Donut Chart */
+        .donut-chart {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            height: 200px;
+        }
+
+        .donut-visual {
+            width: 160px;
+            height: 160px;
+            position: relative;
+        }
+
+        .donut-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .donut-center .value {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .donut-center .label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .donut-legend {
+            flex: 1;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        .legend-text {
+            flex: 1;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .legend-value {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .quick-action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 20px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quick-action-btn:hover {
+            background: var(--bg-hover);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .quick-action-btn .icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .quick-action-btn .label {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Recent Articles */
+        .recent-section {
+            margin-top: 24px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .article-list {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .article-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .article-item:last-child {
+            border-bottom: none;
+        }
+
+        .article-item:hover {
+            background: var(--bg-hover);
+        }
+
+        .article-thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-right: 16px;
+        }
+
+        .article-info {
+            flex: 1;
+        }
+
+        .article-title {
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .article-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .article-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .article-status.published {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+
+        .article-status.draft {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+
+        .article-status.scheduled {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--accent-light);
+        }
+
+        /* Templates Section */
+        .templates-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .template-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .template-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .template-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 16px;
+        }
+
+        .template-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .template-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+
+        .template-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .template-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Editor Section */
+        .editor-container {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+        }
+
+        .editor-main {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .editor-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 12px 16px;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .toolbar-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: none;
+            border-radius: 6px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+
+        .toolbar-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+        }
+
+        .toolbar-btn.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .toolbar-divider {
+            width: 1px;
+            height: 24px;
+            background: var(--border);
+            margin: 0 8px;
+        }
+
+        .editor-title-input {
+            width: 100%;
+            padding: 20px 24px;
+            background: none;
+            border: none;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-primary);
+            font-size: 24px;
+            font-weight: 600;
+            outline: none;
+        }
+
+        .editor-title-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .editor-content {
+            min-height: 400px;
+            padding: 24px;
+            outline: none;
+            font-size: 15px;
+            line-height: 1.8;
+            color: var(--text-primary);
+        }
+
+        .editor-content:empty::before {
+            content: attr(data-placeholder);
+            color: var(--text-muted);
+        }
+
+        .editor-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .editor-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .panel-header {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .seo-score {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .seo-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: conic-gradient(var(--success) 0% 85%, var(--bg-tertiary) 85% 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .seo-circle-inner {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .seo-details h4 {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .seo-details p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .seo-tips {
+            margin-top: 16px;
+        }
+
+        .seo-tip {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            padding: 10px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .seo-tip.success { border-left: 3px solid var(--success); }
+        .seo-tip.warning { border-left: 3px solid var(--warning); }
+        .seo-tip.error { border-left: 3px solid var(--danger); }
+
+        .seo-tip .icon { flex-shrink: 0; }
+
+        /* AI Generate Button */
+        .ai-generate-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+
+        .ai-generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px var(--accent-glow);
+        }
+
+        /* Publish Queue */
+        .queue-filters {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .queue-table {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .queue-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 120px;
+            padding: 14px 20px;
+            background: var(--bg-tertiary);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .queue-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 120px;
+            padding: 16px 20px;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.2s;
+        }
+
+        .queue-row:last-child { border-bottom: none; }
+        .queue-row:hover { background: var(--bg-hover); }
+
+        .queue-article {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .queue-thumb {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .queue-info h4 {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .queue-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .queue-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-dot.green { background: var(--success); }
+        .status-dot.orange { background: var(--warning); }
+        .status-dot.blue { background: var(--accent); }
+
+        .queue-date {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .queue-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .queue-action-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--border);
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .queue-action-btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        /* Team Section */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .team-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .team-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+        }
+
+        .team-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .team-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .team-card .role {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .team-stats {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .team-stat {
+            text-align: center;
+        }
+
+        .team-stat .value {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .team-stat .label {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .team-permission {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .permission-tag {
+            padding: 4px 10px;
+            background: var(--bg-tertiary);
+            border-radius: 20px;
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* Analytics Section */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .analytics-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .analytics-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .metric-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .metric-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .metric-bar {
+            flex: 1;
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            margin: 0 16px;
+            overflow: hidden;
+        }
+
+        .metric-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .metric-value {
+            font-size: 14px;
+            font-weight: 600;
+            min-width: 50px;
+            text-align: right;
+        }
+
+        /* Subscription Section */
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .plan-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .plan-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .plan-card.featured {
+            border-color: var(--accent);
+            background: linear-gradient(180deg, rgba(99, 102, 241, 0.08), var(--bg-card));
+        }
+
+        .plan-card.featured::before {
+            content: '最受欢迎';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent);
+            color: white;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .plan-name {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .plan-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        .plan-price {
+            margin-bottom: 24px;
+        }
+
+        .plan-price .amount {
+            font-size: 42px;
+            font-weight: 700;
+        }
+
+        .plan-price .unit {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 32px;
+        }
+
+        .plan-features li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .plan-features li .icon {
+            color: var(--success);
+        }
+
+        .plan-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .plan-btn.secondary {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .plan-btn.secondary:hover {
+            background: var(--bg-hover);
+        }
+
+        .plan-btn.primary {
+            background: var(--accent);
+            border: none;
+            color: white;
+        }
+
+        .plan-btn.primary:hover {
+            background: var(--accent-light);
+        }
+
+        /* Usage Section */
+        .usage-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .usage-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .usage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .usage-header h4 {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .usage-header .current {
+            font-size: 12px;
+            color: var(--accent-light);
+        }
+
+        .usage-bar {
+            height: 10px;
+            background: var(--bg-tertiary);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .usage-bar-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+
+        .usage-footer {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .usage-footer span:last-child {
+            font-weight: 600;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            width: 560px;
+            max-height: 80vh;
+            overflow: hidden;
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .modal-body {
+            padding: 24px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 20px 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-hover);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            border: none;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-light);
+        }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            top: 80px;
+            right: 24px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toast {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 320px;
+            animation: toastIn 0.3s ease;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--danger); }
+        .toast.warning { border-left: 4px solid var(--warning); }
+
+        .toast .icon {
+            font-size: 20px;
+        }
+
+        .toast.success .icon { color: var(--success); }
+        .toast.error .icon { color: var(--danger); }
+        .toast.warning .icon { color: var(--warning); }
+
+        .toast-message {
+            flex: 1;
+            font-size: 14px;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Loading Animation */
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--bg-tertiary);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .charts-row { grid-template-columns: 1fr; }
+            .templates-grid { grid-template-columns: repeat(2, 1fr); }
+            .plans-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .menu-toggle {
+                display: block;
+            }
+            .search-box {
+                display: none;
+            }
+            .stats-grid { grid-template-columns: 1fr; }
+            .templates-grid { grid-template-columns: 1fr; }
+            .plans-grid { grid-template-columns: 1fr; }
+            .editor-container { grid-template-columns: 1fr; }
+            .queue-header, .queue-row {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            .team-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon">✍️</div>
+            <h1>妙笔AI</h1>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">主菜单</div>
+                <div class="nav-item active" data-page="dashboard">
+                    <span class="icon">📊</span>
+                    <span>工作台</span>
+                </div>
+                <div class="nav-item" data-page="editor">
+                    <span class="icon">✏️</span>
+                    <span>写文章</span>
+                </div>
+                <div class="nav-item" data-page="templates">
+                    <span class="icon">📝</span>
+                    <span>模板库</span>
+                </div>
+                <div class="nav-item" data-page="queue">
+                    <span class="icon">📋</span>
+                    <span>发布队列</span>
+                    <span class="badge">5</span>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">管理</div>
+                <div class="nav-item" data-page="team">
+                    <span class="icon">👥</span>
+                    <span>团队协作</span>
+                </div>
+                <div class="nav-item" data-page="analytics">
+                    <span class="icon">📈</span>
+                    <span>数据统计</span>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <div class="nav-section-title">账户</div>
+                <div class="nav-item" data-page="subscription">
+                    <span class="icon">💎</span>
+                    <span>订阅套餐</span>
+                </div>
+                <div class="nav-item" data-page="settings">
+                    <span class="icon">⚙️</span>
+                    <span>设置中心</span>
+                </div>
+            </div>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-card">
+                <div class="user-avatar">林</div>
+                <div class="user-info">
+                    <div class="user-name">林晓峰</div>
+                    <div class="user-plan">专业版会员</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <button class="menu-toggle" id="menuToggle">☰</button>
+                <h2 class="page-title">工作台</h2>
+            </div>
+
+            <div class="search-box">
+                <span class="icon">🔍</span>
+                <input type="text" placeholder="搜索文章、模板...">
+            </div>
+
+            <div class="header-right">
+                <div class="credits-display">
+                    <span class="icon">⚡</span>
+                    <span>剩余点数: <span class="value">2,847</span></span>
+                </div>
+                <button class="header-btn">
+                    <span>🔔</span>
+                </button>
+                <button class="header-btn primary" id="newArticleBtn">
+                    <span>+</span>
+                    新建文章
+                </button>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Dashboard -->
+            <section class="page-section active" id="dashboard">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon purple">📄</div>
+                            <div class="stat-trend up">
+                                <span>↑ 12%</span>
+                            </div>
+                        </div>
+                        <div class="stat-value">1,284</div>
+                        <div class="stat-label">本月文章</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon green">👁️</div>
+                            <div class="stat-trend up">
+                                <span>↑ 23%</span>
+                            </div>
+                        </div>
+                        <div class="stat-value">58.6万</div>
+                        <div class="stat-label">总阅读量</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon orange">⚡</div>
+                            <div class="stat-trend down">
+                                <span>↓ 5%</span>
+                            </div>
+                        </div>
+                        <div class="stat-value">1,847</div>
+                        <div class="stat-label">AI生成次数</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon blue">👥</div>
+                            <div class="stat-trend up">
+                                <span>↑ 8%</span>
+                            </div>
+                        </div>
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">团队成员</div>
+                    </div>
+                </div>
+
+                <div class="charts-row">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">文章发布趋势</h3>
+                            <select class="form-input form-select" style="width: 120px; padding: 8px 12px;">
+                                <option>近7天</option>
+                                <option>近30天</option>
+                                <option>近90天</option>
+                            </select>
+                        </div>
+                        <div class="chart-container">
+                            <div class="chart-bars">
+                                <div class="chart-bar-group">
+                                    <div class="chart-value">28</div>
+                                    <div class="chart-bar" style="height: 80px;"></div>
+                                    <div class="chart-label">周一</div>
+                                </div>
+                                <div class="chart-bar-group">
+                                    <div class="chart-value">42</div>
+                                    <div class="chart-bar" style="height: 120px;"></div>
+                                    <div class="chart-label">周二</div>
+                                </div>
+                                <div class="chart-bar-group">
+                                    <div class="chart-value">35</div>
+                                    <div class="chart-bar" style="height: 100px;"></div>
+                                    <div class="chart-label">周三</div>
+                                </div>
+                                <div class="chart-bar-group">
+                                    <div class="chart-value">56</div>
+                                    <div class="chart-bar" style="height: 160px;"></div>
+                                    <div class="chart-label">周四</div>
+                                </div>
+                                <div class="chart-bar-group">
+                                    <div class="chart-value">48</div>
+                                    <div class="chart-bar" style="height: 140px;"></div>
+                                    <div class="chart-label">周五</div>
+                                </div>
+                                <div class="chart-bar-group">
+                                    <div class="chart-value">62</div>
+                                    <div class="chart-bar" style="height: 180px;"></div>
+                                    <div class="chart-label">周六</div>
+                                </div>
+                                <div class="chart-bar-group">
+                                    <div class="chart-value">51</div>
+                                    <div class="chart-bar" style="height: 150px;"></div>
+                                    <div class="chart-label">周日</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">文章类型分布</h3>
+                        </div>
+                        <div class="donut-chart">
+                            <div class="donut-visual">
+                                <svg viewBox="0 0 100 100">
+                                    <circle cx="50" cy="50" r="40" fill="none" stroke="#1e293b" stroke-width="12"/>
+                                    <circle cx="50" cy="50" r="40" fill="none" stroke="#6366f1" stroke-width="12"
+                                            stroke-dasharray="100.53 150.8" stroke-dashoffset="0" transform="rotate(-90 50 50)"/>
+                                    <circle cx="50" cy="50" r="40" fill="none" stroke="#10b981" stroke-width="12"
+                                            stroke-dasharray="62.83 188.5" stroke-dashoffset="-100.53" transform="rotate(-90 50 50)"/>
+                                    <circle cx="50" cy="50" r="40" fill="none" stroke="#f59e0b" stroke-width="12"
+                                            stroke-dasharray="50.26 201.06" stroke-dashoffset="-163.36" transform="rotate(-90 50 50)"/>
+                                </svg>
+                                <div class="donut-center">
+                                    <div class="value">342</div>
+                                    <div class="label">篇文章</div>
+                                </div>
+                            </div>
+                            <div class="donut-legend">
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: #6366f1;"></div>
+                                    <span class="legend-text">营销推广</span>
+                                    <span class="legend-value">35%</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: #10b981;"></div>
+                                    <span class="legend-text">产品介绍</span>
+                                    <span class="legend-value">22%</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: #f59e0b;"></div>
+                                    <span class="legend-text">行业资讯</span>
+                                    <span class="legend-value">18%</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background: #ef4444;"></div>
+                                    <span class="legend-text">其他类型</span>
+                                    <span class="legend-value">25%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <h3 class="chart-title">快捷操作</h3>
+                    <div class="quick-actions-grid">
+                        <button class="quick-action-btn" onclick="switchPage('editor')">
+                            <div class="icon" style="background: rgba(99, 102, 241, 0.15);">✏️</div>
+                            <span class="label">AI写作</span>
+                        </button>
+                        <button class="quick-action-btn" onclick="switchPage('templates')">
+                            <div class="icon" style="background: rgba(16, 185, 129, 0.15);">📝</div>
+                            <span class="label">使用模板</span>
+                        </button>
+                        <button class="quick-action-btn">
+                            <div class="icon" style="background: rgba(245, 158, 11, 0.15);">📊</div>
+                            <span class="label">SEO分析</span>
+                        </button>
+                        <button class="quick-action-btn">
+                            <div class="icon" style="background: rgba(239, 68, 68, 0.15);">🚀</div>
+                            <span class="label">一键发布</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="recent-section">
+                    <div class="section-header">
+                        <h3 class="section-title">最近文章</h3>
+                        <button class="header-btn" onclick="switchPage('queue')">查看全部</button>
+                    </div>
+                    <div class="article-list">
+                        <div class="article-item">
+                            <div class="article-thumb">📱</div>
+                            <div class="article-info">
+                                <div class="article-title">2024年最值得关注的科技创新趋势深度分析</div>
+                                <div class="article-meta">阅读 12,847 · 发表于 2024-01-15</div>
+                            </div>
+                            <span class="article-status published">已发布</span>
+                        </div>
+                        <div class="article-item">
+                            <div class="article-thumb">💼</div>
+                            <div class="article-info">
+                                <div class="article-title">企业数字化转型的五大关键策略与实践指南</div>
+                                <div class="article-meta">阅读 8,392 · 发表于 2024-01-14</div>
+                            </div>
+                            <span class="article-status published">已发布</span>
+                        </div>
+                        <div class="article-item">
+                            <div class="article-thumb">🎨</div>
+                            <div class="article-info">
+                                <div class="article-title">如何利用AI工具提升内容创作效率的完整攻略</div>
+                                <div class="article-meta">阅读 5,128 · 发表于 2024-01-13</div>
+                            </div>
+                            <span class="article-status draft">草稿</span>
+                        </div>
+                        <div class="article-item">
+                            <div class="article-thumb">🌐</div>
+                            <div class="article-info">
+                                <div class="article-title">跨境电商新机遇：东南亚市场拓展全攻略</div>
+                                <div class="article-meta">预计 2024-01-20 发布</div>
+                            </div>
+                            <span class="article-status scheduled">待发布</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Editor -->
+            <section class="page-section" id="editor">
+                <div class="editor-container">
+                    <div class="editor-main">
+                        <div class="editor-toolbar">
+                            <button class="toolbar-btn" title="撤销">↩</button>
+                            <button class="toolbar-btn" title="重做">↪</button>
+                            <div class="toolbar-divider"></div>
+                            <button class="toolbar-btn" title="标题1">H1</button>
+                            <button class="toolbar-btn" title="标题2">H2</button>
+                            <button class="toolbar-btn" title="标题3">H3</button>
+                            <div class="toolbar-divider"></div>
+                            <button class="toolbar-btn" title="加粗">B</button>
+                            <button class="toolbar-btn" title="斜体">I</button>
+                            <button class="toolbar-btn" title="下划线">U</button>
+                            <div class="toolbar-divider"></div>
+                            <button class="toolbar-btn" title="有序列表">☰</button>
+                            <button class="toolbar-btn" title="无序列表">•</button>
+                            <button class="toolbar-btn" title="引用">❝</button>
+                            <div class="toolbar-divider"></div>
+                            <button class="toolbar-btn" title="链接">🔗</button>
+                            <button class="toolbar-btn" title="图片">🖼️</button>
+                            <button class="toolbar-btn" title="代码">⟨⟩</button>
+                        </div>
+                        <input type="text" class="editor-title-input" placeholder="输入文章标题..." id="editorTitle">
+                        <div class="editor-content" contenteditable="true" data-placeholder="开始写作，或点击下方AI生成按钮..." id="editorContent"></div>
+                    </div>
+
+                    <div class="editor-sidebar">
+                        <button class="ai-generate-btn" id="generateBtn">
+                            <span>✨</span>
+                            AI续写生成
+                        </button>
+
+                        <div class="editor-panel">
+                            <div class="panel-header">
+                                <span>📊</span>
+                                SEO评分
+                            </div>
+                            <div class="seo-score">
+                                <div class="seo-circle">
+                                    <div class="seo-circle-inner">87</div>
+                                </div>
+                                <div class="seo-details">
+                                    <h4>优秀</h4>
+                                    <p>关键词布局良好</p>
+                                </div>
+                            </div>
+                            <div class="seo-tips">
+                                <div class="seo-tip success">
+                                    <span class="icon">✓</span>
+                                    <span>标题包含关键词</span>
+                                </div>
+                                <div class="seo-tip success">
+                                    <span class="icon">✓</span>
+                                    <span>内容长度适中 (1,200字)</span>
+                                </div>
+                                <div class="seo-tip warning">
+                                    <span class="icon">!</span>
+                                    <span>建议添加更多图片</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="editor-panel">
+                            <div class="panel-header">
+                                <span>📌</span>
+                                文章设置
+                            </div>
+                            <div class="form-group">
+                                <label>分类</label>
+                                <select class="form-input form-select">
+                                    <option>科技数码</option>
+                                    <option>商业财经</option>
+                                    <option>教育培训</option>
+                                    <option>生活方式</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>标签</label>
+                                <input type="text" class="form-input" placeholder="输入标签，用逗号分隔">
+                            </div>
+                            <div class="form-group">
+                                <label>发布平台</label>
+                                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                    <label style="display: flex; align-items: center; gap: 4px; font-size: 13px;">
+                                        <input type="checkbox" checked> 微信公众号
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 4px; font-size: 13px;">
+                                        <input type="checkbox" checked> 知乎
+                                    </label>
+                                    <label style="display: flex; align-items: center; gap: 4px; font-size: 13px;">
+                                        <input type="checkbox"> 百家号
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="ai-generate-btn" style="background: var(--success); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);" id="publishBtn">
+                            <span>🚀</span>
+                            发布文章
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Templates -->
+            <section class="page-section" id="templates">
+                <div class="section-header">
+                    <h2 class="section-title">模板库</h2>
+                    <div style="display: flex; gap: 12px;">
+                        <input type="text" class="form-input" placeholder="搜索模板..." style="width: 200px;">
+                        <select class="form-input form-select" style="width: 140px;">
+                            <option>全部分类</option>
+                            <option>营销推广</option>
+                            <option>产品介绍</option>
+                            <option>知识科普</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="templates-grid">
+                    <div class="template-card">
+                        <div class="template-icon" style="background: rgba(99, 102, 241, 0.15);">📱</div>
+                        <div class="template-name">产品评测</div>
+                        <div class="template-desc">详细介绍产品功能、特点、使用体验，适合科技产品测评文章</div>
+                        <div class="template-meta">
+                            <span>📝 ~1500字</span>
+                            <span>⏱️ 5分钟</span>
+                        </div>
+                    </div>
+                    <div class="template-card">
+                        <div class="template-icon" style="background: rgba(16, 185, 129, 0.15);">💼</div>
+                        <div class="template-name">商业分析</div>
+                        <div class="template-desc">深度分析行业趋势、市场动态、企业战略等商业内容</div>
+                        <div class="template-meta">
+                            <span>📝 ~2000字</span>
+                            <span>⏱️ 8分钟</span>
+                        </div>
+                    </div>
+                    <div class="template-card">
+                        <div class="template-icon" style="background: rgba(245, 158, 11, 0.15);">🎓</div>
+                        <div class="template-name">知识科普</div>
+                        <div class="template-desc">将复杂知识用通俗易懂的语言解释，适合教育内容</div>
+                        <div class="template-meta">
+                            <span>📝 ~1200字</span>
+                            <span>⏱️ 4分钟</span>
+                        </div>
+                    </div>
+                    <div class="template-card">
+                        <div class="template-icon" style="background: rgba(239, 68, 68, 0.15);">🔥</div>
+                        <div class="template-name">热点追踪</div>
+                        <div class="template-desc">快速响应热点事件，进行多角度分析和解读</div>
+                        <div class="template-meta">
+                            <span>📝 ~1000字</span>
+                            <span>⏱️ 3分钟</span>
+                        </div>
+                    </div>
+                    <div class="template-card">
+                        <div class="template-icon" style="background: rgba(236, 72, 153, 0.15);">💡</div>
+                        <div class="template-name">解决方案</div>
+                        <div class="template-desc">针对问题提供系统性的解决方案和实施步骤</div>
+                        <div class="template-meta">
+                            <span>📝 ~1800字</span>
+                            <span>⏱️ 6分钟</span>
+                        </div>
+                    </div>
+                    <div class="template-card">
+                        <div class="template-icon" style="background: rgba(14, 165, 233, 0.15);">📣</div>
+                        <div class="template-name">营销软文</div>
+                        <div class="template-desc">软性植入产品或服务，自然引导用户关注和购买</div>
+                        <div class="template-meta">
+                            <span>📝 ~800字</span>
+                            <span>⏱️ 2分钟</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Queue -->
+            <section class="page-section" id="queue">
+                <div class="section-header">
+                    <h2 class="section-title">发布队列</h2>
+                    <button class="header-btn primary">+ 添加到队列</button>
+                </div>
+
+                <div class="queue-filters">
+                    <button class="filter-btn active">全部 (12)</button>
+                    <button class="filter-btn">待发布 (5)</button>
+                    <button class="filter-btn">已发布 (6)</button>
+                    <button class="filter-btn">失败 (1)</button>
+                </div>
+
+                <div class="queue-table">
+                    <div class="queue-header">
+                        <span>文章</span>
+                        <span>状态</span>
+                        <span>计划时间</span>
+                        <span>平台</span>
+                        <span>操作</span>
+                    </div>
+                    <div class="queue-row">
+                        <div class="queue-article">
+                            <div class="queue-thumb">🌐</div>
+                            <div class="queue-info">
+                                <h4>东南亚跨境电商新机遇分析</h4>
+                                <p>预计阅读量：高</p>
+                            </div>
+                        </div>
+                        <div class="queue-status">
+                            <span class="status-dot blue"></span>
+                            <span>排队中</span>
+                        </div>
+                        <div class="queue-date">今天 14:30</div>
+                        <div style="display: flex; gap: 4px;">
+                            <span style="padding: 2px 8px; background: rgba(16, 185, 129, 0.15); color: var(--success); border-radius: 4px; font-size: 11px;">知乎</span>
+                            <span style="padding: 2px 8px; background: rgba(245, 158, 11, 0.15); color: var(--warning); border-radius: 4px; font-size: 11px;">公众号</span>
+                        </div>
+                        <div class="queue-actions">
+                            <button class="queue-action-btn" title="编辑">✏️</button>
+                            <button class="queue-action-btn" title="立即发布">▶</button>
+                            <button class="queue-action-btn" title="删除">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="queue-row">
+                        <div class="queue-article">
+                            <div class="queue-thumb">🤖</div>
+                            <div class="queue-info">
+                                <h4>AI人工智能在教育领域的应用</h4>
+                                <p>预计阅读量：高</p>
+                            </div>
+                        </div>
+                        <div class="queue-status">
+                            <span class="status-dot green"></span>
+                            <span>发布中</span>
+                        </div>
+                        <div class="queue-date">今天 14:15</div>
+                        <div style="display: flex; gap: 4px;">
+                            <span style="padding: 2px 8px; background: rgba(16, 185, 129, 0.15); color: var(--success); border-radius: 4px; font-size: 11px;">知乎</span>
+                        </div>
+                        <div class="queue-actions">
+                            <button class="queue-action-btn" title="查看">👁️</button>
+                            <button class="queue-action-btn" title="删除">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="queue-row">
+                        <div class="queue-article">
+                            <div class="queue-thumb">💻</div>
+                            <div class="queue-info">
+                                <h4>2024年最值得学习的编程语言</h4>
+                                <p>预计阅读量：极高</p>
+                            </div>
+                        </div>
+                        <div class="queue-status">
+                            <span class="status-dot orange"></span>
+                            <span>待重试</span>
+                        </div>
+                        <div class="queue-date">今天 13:00</div>
+                        <div style="display: flex; gap: 4px;">
+                            <span style="padding: 2px 8px; background: rgba(14, 165, 233, 0.15); color: #0ea5e9; border-radius: 4px; font-size: 11px;">百家号</span>
+                        </div>
+                        <div class="queue-actions">
+                            <button class="queue-action-btn" title="重试">🔄</button>
+                            <button class="queue-action-btn" title="编辑">✏️</button>
+                        </div>
+                    </div>
+                    <div class="queue-row">
+                        <div class="queue-article">
+                            <div class="queue-thumb">🏢</div>
+                            <div class="queue-info">
+                                <h4>中小企业数字化转型实战指南</h4>
+                                <p>预计阅读量：中</p>
+                            </div>
+                        </div>
+                        <div class="queue-status">
+                            <span class="status-dot green"></span>
+                            <span>已完成</span>
+                        </div>
+                        <div class="queue-date">今天 10:30</div>
+                        <div style="display: flex; gap: 4px;">
+                            <span style="padding: 2px 8px; background: rgba(16, 185, 129, 0.15); color: var(--success); border-radius: 4px; font-size: 11px;">知乎</span>
+                            <span style="padding: 2px 8px; background: rgba(245, 158, 11, 0.15); color: var(--warning); border-radius: 4px; font-size: 11px;">公众号</span>
+                        </div>
+                        <div class="queue-actions">
+                            <button class="queue-action-btn" title="查看">👁️</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Team -->
+            <section class="page-section" id="team">
+                <div class="section-header">
+                    <h2 class="section-title">团队协作</h2>
+                    <button class="header-btn primary" id="inviteBtn">+ 邀请成员</button>
+                </div>
+
+                <div class="team-grid">
+                    <div class="team-card">
+                        <div class="team-avatar" style="background: linear-gradient(135deg, #f472b6, #c084fc);">林</div>
+                        <h3>林晓峰</h3>
+                        <p class="role">管理员</p>
+                        <div class="team-stats">
+                            <div class="team-stat">
+                                <div class="value">128</div>
+                                <div class="label">文章</div>
+                            </div>
+                            <div class="team-stat">
+                                <div class="value">8</div>
+                                <div class="label">项目</div>
+                            </div>
+                        </div>
+                        <div class="team-permission">
+                            <span class="permission-tag">写作</span>
+                            <span class="permission-tag">发布</span>
+                            <span class="permission-tag">管理</span>
+                        </div>
+                    </div>
+                    <div class="team-card">
+                        <div class="team-avatar" style="background: linear-gradient(135deg, #60a5fa, #3b82f6);">张</div>
+                        <h3>张雨萱</h3>
+                        <p class="role">内容编辑</p>
+                        <div class="team-stats">
+                            <div class="team-stat">
+                                <div class="value">86</div>
+                                <div class="label">文章</div>
+                            </div>
+                            <div class="team-stat">
+                                <div class="value">5</div>
+                                <div class="label">项目</div>
+                            </div>
+                        </div>
+                        <div class="team-permission">
+                            <span class="permission-tag">写作</span>
+                            <span class="permission-tag">编辑</span>
+                        </div>
+                    </div>
+                    <div class="team-card">
+                        <div class="team-avatar" style="background: linear-gradient(135deg, #34d399, #10b981);">王</div>
+                        <h3>王思远</h3>
+                        <p class="role">SEO专员</p>
+                        <div class="team-stats">
+                            <div class="team-stat">
+                                <div class="value">45</div>
+                                <div class="label">文章</div>
+                            </div>
+                            <div class="team-stat">
+                                <div class="value">3</div>
+                                <div class="label">项目</div>
+                            </div>
+                        </div>
+                        <div class="team-permission">
+                            <span class="permission-tag">写作</span>
+                            <span class="permission-tag">SEO</span>
+                        </div>
+                    </div>
+                    <div class="team-card">
+                        <div class="team-avatar" style="background: linear-gradient(135deg, #fbbf24, #f59e0b);">陈</div>
+                        <h3>陈雅婷</h3>
+                        <p class="role">内容审核</p>
+                        <div class="team-stats">
+                            <div class="team-stat">
+                                <div class="value">92</div>
+                                <div class="label">审核</div>
+                            </div>
+                            <div class="team-stat">
+                                <div class="value">6</div>
+                                <div class="label">项目</div>
+                            </div>
+                        </div>
+                        <div class="team-permission">
+                            <span class="permission-tag">审核</span>
+                            <span class="permission-tag">发布</span>
+                        </div>
+                    </div>
+                    <div class="team-card">
+                        <div class="team-avatar" style="background: linear-gradient(135deg, #f87171, #ef4444);">刘</div>
+                        <h3>刘子墨</h3>
+                        <p class="role">美术设计</p>
+                        <div class="team-stats">
+                            <div class="team-stat">
+                                <div class="value">56</div>
+                                <div class="label">配图</div>
+                            </div>
+                            <div class="team-stat">
+                                <div class="value">4</div>
+                                <div class="label">项目</div>
+                            </div>
+                        </div>
+                        <div class="team-permission">
+                            <span class="permission-tag">设计</span>
+                            <span class="permission-tag">配图</span>
+                        </div>
+                    </div>
+                    <div class="team-card">
+                        <div class="team-avatar" style="background: linear-gradient(135deg, #a78bfa, #8b5cf6);">周</div>
+                        <h3>周文杰</h3>
+                        <p class="role">数据分析师</p>
+                        <div class="team-stats">
+                            <div class="team-stat">
+                                <div class="value">12</div>
+                                <div class="label">报告</div>
+                            </div>
+                            <div class="team-stat">
+                                <div class="value">8</div>
+                                <div class="label">项目</div>
+                            </div>
+                        </div>
+                        <div class="team-permission">
+                            <span class="permission-tag">分析</span>
+                            <span class="permission-tag">报表</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analytics -->
+            <section class="page-section" id="analytics">
+                <div class="section-header">
+                    <h2 class="section-title">数据统计</h2>
+                    <select class="form-input form-select" style="width: 140px;">
+                        <option>近30天</option>
+                        <option>近90天</option>
+                        <option>近一年</option>
+                    </select>
+                </div>
+
+                <div class="stats-grid" style="margin-bottom: 24px;">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon blue">📄</div>
+                            <div class="stat-trend up">↑ 15%</div>
+                        </div>
+                        <div class="stat-value">486</div>
+                        <div class="stat-label">本月发布</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon green">👁️</div>
+                            <div class="stat-trend up">↑ 28%</div>
+                        </div>
+                        <div class="stat-value">23.4万</div>
+                        <div class="stat-label">总阅读</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon orange">💬</div>
+                            <div class="stat-trend up">↑ 12%</div>
+                        </div>
+                        <div class="stat-value">8,642</div>
+                        <div class="stat-label">总评论</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon purple">🔄</div>
+                            <div class="stat-trend down">↓ 3%</div>
+                        </div>
+                        <div class="stat-value">4.2%</div>
+                        <div class="stat-label">平均转化率</div>
+                    </div>
+                </div>
+
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h3>内容类型表现</h3>
+                        <div class="metric-list">
+                            <div class="metric-item">
+                                <span class="metric-label">科技数码</span>
+                                <div class="metric-bar">
+                                    <div class="metric-fill" style="width: 85%; background: var(--accent);"></div>
+                                </div>
+                                <span class="metric-value">85%</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">商业财经</span>
+                                <div class="metric-bar">
+                                    <div class="metric-fill" style="width: 72%; background: var(--success);"></div>
+                                </div>
+                                <span class="metric-value">72%</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">教育培训</span>
+                                <div class="metric-bar">
+                                    <div class="metric-fill" style="width: 68%; background: var(--warning);"></div>
+                                </div>
+                                <span class="metric-value">68%</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">生活方式</span>
+                                <div class="metric-bar">
+                                    <div class="metric-fill" style="width: 55%; background: #f472b6;"></div>
+                                </div>
+                                <span class="metric-value">55%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="analytics-card">
+                        <h3>平台表现</h3>
+                        <div class="metric-list">
+                            <div class="metric-item">
+                                <span class="metric-label">知乎</span>
+                                <div class="metric-bar">
+                                    <div class="metric-fill" style="width: 92%; background: #0084ff;"></div>
+                                </div>
+                                <span class="metric-value">92%</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">微信公众号</span>
+                                <div class="metric-bar">
+                                    <div class="metric-fill" style="width: 78%; background: var(--success);"></div>
+                                </div>
+                                <span class="metric-value">78%</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">百家号</span>
+                                <div class="metric-bar">
+                                    <div class="metric-fill" style="width: 65%; background: var(--warning);"></div>
+                                </div>
+                                <span class="metric-value">65%</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">今日头条</span>
+                                <div class="metric-bar">
+                                    <div class="metric-fill" style="width: 58%; background: #ef4444;"></div>
+                                </div>
+                                <span class="metric-value">58%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="analytics-card">
+                        <h3>阅读时段分布</h3>
+                        <div class="metric-list">
+                            <div class="metric-item">
+                                <span class="metric-label">早间 (6-9点)</span>
+                                <div class="metric-bar">
+                                    <div class="metric-fill" style="width: 45%; background: #fbbf24;"></div>
+                                </div>
+                                <span class="metric-value">45%</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">午间 (11-13点)</span>
+                                <div class="metric-bar">
+                                    <div class="metric-fill" style="width: 62%; background: var(--accent);"></div>
+                                </div>
+                                <span class="metric-value">62%</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">晚间 (18-21点)</span>
+                                <div class="metric-bar">
+                                    <div class="metric-fill" style="width: 88%; background: var(--success);"></div>
+                                </div>
+                                <span class="metric-value">88%</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">深夜 (22-24点)</span>
+                                <div class="metric-bar">
+                                    <div class="metric-fill" style="width: 35%; background: #a78bfa;"></div>
+                                </div>
+                                <span class="metric-value">35%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="analytics-card">
+                        <h3>用户互动</h3>
+                        <div class="metric-list">
+                            <div class="metric-item">
+                                <span class="metric-label">点赞率</span>
+                                <div class="metric-bar">
+                                    <div class="metric-fill" style="width: 76%; background: #f472b6;"></div>
+                                </div>
+                                <span class="metric-value">76%</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">评论率</span>
+                                <div class="metric-bar">
+                                    <div class="metric-fill" style="width: 42%; background: var(--accent);"></div>
+                                </div>
+                                <span class="metric-value">42%</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">转发率</span>
+                                <div class="metric-bar">
+                                    <div class="metric-fill" style="width: 28%; background: var(--warning);"></div>
+                                </div>
+                                <span class="metric-value">28%</span>
+                            </div>
+                            <div class="metric-item">
+                                <span class="metric-label">收藏率</span>
+                                <div class="metric-bar">
+                                    <div class="metric-fill" style="width: 54%; background: var(--success);"></div>
+                                </div>
+                                <span class="metric-value">54%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Subscription -->
+            <section class="page-section" id="subscription">
+                <div class="section-header" style="flex-direction: column; align-items: flex-start; gap: 8px;">
+                    <h2 class="section-title">订阅套餐</h2>
+                    <p style="color: var(--text-secondary); font-size: 14px;">选择适合您的套餐，解锁更多高级功能</p>
+                </div>
+
+                <div class="plans-grid">
+                    <div class="plan-card">
+                        <div class="plan-name">免费版</div>
+                        <div class="plan-desc">适合个人用户入门体验</div>
+                        <div class="plan-price">
+                            <span class="amount">¥0</span>
+                            <span class="unit">/永久</span>
+                        </div>
+                        <ul class="plan-features">
+                            <li><span class="icon">✓</span> 每月50次AI生成</li>
+                            <li><span class="icon">✓</span> 5个基础模板</li>
+                            <li><span class="icon">✓</span> 单平台发布</li>
+                            <li><span class="icon">✓</span> 基础SEO分析</li>
+                            <li><span class="icon">✓</span> 邮件支持</li>
+                        </ul>
+                        <button class="plan-btn secondary">当前方案</button>
+                    </div>
+
+                    <div class="plan-card featured">
+                        <div class="plan-name">专业版</div>
+                        <div class="plan-desc">适合内容创作者和小型团队</div>
+                        <div class="plan-price">
+                            <span class="amount">¥99</span>
+                            <span class="unit">/月</span>
+                        </div>
+                        <ul class="plan-features">
+                            <li><span class="icon">✓</span> 每月1000次AI生成</li>
+                            <li><span class="icon">✓</span> 全部模板库</li>
+                            <li><span class="icon">✓</span> 多平台发布</li>
+                            <li><span class="icon">✓</span> 高级SEO优化</li>
+                            <li><span class="icon">✓</span> 团队协作 (5人)</li>
+                            <li><span class="icon">✓</span> 优先客服支持</li>
+                        </ul>
+                        <button class="plan-btn primary">立即升级</button>
+                    </div>
+
+                    <div class="plan-card">
+                        <div class="plan-name">企业版</div>
+                        <div class="plan-desc">适合中大型企业内容团队</div>
+                        <div class="plan-price">
+                            <span class="amount">¥399</span>
+                            <span class="unit">/月</span>
+                        </div>
+                        <ul class="plan-features">
+                            <li><span class="icon">✓</span> 无限AI生成</li>
+                            <li><span class="icon">✓</span> API接口调用</li>
+                            <li><span class="icon">✓</span> 全平台一键发布</li>
+                            <li><span class="icon">✓</span> 定制SEO策略</li>
+                            <li><span class="icon">✓</span> 无限团队成员</li>
+                            <li><span class="icon">✓</span> 专属客户成功经理</li>
+                        </ul>
+                        <button class="plan-btn secondary">联系销售</button>
+                    </div>
+                </div>
+
+                <div class="usage-cards">
+                    <div class="usage-card">
+                        <div class="usage-header">
+                            <h4>AI生成次数</h4>
+                            <span class="current">742 / 1000</span>
+                        </div>
+                        <div class="usage-bar">
+                            <div class="usage-bar-fill" style="width: 74%; background: linear-gradient(90deg, var(--accent), var(--accent-light));"></div>
+                        </div>
+                        <div class="usage-footer">
+                            <span>本月剩余 258 次</span>
+                            <span style="color: var(--warning);">还剩 14 天</span>
+                        </div>
+                    </div>
+                    <div class="usage-card">
+                        <div class="usage-header">
+                            <h4>存储空间</h4>
+                            <span class="current">8.2 / 20 GB</span>
+                        </div>
+                        <div class="usage-bar">
+                            <div class="usage-bar-fill" style="width: 41%; background: linear-gradient(90deg, var(--success), #34d399);"></div>
+                        </div>
+                        <div class="usage-footer">
+                            <span>已用 8.2 GB</span>
+                            <span>剩余 11.8 GB</span>
+                        </div>
+                    </div>
+                    <div class="usage-card">
+                        <div class="usage-header">
+                            <h4>团队成员</h4>
+                            <span class="current">5 / 5 人</span>
+                        </div>
+                        <div class="usage-bar">
+                            <div class="usage-bar-fill" style="width: 100%; background: linear-gradient(90deg, var(--warning), #fbbf24);"></div>
+                        </div>
+                        <div class="usage-footer">
+                            <span>已用 5 人</span>
+                            <span style="color: var(--accent-light);">升级以添加更多</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings -->
+            <section class="page-section" id="settings">
+                <div class="section-header">
+                    <h2 class="section-title">设置中心</h2>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 250px 1fr; gap: 20px;">
+                    <div class="sidebar-nav" style="padding: 0; background: var(--bg-card); border-radius: 12px; padding: 12px;">
+                        <div class="nav-item active">👤 账户设置</div>
+                        <div class="nav-item">🔒 安全设置</div>
+                        <div class="nav-item">🔔 通知设置</div>
+                        <div class="nav-item">🔗 绑定设置</div>
+                        <div class="nav-item">💳 付款方式</div>
+                        <div class="nav-item">📱 API密钥</div>
+                    </div>
+
+                    <div style="background: var(--bg-card); border-radius: 12px; padding: 24px;">
+                        <h3 style="font-size: 16px; margin-bottom: 20px;">基本设置</h3>
+                        <div class="form-group">
+                            <label>显示名称</label>
+                            <input type="text" class="form-input" value="林晓峰">
+                        </div>
+                        <div class="form-group">
+                            <label>邮箱地址</label>
+                            <input type="email" class="form-input" value="linxiaofeng@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label>个人简介</label>
+                            <textarea class="form-input" rows="3" placeholder="介绍一下你自己...">内容创作者，专注科技数码领域写作，善于将复杂技术用通俗语言表达。</textarea>
+                        </div>
+                        <div style="display: flex; gap: 12px; margin-top: 24px;">
+                            <button class="btn btn-primary">保存设置</button>
+                            <button class="btn btn-secondary">取消</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modalTitle">邀请团队成员</h2>
+                <button class="modal-close" id="modalClose">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>邮箱地址</label>
+                    <input type="email" class="form-input" placeholder="输入成员邮箱">
+                </div>
+                <div class="form-group">
+                    <label>角色权限</label>
+                    <select class="form-input form-select">
+                        <option>内容编辑</option>
+                        <option>内容审核</option>
+                        <option>SEO专员</option>
+                        <option>团队管理员</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>邀请留言 (可选)</label>
+                    <textarea class="form-input" rows="3" placeholder="添加邀请留言..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="modalCancel">取消</button>
+                <button class="btn btn-primary" id="modalConfirm">发送邀请</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // Page Navigation
+        const navItems = document.querySelectorAll('.nav-item');
+        const pageSections = document.querySelectorAll('.page-section');
+        const pageTitle = document.querySelector('.page-title');
+
+        const pageNames = {
+            dashboard: '工作台',
+            editor: '写文章',
+            templates: '模板库',
+            queue: '发布队列',
+            team: '团队协作',
+            analytics: '数据统计',
+            subscription: '订阅套餐',
+            settings: '设置中心'
+        };
+
+        function switchPage(pageId) {
+            navItems.forEach(item => item.classList.remove('active'));
+            pageSections.forEach(section => section.classList.remove('active'));
+
+            const targetNav = document.querySelector(`[data-page="${pageId}"]`);
+            const targetPage = document.getElementById(pageId);
+
+            if (targetNav) targetNav.classList.add('active');
+            if (targetPage) targetPage.classList.add('active');
+
+            if (pageNames[pageId]) {
+                pageTitle.textContent = pageNames[pageId];
+            }
+
+            // Close mobile sidebar
+            document.getElementById('sidebar').classList.remove('open');
+        }
+
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const page = item.dataset.page;
+                if (page) switchPage(page);
+            });
+        });
+
+        // Mobile Menu Toggle
+        document.getElementById('menuToggle').addEventListener('click', () => {
+            document.getElementById('sidebar').classList.toggle('open');
+        });
+
+        // Modal
+        const modal = document.getElementById('modalOverlay');
+        const modalTitle = document.getElementById('modalTitle');
+
+        function showModal(title) {
+            modalTitle.textContent = title;
+            modal.classList.add('show');
+        }
+
+        function hideModal() {
+            modal.classList.remove('show');
+        }
+
+        document.getElementById('modalClose').addEventListener('click', hideModal);
+        document.getElementById('modalCancel').addEventListener('click', hideModal);
+        document.getElementById('modalOverlay').addEventListener('click', (e) => {
+            if (e.target === modal) hideModal();
+        });
+
+        document.getElementById('inviteBtn').addEventListener('click', () => showModal('邀请团队成员'));
+        document.getElementById('newArticleBtn').addEventListener('click', () => {
+            switchPage('editor');
+        });
+
+        // Toast Notifications
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+
+            const icons = {
+                success: '✓',
+                error: '✗',
+                warning: '!'
+            };
+
+            toast.innerHTML = `
+                <span class="icon">${icons[type]}</span>
+                <span class="toast-message">${message}</span>
+                <button class="toast-close" onclick="this.parentElement.remove()">×</button>
+            `;
+
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        // AI Generate Button
+        document.getElementById('generateBtn').addEventListener('click', function() {
+            const btn = this;
+            btn.innerHTML = '<span class="loading-spinner"></span> AI生成中...';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                btn.innerHTML = '<span>✨</span> AI续写生成';
+                btn.disabled = false;
+
+                const editorContent = document.getElementById('editorContent');
+                if (editorContent) {
+                    editorContent.innerHTML = `<p>人工智能技术的发展正在深刻改变内容创作的方式。根据最新数据显示，AI写作助手能够将内容生产效率提升高达300%，同时保持文章的专业性和可读性。</p><p>在选择AI写作工具时，建议重点关注以下几个方面：语言理解的准确性、生成内容的多样性、以及与企业品牌调性的契合度。优质的AI写作平台应该能够理解上下文语境，生成逻辑连贯、表达流畅的文本内容。</p>`;
+                }
+
+                showToast('文章内容已生成并填充到编辑器', 'success');
+            }, 2000);
+        });
+
+        // Publish Button
+        document.getElementById('publishBtn').addEventListener('click', function() {
+            const title = document.getElementById('editorTitle').value || '未命名文章';
+            showToast(`"${title}" 已加入发布队列`, 'success');
+        });
+
+        // Filter buttons in queue
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Template cards click
+        document.querySelectorAll('.template-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const templateName = card.querySelector('.template-name').textContent;
+                showToast(`已选择"${templateName}"模板，正在加载...`, 'success');
+                setTimeout(() => switchPage('editor'), 500);
+            });
+        });
+
+        // Team invite
+        document.getElementById('modalConfirm').addEventListener('click', () => {
+            hideModal();
+            showToast('邀请链接已发送到邮箱', 'success');
+        });
+
+        // Plan buttons
+        document.querySelectorAll('.plan-btn.primary').forEach(btn => {
+            btn.addEventListener('click', () => {
+                showToast('正在跳转到支付页面...', 'success');
+            });
+        });
+
+        // Quick action buttons
+        document.querySelectorAll('.queue-action-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const action = this.title;
+                if (action === '删除') {
+                    showToast('确定要删除此项吗？', 'warning');
+                } else if (action === '重试') {
+                    showToast('正在重试发布...', 'success');
+                }
+            });
+        });
+
+        // Editor toolbar buttons
+        document.querySelectorAll('.toolbar-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                if (this.classList.contains('active')) {
+                    this.classList.remove('active');
+                } else {
+                    document.querySelectorAll('.toolbar-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
+        });
+
+        // Animate progress bars on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const fills = entry.target.querySelectorAll('.metric-fill, .usage-bar-fill');
+                    fills.forEach(fill => {
+                        const width = fill.style.width;
+                        fill.style.width = '0';
+                        setTimeout(() => {
+                            fill.style.width = width;
+                        }, 100);
+                    });
+                }
+            });
+        });
+
+        document.querySelectorAll('.analytics-card, .usage-card').forEach(card => {
+            observer.observe(card);
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                if (e.key === 's') {
+                    e.preventDefault();
+                    showToast('设置已保存', 'success');
+                }
+            }
+        });
+
+        // Search box
+        const searchInput = document.querySelector('.search-box input');
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const query = searchInput.value;
+                showToast(`搜索: "${query}" - 找到 12 条结果`, 'success');
+            }
+        });
+    </script>
+</body>
+</html>

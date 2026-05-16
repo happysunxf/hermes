@@ -1,0 +1,1807 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>趣动芯 - 智慧体育场馆管理系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        * { font-family: 'Noto Sans SC', sans-serif; }
+        
+        :root {
+            --bg-primary: #0f1419;
+            --bg-secondary: #1a2332;
+            --bg-card: #1e2a3a;
+            --accent: #00d4aa;
+            --accent-hover: #00b894;
+            --text-primary: #ffffff;
+            --text-secondary: #8899a6;
+            --border: #2d3d50;
+        }
+        
+        body { background: var(--bg-primary); color: var(--text-primary); }
+        
+        .sidebar { 
+            background: var(--bg-secondary); 
+            border-right: 1px solid var(--border);
+            width: 260px;
+            transition: transform 0.3s ease;
+        }
+        
+        .nav-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: rgba(0, 212, 170, 0.1);
+            border-left-color: var(--accent);
+            color: var(--accent);
+        }
+        
+        .nav-item i { width: 24px; text-align: center; }
+        
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 20px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #00d4aa, #00b894);
+            color: #0f1419;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 212, 170, 0.4);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 10px 24px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        
+        .input-field {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: var(--text-primary);
+            width: 100%;
+            transition: border-color 0.2s;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(0,212,170,0.05) 100%);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, rgba(0,212,170,0.2), transparent);
+            border-radius: 0 12px 0 80px;
+        }
+        
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .badge-active { background: rgba(0,212,170,0.2); color: #00d4aa; }
+        .badge-warning { background: rgba(255,193,7,0.2); color: #ffc107; }
+        .badge-danger { background: rgba(220,53,69,0.2); color: #dc3545; }
+        .badge-info { background: rgba(23,162,184,0.2); color: #17a2b8; }
+        
+        .table-container {
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+        
+        table { width: 100%; border-collapse: collapse; }
+        
+        th {
+            background: var(--bg-secondary);
+            padding: 14px 16px;
+            text-align: left;
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+        
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+        
+        tr:hover { background: rgba(0,212,170,0.05); }
+        
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-overlay.active { display: flex; }
+        
+        .modal {
+            background: var(--bg-card);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 28px;
+            min-width: 480px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .tab-btn {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+        
+        .tab-btn:hover, .tab-btn.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+        
+        .progress-bar {
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #00d4aa, #00b894);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        .equipment-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .equipment-ok { background: #00d4aa; box-shadow: 0 0 8px #00d4aa; }
+        .equipment-warning { background: #ffc107; box-shadow: 0 0 8px #ffc107; }
+        .equipment-error { background: #dc3545; box-shadow: 0 0 8px #dc3545; }
+        
+        .calendar-day {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+        
+        .calendar-day:hover { background: rgba(0,212,170,0.2); }
+        .calendar-day.today { background: var(--accent); color: #0f1419; }
+        .calendar-day.has-event { 
+            position: relative;
+        }
+        .calendar-day.has-event::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #00d4aa;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            padding: 16px 24px;
+            display: none;
+            animation: slideIn 0.3s ease;
+            z-index: 2000;
+        }
+        
+        .toast.show { display: block; }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .live-indicator {
+            animation: pulse 1.5s infinite;
+        }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+        
+        .module { display: none; }
+        .module.active { display: block; }
+    </style>
+</head>
+<body class="min-h-screen flex">
+    <!-- Sidebar -->
+    <aside class="sidebar fixed h-full flex flex-col z-10">
+        <div class="p-5 border-b border-[#2d3d50]">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00d4aa] to-[#00b894] flex items-center justify-center">
+                    <i class="fas fa-dumbbell text-[#0f1419] text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg">趣动芯</h1>
+                    <p class="text-xs text-[#8899a6]">智慧场馆管理系统</p>
+                </div>
+            </div>
+        </div>
+        
+        <nav class="flex-1 py-4 overflow-y-auto">
+            <div class="nav-item active" data-module="dashboard">
+                <i class="fas fa-th-large"></i>
+                <span>数据概览</span>
+            </div>
+            <div class="nav-item" data-module="membership">
+                <i class="fas fa-id-card"></i>
+                <span>会员管理</span>
+            </div>
+            <div class="nav-item" data-module="schedule">
+                <i class="fas fa-calendar-alt"></i>
+                <span>课程安排</span>
+            </div>
+            <div class="nav-item" data-module="trainers">
+                <i class="fas fa-user-tie"></i>
+                <span>教练管理</span>
+            </div>
+            <div class="nav-item" data-module="equipment">
+                <i class="fas fa-tools"></i>
+                <span>设备维护</span>
+            </div>
+            <div class="nav-item" data-module="attendance">
+                <i class="fas fa-clipboard-check"></i>
+                <span>签到记录</span>
+            </div>
+            <div class="nav-item" data-module="lockers">
+                <i class="fas fa-lock"></i>
+                <span>更衣柜管理</span>
+            </div>
+            <div class="nav-item" data-module="booking">
+                <i class="fas fa-clock"></i>
+                <span>场地预约</span>
+            </div>
+            <div class="nav-item" data-module="payments">
+                <i class="fas fa-credit-card"></i>
+                <span>账单支付</span>
+            </div>
+            <div class="nav-item" data-module="analytics">
+                <i class="fas fa-chart-line"></i>
+                <span>运营分析</span>
+            </div>
+        </nav>
+        
+        <div class="p-4 border-t border-[#2d3d50]">
+            <div class="flex items-center gap-3">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=admin" class="w-10 h-10 rounded-full bg-[#2d3d50]">
+                <div>
+                    <p class="font-medium text-sm">王管理员</p>
+                    <p class="text-xs text-[#8899a6]">超级管理员</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 ml-[260px] min-h-screen">
+        <!-- Dashboard Module -->
+        <div id="module-dashboard" class="module active">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold">数据概览</h2>
+                        <p class="text-[#8899a6] mt-1">实时场馆运营状态</p>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm text-[#8899a6]">
+                        <span class="w-2 h-2 rounded-full bg-[#00d4aa] live-indicator"></span>
+                        <span>实时更新于 <span id="current-time"></span></span>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-4 gap-5 mb-6">
+                    <div class="stat-card">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-[#8899a6] text-sm">今日访客</span>
+                            <i class="fas fa-users text-[#00d4aa] text-xl"></i>
+                        </div>
+                        <p class="text-3xl font-bold">328</p>
+                        <p class="text-xs text-[#8899a6] mt-1">较昨日 <span class="text-[#00d4aa]">+12.5%</span></p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-[#8899a6] text-sm">活跃会员</span>
+                            <i class="fas fa-id-card text-[#17a2b8] text-xl"></i>
+                        </div>
+                        <p class="text-3xl font-bold">1,856</p>
+                        <p class="text-xs text-[#8899a6] mt-1">本月新增 <span class="text-[#00d4aa]">+86</span></p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-[#8899a6] text-sm">课程进行中</span>
+                            <i class="fas fa-calendar-check text-[#ffc107] text-xl"></i>
+                        </div>
+                        <p class="text-3xl font-bold">8</p>
+                        <p class="text-xs text-[#8899a6] mt-1">今日共 <span class="text-white">24</span> 节课</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-[#8899a6] text-sm">设备状态</span>
+                            <i class="fas fa-check-circle text-[#00d4aa] text-xl"></i>
+                        </div>
+                        <p class="text-3xl font-bold">98.2%</p>
+                        <p class="text-xs text-[#8899a6] mt-1">正常运行中</p>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="grid grid-cols-2 gap-5 mb-6">
+                    <div class="card">
+                        <h3 class="font-semibold mb-4">本周访客趋势</h3>
+                        <canvas id="visitorChart" height="200"></canvas>
+                    </div>
+                    <div class="card">
+                        <h3 class="font-semibold mb-4">会员增长走势</h3>
+                        <canvas id="memberChart" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="grid grid-cols-3 gap-5">
+                    <div class="card">
+                        <h3 class="font-semibold mb-4">使用中场地</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 bg-[#1a2332] rounded-lg">
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-basketball text-[#00d4aa]"></i>
+                                    <span>篮球场 A区</span>
+                                </div>
+                                <span class="badge badge-active">使用中</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-[#1a2332] rounded-lg">
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-table-tennis-paddle-ball text-[#17a2b8]"></i>
+                                    <span>乒乓球室 3号</span>
+                                </div>
+                                <span class="badge badge-active">使用中</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-[#1a2332] rounded-lg">
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-dumbbell text-[#ffc107]"></i>
+                                    <span>器械区</span>
+                                </div>
+                                <span class="badge badge-warning">拥挤</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3 class="font-semibold mb-4">即将开始的课程</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 bg-[#1a2332] rounded-lg">
+                                <div>
+                                    <p class="font-medium">瑜伽课 - 初级班</p>
+                                    <p class="text-xs text-[#8899a6]">14:00 · 2号操房</p>
+                                </div>
+                                <span class="text-sm text-[#00d4aa]">15分钟后</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-[#1a2332] rounded-lg">
+                                <div>
+                                    <p class="font-medium">游泳私教课</p>
+                                    <p class="text-xs text-[#8899a6]">14:30 · 泳池</p>
+                                </div>
+                                <span class="text-sm text-[#ffc107]">45分钟后</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3 class="font-semibold mb-4">设备告警</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 bg-[#1a2332] rounded-lg">
+                                <div class="flex items-center gap-3">
+                                    <span class="equipment-status equipment-warning"></span>
+                                    <span>跑步机 #5</span>
+                                </div>
+                                <span class="badge badge-warning">待维修</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-[#1a2332] rounded-lg">
+                                <div class="flex items-center gap-3">
+                                    <span class="equipment-status equipment-ok"></span>
+                                    <span>史密斯机</span>
+                                </div>
+                                <span class="badge badge-active">正常</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Membership Module -->
+        <div id="module-membership" class="module">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold">会员管理</h2>
+                        <p class="text-[#8899a6] mt-1">会员卡办理、续费、信息管理</p>
+                    </div>
+                    <button class="btn-primary" onclick="openModal('addMember')">
+                        <i class="fas fa-plus mr-2"></i>办理新会员
+                    </button>
+                </div>
+
+                <!-- Search & Filter -->
+                <div class="flex gap-4 mb-5">
+                    <div class="flex-1 relative">
+                        <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-[#8899a6]"></i>
+                        <input type="text" placeholder="搜索会员姓名、手机号或卡号..." class="input-field pl-12" id="memberSearch">
+                    </div>
+                    <select class="input-field w-48" id="memberTypeFilter">
+                        <option value="">全部卡类型</option>
+                        <option value="月卡">月卡</option>
+                        <option value="季卡">季卡</option>
+                        <option value="年卡">年卡</option>
+                        <option value="VIP">VIP</option>
+                    </select>
+                    <select class="input-field w-40" id="memberStatusFilter">
+                        <option value="">全部状态</option>
+                        <option value="active">正常</option>
+                        <option value="expired">已过期</option>
+                        <option value="suspended">已冻结</option>
+                    </select>
+                </div>
+
+                <!-- Member Cards Grid -->
+                <div class="grid grid-cols-3 gap-5 mb-6" id="memberCards">
+                </div>
+
+                <!-- Member Table -->
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>会员信息</th>
+                                <th>卡号</th>
+                                <th>卡类型</th>
+                                <th>剩余次数</th>
+                                <th>到期日期</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="memberTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Schedule Module -->
+        <div id="module-schedule" class="module">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold">课程安排</h2>
+                        <p class="text-[#8899a6] mt-1">团体课程、私教课程时间表</p>
+                    </div>
+                    <button class="btn-primary" onclick="openModal('addClass')">
+                        <i class="fas fa-plus mr-2"></i>添加课程
+                    </button>
+                </div>
+
+                <!-- Week Tabs -->
+                <div class="flex gap-2 mb-5 border-b border-[#2d3d50]">
+                    <button class="tab-btn" onclick="switchWeek(-1)"><i class="fas fa-chevron-left"></i></button>
+                    <button class="tab-btn active" id="weekLabel">本周</button>
+                    <button class="tab-btn" onclick="switchWeek(1)"><i class="fas fa-chevron-right"></i></button>
+                    <button class="tab-btn ml-4" onclick="goToToday()">今天</button>
+                </div>
+
+                <div class="grid grid-cols-7 gap-4">
+                    <div class="text-center mb-3">
+                        <div class="text-sm text-[#8899a6] mb-2">周一 5/13</div>
+                        <div class="space-y-2">
+                            <div class="p-3 bg-gradient-to-r from-[#00d4aa] to-[#00b894] rounded-lg text-[#0f1419]">
+                                <p class="font-semibold text-sm">09:00 瑜伽</p>
+                                <p class="text-xs opacity-80">李婷 · 12人</p>
+                            </div>
+                            <div class="p-3 bg-[#1a2332] rounded-lg border border-[#2d3d50]">
+                                <p class="font-semibold text-sm">14:00 普拉提</p>
+                                <p class="text-xs text-[#8899a6]">王芳 · 8人</p>
+                            </div>
+                            <div class="p-3 bg-[#1a2332] rounded-lg border border-[#2d3d50]">
+                                <p class="font-semibold text-sm">19:00 动感单车</p>
+                                <p class="text-xs text-[#8899a6]">张伟 · 满员</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center mb-3">
+                        <div class="text-sm text-[#8899a6] mb-2">周二 5/14</div>
+                        <div class="space-y-2">
+                            <div class="p-3 bg-[#1a2332] rounded-lg border border-[#2d3d50]">
+                                <p class="font-semibold text-sm">10:00 游泳课</p>
+                                <p class="text-xs text-[#8899a6]">刘洋 · 6人</p>
+                            </div>
+                            <div class="p-3 bg-[#1a2332] rounded-lg border border-[#2d3d50]">
+                                <p class="font-semibold text-sm">15:00 搏击操</p>
+                                <p class="text-xs text-[#8899a6]">赵磊 · 10人</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center mb-3">
+                        <div class="text-sm text-[#8899a6] mb-2">周三 5/15</div>
+                        <div class="space-y-2">
+                            <div class="p-3 bg-gradient-to-r from-[#17a2b8] to-[#138496] rounded-lg text-white">
+                                <p class="font-semibold text-sm">09:00 晨练瑜伽</p>
+                                <p class="text-xs opacity-80">李婷 · 15人</p>
+                            </div>
+                            <div class="p-3 bg-[#1a2332] rounded-lg border border-[#2d3d50]">
+                                <p class="font-semibold text-sm">16:00 拉丁舞</p>
+                                <p class="text-xs text-[#8899a6]">陈美 · 20人</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center mb-3">
+                        <div class="text-sm text-[#8899a6] mb-2">周四 5/16</div>
+                        <div class="space-y-2">
+                            <div class="p-3 bg-[#1a2332] rounded-lg border border-[#2d3d50]">
+                                <p class="font-semibold text-sm">11:00 核心训练</p>
+                                <p class="text-xs text-[#8899a6]">张强 · 8人</p>
+                            </div>
+                            <div class="p-3 bg-[#1a2332] rounded-lg border border-[#2d3d50]">
+                                <p class="font-semibold text-sm">20:00 尊巴</p>
+                                <p class="text-xs text-[#8899a6]">林小琳 · 18人</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center mb-3">
+                        <div class="text-sm text-[#8899a6] mb-2">周五 5/17</div>
+                        <div class="space-y-2">
+                            <div class="p-3 bg-[#1a2332] rounded-lg border border-[#2d3d50]">
+                                <p class="font-semibold text-sm">09:00 力量塑形</p>
+                                <p class="text-xs text-[#8899a6]">王磊 · 12人</p>
+                            </div>
+                            <div class="p-3 bg-gradient-to-r from-[#ffc107] to-[#e0a800] rounded-lg text-[#0f1419]">
+                                <p class="font-semibold text-sm">19:30 周末派对</p>
+                                <p class="text-xs opacity-80">全体 · 50人</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center mb-3">
+                        <div class="text-sm text-[#00d4aa] mb-2">周六 5/18</div>
+                        <div class="space-y-2">
+                            <div class="p-3 bg-gradient-to-r from-[#6f42c1] to-[#5a3f91] rounded-lg text-white">
+                                <p class="font-semibold text-sm">08:00 户外骑行</p>
+                                <p class="text-xs opacity-80">孙健 · 25人</p>
+                            </div>
+                            <div class="p-3 bg-[#1a2332] rounded-lg border border-[#2d3d50]">
+                                <p class="font-semibold text-sm">14:00 泰拳</p>
+                                <p class="text-xs text-[#8899a6]">阿龙 · 15人</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center mb-3">
+                        <div class="text-sm text-[#00d4aa] mb-2">周日 5/19</div>
+                        <div class="space-y-2">
+                            <div class="p-3 bg-[#1a2332] rounded-lg border border-[#2d3d50]">
+                                <p class="font-semibold text-sm">10:00 亲子瑜伽</p>
+                                <p class="text-xs text-[#8899a6]">李婷 · 10组</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trainers Module -->
+        <div id="module-trainers" class="module">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold">教练管理</h2>
+                        <p class="text-[#8899a6] mt-1">教练团队信息、课程分配、绩效统计</p>
+                    </div>
+                    <button class="btn-primary" onclick="openModal('addTrainer')">
+                        <i class="fas fa-plus mr-2"></i>添加教练
+                    </button>
+                </div>
+
+                <!-- Trainer Cards -->
+                <div class="grid grid-cols-4 gap-5 mb-6" id="trainerCards"></div>
+
+                <!-- Trainer Table -->
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>教练信息</th>
+                                <th>专长</th>
+                                <th>课程数量</th>
+                                <th>学员总数</th>
+                                <th>评分</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trainerTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Equipment Module -->
+        <div id="module-equipment" class="module">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold">设备维护</h2>
+                        <p class="text-[#8899a6] mt-1">器械管理、保养计划、维修记录</p>
+                    </div>
+                    <button class="btn-primary" onclick="openModal('addEquipment')">
+                        <i class="fas fa-plus mr-2"></i>添加设备
+                    </button>
+                </div>
+
+                <!-- Stats -->
+                <div class="grid grid-cols-4 gap-5 mb-6">
+                    <div class="stat-card">
+                        <p class="text-[#8899a6] text-sm mb-2">设备总数</p>
+                        <p class="text-2xl font-bold">156</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="text-[#8899a6] text-sm mb-2">正常运转</p>
+                        <p class="text-2xl font-bold text-[#00d4aa]">153</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="text-[#8899a6] text-sm mb-2">待保养</p>
+                        <p class="text-2xl font-bold text-[#ffc107]">2</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="text-[#8899a6] text-sm mb-2">维修中</p>
+                        <p class="text-2xl font-bold text-[#dc3545]">1</p>
+                    </div>
+                </div>
+
+                <!-- Equipment Categories -->
+                <div class="grid grid-cols-5 gap-3 mb-6" id="equipmentCategories"></div>
+
+                <!-- Equipment Table -->
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>设备名称</th>
+                                <th>型号</th>
+                                <th>位置</th>
+                                <th>购买日期</th>
+                                <th>状态</th>
+                                <th>下次保养</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="equipmentTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance Module -->
+        <div id="module-attendance" class="module">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold">签到记录</h2>
+                        <p class="text-[#8899a6] mt-1">会员入场、出场记录查询</p>
+                    </div>
+                    <div class="flex gap-3">
+                        <input type="date" class="input-field w-40" id="attendanceDate">
+                        <button class="btn-secondary" onclick="exportAttendance()">
+                            <i class="fas fa-download mr-2"></i>导出
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Today's Stats -->
+                <div class="grid grid-cols-4 gap-5 mb-6">
+                    <div class="stat-card">
+                        <p class="text-[#8899a6] text-sm mb-2">今日签到</p>
+                        <p class="text-2xl font-bold">328</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="text-[#8899a6] text-sm mb-2">当前在场</p>
+                        <p class="text-2xl font-bold text-[#00d4aa]">89</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="text-[#8899a6] text-sm mb-2">今日签退</p>
+                        <p class="text-2xl font-bold">239</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="text-[#8899a6] text-sm mb-2">平均时长</p>
+                        <p class="text-2xl font-bold">1.8h</p>
+                    </div>
+                </div>
+
+                <!-- Real-time Check-in -->
+                <div class="card mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-semibold">实时签到</h3>
+                        <span class="badge badge-active live-indicator">
+                            <i class="fas fa-circle text-xs mr-1"></i>直播中
+                        </span>
+                    </div>
+                    <div class="space-y-3" id="liveCheckins"></div>
+                </div>
+
+                <!-- Attendance Table -->
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>会员姓名</th>
+                                <th>会员卡号</th>
+                                <th>入场时间</th>
+                                <th>出场时间</th>
+                                <th>停留时长</th>
+                                <th>入场方式</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendanceTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lockers Module -->
+        <div id="module-lockers" class="module">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold">更衣柜管理</h2>
+                        <p class="text-[#8899a6] mt-1">更衣柜分配、使用状态查询</p>
+                    </div>
+                    <button class="btn-primary" onclick="openModal('assignLocker')">
+                        <i class="fas fa-plus mr-2"></i>分配衣柜
+                    </button>
+                </div>
+
+                <!-- Locker Stats -->
+                <div class="grid grid-cols-4 gap-5 mb-6">
+                    <div class="stat-card">
+                        <p class="text-[#8899a6] text-sm mb-2">衣柜总数</p>
+                        <p class="text-2xl font-bold">200</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="text-[#8899a6] text-sm mb-2">已使用</p>
+                        <p class="text-2xl font-bold text-[#00d4aa]">156</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="text-[#8899a6] text-sm mb-2">空闲</p>
+                        <p class="text-2xl font-bold">44</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="text-[#8899a6] text-sm mb-2">使用率</p>
+                        <p class="text-2xl font-bold">78%</p>
+                    </div>
+                </div>
+
+                <!-- Locker Grid -->
+                <div class="grid grid-cols-10 gap-3 mb-6" id="lockerGrid"></div>
+
+                <!-- Locker Table -->
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>柜号</th>
+                                <th>位置</th>
+                                <th>使用会员</th>
+                                <th>开始日期</th>
+                                <th>到期日期</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lockerTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Booking Module -->
+        <div id="module-booking" class="module">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold">场地预约</h2>
+                        <p class="text-[#8899a6] mt-1">篮球场、羽毛球场、乒乓球室等场地预约</p>
+                    </div>
+                    <button class="btn-primary" onclick="openModal('addBooking')">
+                        <i class="fas fa-plus mr-2"></i>新建预约
+                    </button>
+                </div>
+
+                <!-- Facility Tabs -->
+                <div class="flex gap-2 mb-5">
+                    <button class="tab-btn active" onclick="switchFacility('basketball')">篮球场</button>
+                    <button class="tab-btn" onclick="switchFacility('badminton')">羽毛球场</button>
+                    <button class="tab-btn" onclick="switchFacility('tennis')">网球场</button>
+                    <button class="tab-btn" onclick="switchFacility('pingpong')">乒乓球室</button>
+                    <button class="tab-btn" onclick="switchFacility('pool')">泳池</button>
+                </div>
+
+                <!-- Calendar Grid -->
+                <div class="card mb-6">
+                    <div class="grid grid-cols-9 gap-4 mb-4">
+                        <div></div>
+                        <div class="text-center text-sm text-[#8899a6]">08:00</div>
+                        <div class="text-center text-sm text-[#8899a6]">10:00</div>
+                        <div class="text-center text-sm text-[#8899a6]">12:00</div>
+                        <div class="text-center text-sm text-[#8899a6]">14:00</div>
+                        <div class="text-center text-sm text-[#8899a6]">16:00</div>
+                        <div class="text-center text-sm text-[#8899a6]">18:00</div>
+                        <div class="text-center text-sm text-[#8899a6]">20:00</div>
+                        <div class="text-center text-sm text-[#8899a6]">22:00</div>
+                    </div>
+                    <div id="bookingGrid"></div>
+                </div>
+
+                <!-- Booking Table -->
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>场地</th>
+                                <th>预约人</th>
+                                <th>联系电话</th>
+                                <th>日期</th>
+                                <th>时段</th>
+                                <th>费用</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookingTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payments Module -->
+        <div id="module-payments" class="module">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold">账单支付</h2>
+                        <p class="text-[#8899a6] mt-1">会员消费记录、收银台、流水统计</p>
+                    </div>
+                    <button class="btn-primary" onclick="openModal('quickPay')">
+                        <i class="fas fa-plus mr-2"></i>快速收款
+                    </button>
+                </div>
+
+                <!-- Payment Stats -->
+                <div class="grid grid-cols-4 gap-5 mb-6">
+                    <div class="stat-card">
+                        <p class="text-[#8899a6] text-sm mb-2">今日收入</p>
+                        <p class="text-2xl font-bold text-[#00d4aa]">¥8,560</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="text-[#8899a6] text-sm mb-2">本月收入</p>
+                        <p class="text-2xl font-bold">¥186,420</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="text-[#8899a6] text-sm mb-2">待结算</p>
+                        <p class="text-2xl font-bold text-[#ffc107]">¥3,280</p>
+                    </div>
+                    <div class="stat-card">
+                        <p class="text-[#8899a6] text-sm mb-2">今日订单</p>
+                        <p class="text-2xl font-bold">124</p>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="grid grid-cols-4 gap-4 mb-6">
+                    <button class="card flex items-center gap-3 hover:border-[#00d4aa] cursor-pointer transition" onclick="openModal('quickPay')">
+                        <div class="w-12 h-12 rounded-xl bg-[#00d4aa]/20 flex items-center justify-center">
+                            <i class="fas fa-cash-register text-[#00d4aa] text-xl"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-semibold">收银台</p>
+                            <p class="text-xs text-[#8899a6]">快速收款</p>
+                        </div>
+                    </button>
+                    <button class="card flex items-center gap-3 hover:border-[#00d4aa] cursor-pointer transition" onclick="openModal('refund')">
+                        <div class="w-12 h-12 rounded-xl bg-[#dc3545]/20 flex items-center justify-center">
+                            <i class="fas fa-undo text-[#dc3545] text-xl"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-semibold">退款</p>
+                            <p class="text-xs text-[#8899a6]">订单退款</p>
+                        </div>
+                    </button>
+                    <button class="card flex items-center gap-3 hover:border-[#00d4aa] cursor-pointer transition" onclick="openModal('invoice')">
+                        <div class="w-12 h-12 rounded-xl bg-[#17a2b8]/20 flex items-center justify-center">
+                            <i class="fas fa-file-invoice text-[#17a2b8] text-xl"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-semibold">开票</p>
+                            <p class="text-xs text-[#8899a6]">发票管理</p>
+                        </div>
+                    </button>
+                    <button class="card flex items-center gap-3 hover:border-[#00d4aa] cursor-pointer transition" onclick="exportPayments()">
+                        <div class="w-12 h-12 rounded-xl bg-[#ffc107]/20 flex items-center justify-center">
+                            <i class="fas fa-download text-[#ffc107] text-xl"></i>
+                        </div>
+                        <div class="text-left">
+                            <p class="font-semibold">导出</p>
+                            <p class="text-xs text-[#8899a6]">流水导出</p>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Payment Table -->
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>订单号</th>
+                                <th>会员姓名</th>
+                                <th>消费项目</th>
+                                <th>金额</th>
+                                <th>支付方式</th>
+                                <th>时间</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paymentTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Module -->
+        <div id="module-analytics" class="module">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold">运营分析</h2>
+                        <p class="text-[#8899a6] mt-1">场馆运营数据、会员分析、财务报表</p>
+                    </div>
+                    <button class="btn-secondary" onclick="exportReport()">
+                        <i class="fas fa-download mr-2"></i>导出报表
+                    </button>
+                </div>
+
+                <!-- Date Range -->
+                <div class="flex gap-4 mb-6">
+                    <button class="btn-primary text-sm">今日</button>
+                    <button class="btn-secondary text-sm">本周</button>
+                    <button class="btn-secondary text-sm">本月</button>
+                    <button class="btn-secondary text-sm">本季度</button>
+                    <input type="date" class="input-field w-40">
+                    <span class="self-center text-[#8899a6]">至</span>
+                    <input type="date" class="input-field w-40">
+                    <button class="btn-secondary text-sm">查询</button>
+                </div>
+
+                <!-- Charts -->
+                <div class="grid grid-cols-2 gap-5 mb-6">
+                    <div class="card">
+                        <h3 class="font-semibold mb-4">月度营收趋势</h3>
+                        <canvas id="revenueChart" height="200"></canvas>
+                    </div>
+                    <div class="card">
+                        <h3 class="font-semibold mb-4">客流量时段分布</h3>
+                        <canvas id="hourlyChart" height="200"></canvas>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-5 mb-6">
+                    <div class="card">
+                        <h3 class="font-semibold mb-4">会员年龄分布</h3>
+                        <canvas id="ageChart" height="200"></canvas>
+                    </div>
+                    <div class="card">
+                        <h3 class="font-semibold mb-4">课程类型占比</h3>
+                        <canvas id="courseChart" height="200"></canvas>
+                    </div>
+                </div>
+
+                <!-- Detailed Stats -->
+                <div class="grid grid-cols-4 gap-5">
+                    <div class="card">
+                        <p class="text-[#8899a6] text-sm mb-2">人均消费</p>
+                        <p class="text-2xl font-bold">¥156</p>
+                        <p class="text-xs text-[#00d4aa] mt-1">较上月 +8.2%</p>
+                    </div>
+                    <div class="card">
+                        <p class="text-[#8899a6] text-sm mb-2">会员转化率</p>
+                        <p class="text-2xl font-bold">34.5%</p>
+                        <p class="text-xs text-[#00d4aa] mt-1">较上月 +2.1%</p>
+                    </div>
+                    <div class="card">
+                        <p class="text-[#8899a6] text-sm mb-2">客单价</p>
+                        <p class="text-2xl font-bold">¥68</p>
+                        <p class="text-xs text-[#00d4aa] mt-1">较上月 +5.6%</p>
+                    </div>
+                    <div class="card">
+                        <p class="text-[#8899a6] text-sm mb-2">复购率</p>
+                        <p class="text-2xl font-bold">62.8%</p>
+                        <p class="text-xs text-[#00d4aa] mt-1">较上月 +1.3%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <div id="modal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold" id="modalTitle">添加</h3>
+                <button onclick="closeModal()" class="text-[#8899a6] hover:text-white text-xl">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast">
+        <div class="flex items-center gap-3">
+            <i class="fas fa-check-circle text-[#00d4aa] text-xl"></i>
+            <span id="toastMessage">操作成功</span>
+        </div>
+    </div>
+
+    <script>
+        // Data
+        const members = [
+            { id: 1, name: '张伟', phone: '138****2356', card: 'VIP20240001', type: 'VIP', remaining: '无限次', expire: '2025-12-31', status: 'active', avatar: 'zhang' },
+            { id: 2, name: '李娜', phone: '139****8821', card: 'VIP20240002', type: 'VIP', remaining: '无限次', expire: '2025-06-15', status: 'active', avatar: 'li' },
+            { id: 3, name: '王芳', phone: '136****5590', card: 'YC20240156', type: '月卡', remaining: '12次', expire: '2024-06-01', status: 'active', avatar: 'wang' },
+            { id: 4, name: '刘洋', phone: '137****3312', card: 'JC20240189', type: '季卡', remaining: '38次', expire: '2024-08-20', status: 'active', avatar: 'liu' },
+            { id: 5, name: '陈明', phone: '135****7789', card: 'NC20230678', type: '年卡', remaining: '156次', expire: '2024-05-10', status: 'expired', avatar: 'chen' },
+            { id: 6, name: '赵敏', phone: '158****4421', card: 'JC20240234', type: '季卡', remaining: '24次', expire: '2024-09-01', status: 'active', avatar: 'zhao' },
+            { id: 7, name: '孙强', phone: '159****8876', card: 'YC20240256', type: '月卡', remaining: '8次', expire: '2024-05-25', status: 'active', avatar: 'sun' },
+            { id: 8, name: '周婷', phone: '186****1123', card: 'VIP20230345', type: 'VIP', remaining: '无限次', expire: '2025-03-15', status: 'suspended', avatar: 'zhou' },
+        ];
+
+        const trainers = [
+            { id: 1, name: '李婷', avatar: 'lit', specialty: '瑜伽、普拉提', classes: 12, students: 86, rating: 4.9, status: 'active' },
+            { id: 2, name: '张伟', avatar: 'zhangw', specialty: '动感单车、搏击', classes: 15, students: 120, rating: 4.8, status: 'active' },
+            { id: 3, name: '王磊', avatar: 'wangl', specialty: '力量训练、塑形', classes: 10, students: 65, rating: 4.7, status: 'active' },
+            { id: 4, name: '刘洋', avatar: 'liuy', specialty: '游泳教学', classes: 8, students: 42, rating: 4.9, status: 'active' },
+            { id: 5, name: '陈美', avatar: 'chenm', specialty: '拉丁舞、尊巴', classes: 14, students: 95, rating: 4.8, status: 'active' },
+            { id: 6, name: '赵龙', avatar: 'zhaol', specialty: '泰拳、散打', classes: 9, students: 52, rating: 4.6, status: 'active' },
+            { id: 7, name: '孙悦', avatar: 'suny', specialty: '亲子瑜伽、舞蹈', classes: 11, students: 78, rating: 4.9, status: 'off' },
+            { id: 8, name: '阿杰', avatar: 'ajie', specialty: '拳击、MMA', classes: 7, students: 38, rating: 4.7, status: 'active' },
+        ];
+
+        const equipment = [
+            { id: 1, name: '跑步机 #1', model: 'Life Fitness T5', location: '器械区A区', buyDate: '2022-03-15', status: 'ok', nextMaintain: '2024-06-01' },
+            { id: 2, name: '跑步机 #5', model: 'Life Fitness T5', location: '器械区A区', buyDate: '2022-03-15', status: 'warning', nextMaintain: '2024-05-20' },
+            { id: 3, name: '史密斯机', model: 'Hammer Strength', location: '器械区B区', buyDate: '2021-08-20', status: 'ok', nextMaintain: '2024-07-15' },
+            { id: 4, name: '椭圆机 #3', model: 'Precor EFX', location: '器械区A区', buyDate: '2023-01-10', status: 'ok', nextMaintain: '2024-08-01' },
+            { id: 5, name: '划船机 #2', model: 'Concept2', location: '器械区C区', buyDate: '2022-11-05', status: 'error', nextMaintain: '维修中' },
+            { id: 6, name: '深蹲架 #1', model: 'Rogue SML-2', location: '器械区B区', buyDate: '2021-05-18', status: 'ok', nextMaintain: '2024-06-20' },
+        ];
+
+        const attendanceData = [
+            { name: '张伟', card: 'VIP20240001', in: '08:32', out: '10:15', duration: '1h43m', method: '刷脸入场' },
+            { name: '李娜', card: 'VIP20240002', in: '08:45', out: '—', duration: '在场', method: '刷脸入场' },
+            { name: '王芳', card: 'YC20240156', in: '09:10', out: '11:30', duration: '2h20m', method: '刷卡入场' },
+            { name: '刘洋', card: 'JC20240189', in: '09:25', out: '11:00', duration: '1h35m', method: '刷脸入场' },
+            { name: '陈明', card: 'NC20230678', in: '09:40', out: '12:10', duration: '2h30m', method: '刷卡入场' },
+            { name: '赵敏', card: 'JC20240234', in: '10:05', out: '—', duration: '在场', method: '刷脸入场' },
+            { name: '孙强', card: 'YC20240256', in: '10:20', out: '11:45', duration: '1h25m', method: '刷卡入场' },
+            { name: '周婷', card: 'VIP20230345', in: '10:35', out: '—', duration: '在场', method: '刷脸入场' },
+        ];
+
+        const lockers = [];
+        for (let i = 1; i <= 200; i++) {
+            const used = Math.random() > 0.22;
+            lockers.push({
+                id: i,
+                area: i <= 100 ? 'A区' : 'B区',
+                user: used ? members[Math.floor(Math.random() * members.length)].name : null,
+                start: used ? '2024-01-15' : null,
+                expire: used ? '2025-01-15' : null,
+                status: used ? 'used' : 'available'
+            });
+        }
+
+        const bookings = [
+            { id: 1, facility: '篮球场 A区', name: '张伟', phone: '138****2356', date: '2024-05-17', time: '09:00-11:00', fee: 200, status: 'confirmed' },
+            { id: 2, facility: '羽毛球场 2号', name: '李娜', phone: '139****8821', date: '2024-05-17', time: '14:00-16:00', fee: 80, status: 'confirmed' },
+            { id: 3, facility: '乒乓球场 3号', name: '王芳', phone: '136****5590', date: '2024-05-17', time: '16:00-18:00', fee: 60, status: 'pending' },
+            { id: 4, facility: '网球场 1号', name: '刘洋', phone: '137****3312', date: '2024-05-18', time: '08:00-10:00', fee: 150, status: 'confirmed' },
+            { id: 5, facility: '泳池', name: '陈明', phone: '135****7789', date: '2024-05-18', time: '10:00-12:00', fee: 300, status: 'confirmed' },
+        ];
+
+        const payments = [
+            { id: 'PAY20240517001', name: '张伟', item: 'VIP年卡续费', amount: 12800, method: '支付宝', time: '09:15:32', status: 'paid' },
+            { id: 'PAY20240517002', name: '李娜', item: '私教课 10节', amount: 5000, method: '微信', time: '09:32:18', status: 'paid' },
+            { id: 'PAY20240517003', name: '王芳', item: '月卡', amount: 399, method: '支付宝', time: '10:05:44', status: 'paid' },
+            { id: 'PAY20240517004', name: '刘洋', item: '场地预约-篮球', amount: 200, method: '微信', time: '10:28:56', status: 'paid' },
+            { id: 'PAY20240517005', name: '周婷', item: '更衣柜续费', amount: 100, method: '现金', time: '11:12:03', status: 'refunded' },
+            { id: 'PAY20240517006', name: '赵敏', item: '团体课-瑜伽', amount: 50, method: '微信', time: '11:35:27', status: 'paid' },
+        ];
+
+        // Navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                item.classList.add('active');
+                document.querySelectorAll('.module').forEach(m => m.classList.remove('active'));
+                document.getElementById('module-' + item.dataset.module).classList.add('active');
+                
+                if (item.dataset.module === 'analytics') {
+                    setTimeout(initAnalyticsCharts, 100);
+                }
+            });
+        });
+
+        // Time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('current-time').textContent = 
+                now.toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+        }
+        updateTime();
+        setInterval(updateTime, 60000);
+
+        // Toast
+        function showToast(message) {
+            document.getElementById('toastMessage').textContent = message;
+            document.getElementById('toast').classList.add('show');
+            setTimeout(() => document.getElementById('toast').classList.remove('show'), 3000);
+        }
+
+        // Modal
+        function openModal(type) {
+            const modal = document.getElementById('modal');
+            const title = document.getElementById('modalTitle');
+            const content = document.getElementById('modalContent');
+            
+            let html = '';
+            
+            switch(type) {
+                case 'addMember':
+                    title.textContent = '办理新会员';
+                    html = `
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm text-[#8899a6] mb-2">姓名</label>
+                                <input type="text" class="input-field" placeholder="请输入姓名">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-[#8899a6] mb-2">手机号</label>
+                                <input type="tel" class="input-field" placeholder="请输入手机号">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-[#8899a6] mb-2">身份证号</label>
+                                <input type="text" class="input-field" placeholder="请输入身份证号">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-[#8899a6] mb-2">卡类型</label>
+                                <select class="input-field">
+                                    <option>月卡 - ¥399</option>
+                                    <option>季卡 - ¥999</option>
+                                    <option>年卡 - ¥2999</option>
+                                    <option>VIP - ¥12800</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-[#8899a6] mb-2">紧急联系人</label>
+                                <input type="text" class="input-field" placeholder="请输入联系人">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-[#8899a6] mb-2">紧急联系电话</label>
+                                <input type="tel" class="input-field" placeholder="请输入电话">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-sm text-[#8899a6] mb-2">备注</label>
+                                <textarea class="input-field" rows="3" placeholder="可选"></textarea>
+                            </div>
+                        </div>
+                        <div class="flex justify-end gap-3 mt-6">
+                            <button class="btn-secondary" onclick="closeModal()">取消</button>
+                            <button class="btn-primary" onclick="closeModal(); showToast('会员办理成功')">确认办理</button>
+                        </div>
+                    `;
+                    break;
+                case 'quickPay':
+                    title.textContent = '快速收款';
+                    html = `
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm text-[#8899a6] mb-2">会员卡号/手机号</label>
+                                <div class="flex gap-2">
+                                    <input type="text" class="input-field flex-1" placeholder="扫描或输入卡号">
+                                    <button class="btn-secondary"><i class="fas fa-qrcode"></i></button>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-[#8899a6] mb-2">消费项目</label>
+                                <select class="input-field">
+                                    <option>请选择消费项目</option>
+                                    <option>入场门票 - ¥50</option>
+                                    <option>团体课程 - ¥80</option>
+                                    <option>私教课程 - ¥500</option>
+                                    <option>场地租赁 - ¥100</option>
+                                    <option>商品购买 - ¥0</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm text-[#8899a6] mb-2">金额</label>
+                                <input type="number" class="input-field" value="80">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-[#8899a6] mb-2">支付方式</label>
+                                <div class="grid grid-cols-4 gap-3">
+                                    <button class="p-4 border border-[#00d4aa] rounded-lg text-center bg-[#00d4aa]/10">
+                                        <i class="fab fa-alipay text-2xl text-[#00d4aa]"></i>
+                                        <p class="text-sm mt-1">支付宝</p>
+                                    </button>
+                                    <button class="p-4 border border-[#2d3d50] rounded-lg text-center hover:border-[#07c160]">
+                                        <i class="fab fa-weixin text-2xl text-[#07c160]"></i>
+                                        <p class="text-sm mt-1">微信</p>
+                                    </button>
+                                    <button class="p-4 border border-[#2d3d50] rounded-lg text-center hover:border-[#ffc107]">
+                                        <i class="fas fa-money-bill text-2xl text-[#ffc107]"></i>
+                                        <p class="text-sm mt-1">现金</p>
+                                    </button>
+                                    <button class="p-4 border border-[#2d3d50] rounded-lg text-center hover:border-[#17a2b8]">
+                                        <i class="fas fa-credit-card text-2xl text-[#17a2b8]"></i>
+                                        <p class="text-sm mt-1">银行卡</p>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex justify-end gap-3 mt-6">
+                            <button class="btn-secondary" onclick="closeModal()">取消</button>
+                            <button class="btn-primary" onclick="closeModal(); showToast('收款成功 ¥80')">确认收款</button>
+                        </div>
+                    `;
+                    break;
+                default:
+                    title.textContent = '提示';
+                    html = '<p class="text-center py-8 text-[#8899a6]">功能开发中...</p>';
+            }
+            
+            content.innerHTML = html;
+            modal.classList.add('active');
+        }
+
+        function closeModal(e) {
+            if (!e || e.target.id === 'modal') {
+                document.getElementById('modal').classList.remove('active');
+            }
+        }
+
+        // Render Functions
+        function renderMemberCards() {
+            const container = document.getElementById('memberCards');
+            container.innerHTML = members.slice(0, 6).map(m => `
+                <div class="card hover:border-[#00d4aa] transition cursor-pointer">
+                    <div class="flex items-center gap-4 mb-4">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${m.avatar}" class="w-14 h-14 rounded-full bg-[#2d3d50]">
+                        <div>
+                            <p class="font-semibold">${m.name}</p>
+                            <p class="text-sm text-[#8899a6]">${m.phone}</p>
+                        </div>
+                    </div>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-[#8899a6]">卡号</span>
+                            <span>${m.card}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-[#8899a6]">卡类型</span>
+                            <span class="badge badge-${m.type === 'VIP' ? 'warning' : 'active'}">${m.type}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-[#8899a6]">到期日</span>
+                            <span>${m.expire}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderMemberTable() {
+            const tbody = document.getElementById('memberTableBody');
+            tbody.innerHTML = members.map(m => `
+                <tr>
+                    <td>
+                        <div class="flex items-center gap-3">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${m.avatar}" class="w-8 h-8 rounded-full bg-[#2d3d50]">
+                            <div>
+                                <p class="font-medium">${m.name}</p>
+                                <p class="text-xs text-[#8899a6]">${m.phone}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${m.card}</td>
+                    <td><span class="badge badge-${m.type === 'VIP' ? 'warning' : m.type === '年卡' ? 'info' : 'active'}">${m.type}</span></td>
+                    <td>${m.remaining}</td>
+                    <td>${m.expire}</td>
+                    <td><span class="badge badge-${m.status === 'active' ? 'active' : m.status === 'expired' ? 'danger' : 'warning'}">${m.status === 'active' ? '正常' : m.status === 'expired' ? '已过期' : '已冻结'}</span></td>
+                    <td>
+                        <button class="text-[#00d4aa] hover:underline mr-3" onclick="openModal('addMember')">编辑</button>
+                        <button class="text-[#dc3545] hover:underline">删除</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderTrainerCards() {
+            const container = document.getElementById('trainerCards');
+            container.innerHTML = trainers.slice(0, 4).map(t => `
+                <div class="card text-center hover:border-[#00d4aa] transition">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${t.avatar}" class="w-20 h-20 rounded-full bg-[#2d3d50] mx-auto mb-3">
+                    <p class="font-semibold">${t.name}</p>
+                    <p class="text-sm text-[#00d4aa]">${t.specialty.split('、')[0]}</p>
+                    <div class="flex justify-center gap-4 mt-3 text-sm text-[#8899a6]">
+                        <span><i class="fas fa-calendar mr-1"></i>${t.classes}课</span>
+                        <span><i class="fas fa-users mr-1"></i>${t.students}人</span>
+                    </div>
+                    <div class="flex items-center justify-center gap-1 mt-2">
+                        <i class="fas fa-star text-[#ffc107]"></i>
+                        <span>${t.rating}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderTrainerTable() {
+            const tbody = document.getElementById('trainerTableBody');
+            tbody.innerHTML = trainers.map(t => `
+                <tr>
+                    <td>
+                        <div class="flex items-center gap-3">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${t.avatar}" class="w-8 h-8 rounded-full bg-[#2d3d50]">
+                            <span class="font-medium">${t.name}</span>
+                        </div>
+                    </td>
+                    <td>${t.specialty}</td>
+                    <td>${t.classes}</td>
+                    <td>${t.students}</td>
+                    <td>
+                        <div class="flex items-center gap-1">
+                            <i class="fas fa-star text-[#ffc107]"></i>
+                            <span>${t.rating}</span>
+                        </div>
+                    </td>
+                    <td><span class="badge badge-${t.status === 'active' ? 'active' : 'warning'}">${t.status === 'active' ? '在职' : '休息'}</span></td>
+                    <td>
+                        <button class="text-[#00d4aa] hover:underline mr-3">详情</button>
+                        <button class="text-[#00d4aa] hover:underline">排班</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderEquipmentCategories() {
+            const container = document.getElementById('equipmentCategories');
+            const cats = [
+                { name: '有氧器械', count: 45, icon: 'fa-heartbeat', color: '#00d4aa' },
+                { name: '力量器械', count: 38, icon: 'fa-dumbbell', color: '#17a2b8' },
+                { name: '自由重量', count: 52, icon: 'fa-weight', color: '#ffc107' },
+                { name: '团课设备', count: 28, icon: 'fa-users', color: '#6f42c1' },
+                { name: '其他设备', count: 12, icon: 'fa-box', color: '#8899a6' },
+            ];
+            container.innerHTML = cats.map(c => `
+                <div class="card text-center cursor-pointer hover:border-[#00d4aa] transition">
+                    <i class="fas ${c.icon} text-2xl mb-2" style="color: ${c.color}"></i>
+                    <p class="font-semibold">${c.count}</p>
+                    <p class="text-xs text-[#8899a6]">${c.name}</p>
+                </div>
+            `).join('');
+        }
+
+        function renderEquipmentTable() {
+            const tbody = document.getElementById('equipmentTableBody');
+            tbody.innerHTML = equipment.map(e => `
+                <tr>
+                    <td class="font-medium">${e.name}</td>
+                    <td>${e.model}</td>
+                    <td>${e.location}</td>
+                    <td>${e.buyDate}</td>
+                    <td><span class="equipment-status equipment-${e.status}"></span> ${e.status === 'ok' ? '正常' : e.status === 'warning' ? '待保养' : '维修中'}</td>
+                    <td>${e.nextMaintain}</td>
+                    <td>
+                        <button class="text-[#00d4aa] hover:underline mr-3">保养</button>
+                        <button class="text-[#dc3545] hover:underline">报修</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderAttendance() {
+            const tbody = document.getElementById('attendanceTableBody');
+            tbody.innerHTML = attendanceData.map(a => `
+                <tr>
+                    <td class="font-medium">${a.name}</td>
+                    <td>${a.card}</td>
+                    <td>${a.in}</td>
+                    <td class="${a.out === '—' ? 'text-[#00d4aa]' : ''}">${a.out}</td>
+                    <td>${a.duration}</td>
+                    <td>${a.method}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderLiveCheckins() {
+            const container = document.getElementById('liveCheckins');
+            const recent = attendanceData.slice(0, 4);
+            container.innerHTML = recent.map((a, i) => `
+                <div class="flex items-center justify-between p-3 bg-[#1a2332] rounded-lg" style="animation: slideIn 0.3s ease ${i * 0.1}s both">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-r from-[#00d4aa] to-[#00b894] flex items-center justify-center text-[#0f1419] font-bold">
+                            ${a.name[0]}
+                        </div>
+                        <div>
+                            <p class="font-medium">${a.name}</p>
+                            <p class="text-xs text-[#8899a6]">${a.card}</p>
+                        </div>
+                    </div>
+                    <span class="text-sm text-[#00d4aa]">${a.in} 入场</span>
+                </div>
+            `).join('');
+        }
+
+        function renderLockerGrid() {
+            const container = document.getElementById('lockerGrid');
+            container.innerHTML = lockers.slice(0, 50).map(l => `
+                <div class="aspect-square rounded-lg flex items-center justify-center text-xs font-medium cursor-pointer transition
+                    ${l.status === 'used' ? 'bg-[#00d4aa]/20 text-[#00d4aa] hover:bg-[#00d4aa]/30' : 'bg-[#1a2332] text-[#8899a6] hover:bg-[#2d3d50]'}"
+                    title="${l.user ? l.user + ' - ' + l.id + '号柜' : l.id + '号柜 - 空闲'}">
+                    ${l.id}
+                </div>
+            `).join('');
+        }
+
+        function renderLockerTable() {
+            const tbody = document.getElementById('lockerTableBody');
+            const usedLockers = lockers.filter(l => l.status === 'used').slice(0, 10);
+            tbody.innerHTML = usedLockers.map(l => `
+                <tr>
+                    <td class="font-medium">${l.id}号柜</td>
+                    <td>${l.area}</td>
+                    <td>${l.user}</td>
+                    <td>${l.start}</td>
+                    <td>${l.expire}</td>
+                    <td><span class="badge badge-active">使用中</span></td>
+                    <td>
+                        <button class="text-[#00d4aa] hover:underline mr-3">续期</button>
+                        <button class="text-[#dc3545] hover:underline">释放</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderBookingGrid() {
+            const container = document.getElementById('bookingGrid');
+            const courts = ['A区', 'B区', 'C区'];
+            let html = '';
+            courts.forEach((court, ci) => {
+                html += `
+                    <div class="grid grid-cols-9 gap-4 mb-4">
+                        <div class="flex items-center">
+                            <span class="font-medium">篮球场 ${court}</span>
+                        </div>
+                        ${[0,1,2,3,4,5,6,7].map(slot => {
+                            const booked = (ci === 0 && (slot === 1 || slot === 3 || slot === 5)) ||
+                                          (ci === 1 && (slot === 2 || slot === 4)) ||
+                                          (ci === 2 && slot === 6);
+                            return `
+                                <div class="h-16 rounded-lg flex items-center justify-center text-sm cursor-pointer transition
+                                    ${booked ? 'bg-[#dc3545]/20 text-[#dc3545] cursor-not-allowed' : 'bg-[#1a2332] hover:bg-[#00d4aa]/20 text-[#8899a6]'}"
+                                    ${!booked ? `onclick="openModal('addBooking')"` : ''}>
+                                    ${booked ? '已预约' : '可预约'}
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function renderBookingTable() {
+            const tbody = document.getElementById('bookingTableBody');
+            tbody.innerHTML = bookings.map(b => `
+                <tr>
+                    <td class="font-medium">${b.facility}</td>
+                    <td>${b.name}</td>
+                    <td>${b.phone}</td>
+                    <td>${b.date}</td>
+                    <td>${b.time}</td>
+                    <td>¥${b.fee}</td>
+                    <td><span class="badge badge-${b.status === 'confirmed' ? 'active' : 'warning'}">${b.status === 'confirmed' ? '已确认' : '待确认'}</span></td>
+                    <td>
+                        <button class="text-[#00d4aa] hover:underline mr-3">详情</button>
+                        <button class="text-[#dc3545] hover:underline">取消</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderPaymentTable() {
+            const tbody = document.getElementById('paymentTableBody');
+            tbody.innerHTML = payments.map(p => `
+                <tr>
+                    <td class="font-mono text-sm">${p.id}</td>
+                    <td>${p.name}</td>
+                    <td>${p.item}</td>
+                    <td class="text-[#00d4aa] font-semibold">¥${p.amount.toLocaleString()}</td>
+                    <td>${p.method}</td>
+                    <td>${p.time}</td>
+                    <td><span class="badge badge-${p.status === 'paid' ? 'active' : 'danger'}">${p.status === 'paid' ? '已支付' : '已退款'}</span></td>
+                    <td>
+                        <button class="text-[#00d4aa] hover:underline">详情</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Charts
+        function initDashboardCharts() {
+            // Visitor Chart
+            const visitorCtx = document.getElementById('visitorChart').getContext('2d');
+            new Chart(visitorCtx, {
+                type: 'line',
+                data: {
+                    labels: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+                    datasets: [{
+                        label: '访客数',
+                        data: [245, 312, 287, 356, 398, 425, 328],
+                        borderColor: '#00d4aa',
+                        backgroundColor: 'rgba(0, 212, 170, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#00d4aa',
+                        pointBorderColor: '#00d4aa',
+                        pointRadius: 4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { color: '#2d3d50' }, ticks: { color: '#8899a6' } },
+                        y: { grid: { color: '#2d3d50' }, ticks: { color: '#8899a6' } }
+                    }
+                }
+            });
+
+            // Member Chart
+            const memberCtx = document.getElementById('memberChart').getContext('2d');
+            new Chart(memberCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                    datasets: [{
+                        label: '会员数',
+                        data: [1520, 1580, 1650, 1720, 1790, 1856],
+                        backgroundColor: 'rgba(23, 162, 184, 0.8)',
+                        borderRadius: 6,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: '#8899a6' } },
+                        y: { grid: { color: '#2d3d50' }, ticks: { color: '#8899a6' } }
+                    }
+                }
+            });
+        }
+
+        function initAnalyticsCharts() {
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart');
+            if (revenueCtx && !revenueCtx.chart) {
+                revenueCtx.chart = new Chart(revenueCtx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                        datasets: [{
+                            label: '营收(万元)',
+                            data: [15.2, 16.8, 14.5, 18.2, 17.6, 18.6],
+                            borderColor: '#00d4aa',
+                            backgroundColor: 'rgba(0, 212, 170, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { grid: { color: '#2d3d50' }, ticks: { color: '#8899a6' } },
+                            y: { grid: { color: '#2d3d50' }, ticks: { color: '#8899a6' } }
+                        }
+                    }
+                });
+            }
+
+            // Hourly Chart
+            const hourlyCtx = document.getElementById('hourlyChart');
+            if (hourlyCtx && !hourlyCtx.chart) {
+                hourlyCtx.chart = new Chart(hourlyCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['08', '10', '12', '14', '16', '18', '20', '22'],
+                        datasets: [{
+                            label: '人次',
+                            data: [45, 78, 56, 89, 120, 156, 98, 42],
+                            backgroundColor: 'rgba(255, 193, 7, 0.8)',
+                            borderRadius: 4,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { grid: { display: false }, ticks: { color: '#8899a6' } },
+                            y: { grid: { color: '#2d3d50' }, ticks: { color: '#8899a6' } }
+                        }
+                    }
+                });
+            }
+
+            // Age Chart
+            const ageCtx = document.getElementById('ageChart');
+            if (ageCtx && !ageCtx.chart) {
+                ageCtx.chart = new Chart(ageCtx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['18-25岁', '26-35岁', '36-45岁', '45岁以上'],
+                        datasets: [{
+                            data: [28, 42, 22, 8],
+                            backgroundColor: ['#00d4aa', '#17a2b8', '#ffc107', '#6f42c1'],
+                            borderWidth: 0,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'right', labels: { color: '#8899a6', padding: 20 } }
+                        }
+                    }
+                });
+            }
+
+            // Course Chart
+            const courseCtx = document.getElementById('courseChart');
+            if (courseCtx && !courseCtx.chart) {
+                courseCtx.chart = new Chart(courseCtx.getContext('2d'), {
+                    type: 'pie',
+                    data: {
+                        labels: ['瑜伽', '健身', '游泳', '舞蹈', '其他'],
+                        datasets: [{
+                            data: [32, 28, 18, 14, 8],
+                            backgroundColor: ['#00d4aa', '#17a2b8', '#ffc107', '#6f42c1', '#8899a6'],
+                            borderWidth: 0,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'right', labels: { color: '#8899a6', padding: 20 } }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Export functions
+        function exportAttendance() { showToast('签到记录导出中...'); }
+        function exportPayments() { showToast('账单流水导出中...'); }
+        function exportReport() { showToast('报表生成中...'); }
+
+        // Init
+        function init() {
+            renderMemberCards();
+            renderMemberTable();
+            renderTrainerCards();
+            renderTrainerTable();
+            renderEquipmentCategories();
+            renderEquipmentTable();
+            renderAttendance();
+            renderLiveCheckins();
+            renderLockerGrid();
+            renderLockerTable();
+            renderBookingGrid();
+            renderBookingTable();
+            renderPaymentTable();
+            initDashboardCharts();
+        }
+
+        init();
+    </script>
+</body>
+</html>

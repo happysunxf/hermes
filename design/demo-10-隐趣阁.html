@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>隐趣阁 - 棋牌茶馆管理系统</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<style>
+:root {
+  --bg-dark: #0d1117;
+  --bg-card: #161b22;
+  --bg-sidebar: #0d1117;
+  --bg-hover: #21262d;
+  --border-color: #30363d;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --accent: #c9a962;
+  --accent-hover: #dbbf78;
+  --success: #3fb950;
+  --warning: #d29922;
+  --danger: #f85149;
+  --info: #58a6ff;
+}
+* { box-sizing: border-box; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  margin: 0;
+  min-height: 100vh;
+}
+.sidebar {
+  width: 240px;
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border-color);
+  position: fixed;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 100;
+  transition: transform 0.3s;
+}
+.sidebar .logo {
+  padding: 20px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sidebar .logo i { font-size: 28px; color: var(--accent); }
+.sidebar .logo span { font-size: 20px; font-weight: 600; color: var(--accent); }
+.sidebar-nav { padding: 12px 0; }
+.nav-item {
+  padding: 12px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+}
+.nav-item:hover, .nav-item.active {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+.nav-item.active { border-left-color: var(--accent); color: var(--accent); }
+.nav-item i { font-size: 18px; width: 24px; }
+.main-content {
+  margin-left: 240px;
+  padding: 24px;
+  min-height: 100vh;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+.header h1 { font-size: 24px; margin: 0; font-weight: 600; }
+.header-actions { display: flex; gap: 12px; align-items: center; }
+.breadcrumb { font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; }
+.stat-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.stat-card .icon {
+  width: 48px; height: 48px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+.stat-card .icon.yellow { background: rgba(201,169,98,0.15); color: var(--accent); }
+.stat-card .icon.green { background: rgba(63,185,80,0.15); color: var(--success); }
+.stat-card .icon.blue { background: rgba(88,166,255,0.15); color: var(--info); }
+.stat-card .icon.red { background: rgba(248,81,73,0.15); color: var(--danger); }
+.stat-card .info h3 { font-size: 24px; margin: 0 0 4px; }
+.stat-card .info p { margin: 0; font-size: 13px; color: var(--text-secondary); }
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+.card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.card-header h2 { font-size: 16px; margin: 0; font-weight: 600; }
+.btn {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-primary { background: var(--accent); color: #000; }
+.btn-primary:hover { background: var(--accent-hover); }
+.btn-secondary { background: var(--bg-hover); color: var(--text-primary); border: 1px solid var(--border-color); }
+.btn-secondary:hover { background: var(--border-color); }
+.btn-danger { background: rgba(248,81,73,0.15); color: var(--danger); }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+.card-body { padding: 20px; }
+.table-wrapper { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border-color); }
+th { font-weight: 600; font-size: 13px; color: var(--text-secondary); background: var(--bg-dark); }
+tr:hover { background: var(--bg-hover); }
+.badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.badge-gold { background: rgba(201,169,98,0.2); color: var(--accent); }
+.badge-green { background: rgba(63,185,80,0.2); color: var(--success); }
+.badge-blue { background: rgba(88,166,255,0.2); color: var(--info); }
+.badge-red { background: rgba(248,81,73,0.2); color: var(--danger); }
+.badge-yellow { background: rgba(210,153,34,0.2); color: var(--warning); }
+.tab-nav { display: flex; gap: 4px; border-bottom: 1px solid var(--border-color); margin-bottom: 20px; }
+.tab-btn {
+  padding: 10px 20px;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+.tab-btn:hover { color: var(--text-primary); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.form-group { margin-bottom: 16px; }
+.form-label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; }
+.form-control {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+.form-control:focus { outline: none; border-color: var(--accent); }
+select.form-control { cursor: pointer; }
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s;
+}
+.modal-overlay.show { opacity: 1; visibility: visible; }
+.modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  width: 500px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  transform: scale(0.9);
+  transition: transform 0.3s;
+}
+.modal-overlay.show .modal { transform: scale(1); }
+.modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-header h3 { margin: 0; font-size: 16px; }
+.modal-close { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 20px; }
+.modal-close:hover { color: var(--text-primary); }
+.modal-body { padding: 20px; }
+.modal-footer { padding: 16px 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: flex-end; gap: 10px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.progress-bar { height: 8px; background: var(--bg-dark); border-radius: 4px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
+.progress-fill.yellow { background: var(--accent); }
+.progress-fill.green { background: var(--success); }
+.progress-fill.blue { background: var(--info); }
+.progress-fill.red { background: var(--danger); }
+.tag { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; background: var(--bg-hover); border-radius: 4px; font-size: 12px; margin: 2px; }
+.tag i { cursor: pointer; }
+.search-box { position: relative; }
+.search-box i { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); }
+.search-box input { padding-left: 38px; }
+.filters { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
+.filters select, .filters input { margin: 0; }
+.calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.calendar-header { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 8px; }
+.calendar-header span { text-align: center; font-size: 12px; color: var(--text-secondary); padding: 8px; }
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+.calendar-day:hover { background: var(--bg-hover); }
+.calendar-day.today { border-color: var(--accent); color: var(--accent); }
+.calendar-day.selected { background: var(--accent); color: #000; }
+.calendar-day.disabled { color: var(--text-secondary); opacity: 0.4; cursor: not-allowed; }
+.schedule-grid { display: grid; grid-template-columns: 60px repeat(7, 1fr); gap: 2px; }
+.schedule-row { display: contents; }
+.schedule-cell { padding: 8px 4px; text-align: center; font-size: 12px; border: 1px solid var(--border-color); min-height: 50px; display: flex; align-items: center; justify-content: center; }
+.schedule-cell.header { background: var(--bg-dark); font-weight: 600; color: var(--text-secondary); }
+.schedule-cell .emp-name { font-size: 11px; color: var(--text-secondary); }
+.schedule-cell .shift-type { font-size: 10px; padding: 2px 4px; border-radius: 3px; margin-top: 2px; }
+.schedule-cell .shift-type.morning { background: rgba(210,153,34,0.2); color: var(--warning); }
+.schedule-cell .shift-type.afternoon { background: rgba(88,166,255,0.2); color: var(--info); }
+.schedule-cell .shift-type.night { background: rgba(139,148,158,0.2); color: var(--text-secondary); }
+.chart-container { height: 300px; display: flex; align-items: flex-end; gap: 16px; padding: 20px 0; }
+.chart-bar { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.chart-bar .bar { width: 100%; max-width: 60px; border-radius: 6px 6px 0 0; transition: height 0.5s; }
+.chart-bar span { font-size: 12px; color: var(--text-secondary); }
+.equipment-status { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+.equipment-item {
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.equipment-item i { font-size: 24px; }
+.equipment-item .info h4 { margin: 0 0 4px; font-size: 14px; }
+.equipment-item .info p { margin: 0; font-size: 12px; color: var(--text-secondary); }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.fade-in { animation: fadeIn 0.3s ease forwards; }
+.text-accent { color: var(--accent); }
+.text-success { color: var(--success); }
+.text-danger { color: var(--danger); }
+.text-warning { color: var(--warning); }
+.text-info { color: var(--info); }
+.text-muted { color: var(--text-secondary); }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+  <div class="logo">
+    <i class="bi bi-dice-6-fill"></i>
+    <span>隐趣阁</span>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-item active" data-page="dashboard"><i class="bi bi-grid-1x2"></i>数据概览</div>
+    <div class="nav-item" data-page="rooms"><i class="bi bi-door-open"></i>房间预订</div>
+    <div class="nav-item" data-page="members"><i class="bi bi-credit-card"></i>会员管理</div>
+    <div class="nav-item" data-page="tables"><i class="bi bi-layout-sidebar-inset"></i>桌台管理</div>
+    <div class="nav-item" data-page="scoring"><i class="bi bi-calculator"></i>比赛计分</div>
+    <div class="nav-item" data-page="consumption"><i class="bi bi-receipt"></i>消费记录</div>
+    <div class="nav-item" data-page="employees"><i class="bi bi-people"></i>员工排班</div>
+    <div class="nav-item" data-page="revenue"><i class="bi bi-graph-up"></i>营收报表</div>
+    <div class="nav-item" data-page="equipment"><i class="bi bi-box"></i>设备管理</div>
+    <div class="nav-item" data-page="loyalty"><i class="bi bi-gift"></i>积分商城</div>
+  </nav>
+</aside>
+
+<!-- Main Content -->
+<main class="main-content" id="mainContent">
+  <!-- Dashboard Page -->
+  <section id="page-dashboard" class="page-section active">
+    <div class="header">
+      <div>
+        <div class="breadcrumb">首页 / 数据概览</div>
+        <h1>数据概览</h1>
+      </div>
+      <div class="header-actions">
+        <span class="text-muted">今日营业</span>
+        <span class="text-accent" style="font-size:18px;font-weight:600;">¥8,524</span>
+      </div>
+    </div>
+    <div class="stat-cards">
+      <div class="stat-card">
+        <div class="icon yellow"><i class="bi bi-people-fill"></i></div>
+        <div class="info">
+          <h3>128</h3>
+          <p>今日客流</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="icon green"><i class="bi bi-door-open-fill"></i></div>
+        <div class="info">
+          <h3>12/16</h3>
+          <p>房间占用</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="icon blue"><i class="bi bi-credit-card-fill"></i></div>
+        <div class="info">
+          <h3>3,420</h3>
+          <p>会员储值</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="icon red"><i class="bi bi-trophy-fill"></i></div>
+        <div class="info">
+          <h3>45</h3>
+          <p>活跃会员</p>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="gap:20px;">
+      <div class="card" style="flex:1;min-width:300px;">
+        <div class="card-header"><h2>本周营收趋势</h2></div>
+        <div class="card-body">
+          <div class="chart-container" id="revenueChart"></div>
+        </div>
+      </div>
+      <div class="card" style="flex:1;min-width:300px;">
+        <div class="card-header"><h2>房间状态</h2></div>
+        <div class="card-body">
+          <div id="roomStatusList"></div>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="gap:20px;">
+      <div class="card" style="flex:1;">
+        <div class="card-header"><h2>最近消费</h2><button class="btn btn-sm btn-secondary" onclick="switchPage('consumption')">查看全部</button></div>
+        <div class="card-body">
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>会员</th><th>房间</th><th>消费</th><th>时间</th></tr></thead>
+              <tbody id="recentConsumptions"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="flex:1;">
+        <div class="card-header"><h2>待办事项</h2></div>
+        <div class="card-body" id="todoList">
+          <div class="tag"><i class="bi bi-exclamation-circle text-warning"></i> 3号桌麻将牌损坏，需采购</div>
+          <div class="tag"><i class="bi bi-calendar-event text-info"></i> 明日会员王建国预约包间</div>
+          <div class="tag"><i class="bi bi-credit-card text-danger"></i> 李小红会员卡即将到期</div>
+          <div class="tag"><i class="bi bi-tools text-warning"></i> 空调滤网需清洗</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Room Booking Page -->
+  <section id="page-rooms" class="page-section">
+    <div class="header">
+      <div>
+        <div class="breadcrumb">首页 / 房间预订</div>
+        <h1>房间预订</h1>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary" onclick="openModal('roomModal')"><i class="bi bi-plus"></i>新建预订</button>
+      </div>
+    </div>
+    <div class="filters">
+      <select class="form-control" style="width:auto;" id="roomFilter" onchange="filterRooms()">
+        <option value="all">全部房间</option>
+        <option value="available">可预订</option>
+        <option value="occupied">使用中</option>
+        <option value="maintenance">维护中</option>
+      </select>
+      <div class="search-box">
+        <i class="bi bi-search"></i>
+        <input type="text" class="form-control" placeholder="搜索预订或会员..." id="roomSearch">
+      </div>
+    </div>
+    <div class="row" style="gap:16px;" id="roomCards"></div>
+  </section>
+
+  <!-- Members Page -->
+  <section id="page-members" class="page-section">
+    <div class="header">
+      <div>
+        <div class="breadcrumb">首页 / 会员管理</div>
+        <h1>会员管理</h1>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary" onclick="openModal('memberModal')"><i class="bi bi-plus"></i>添加会员</button>
+      </div>
+    </div>
+    <div class="filters">
+      <select class="form-control" style="width:auto;" id="memberLevelFilter" onchange="filterMembers()">
+        <option value="all">全部等级</option>
+        <option value="gold">黄金会员</option>
+        <option value="silver">白银会员</option>
+        <option value="bronze">青铜会员</option>
+      </select>
+      <div class="search-box">
+        <i class="bi bi-search"></i>
+        <input type="text" class="form-control" placeholder="搜索姓名或手机号..." id="memberSearch">
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th>会员</th><th>手机号</th><th>等级</th><th>余额</th><th>积分</th><th>累计消费</th><th>操作</th></tr></thead>
+            <tbody id="memberTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Table Management Page -->
+  <section id="page-tables" class="page-section">
+    <div class="header">
+      <div>
+        <div class="breadcrumb">首页 / 桌台管理</div>
+        <h1>桌台管理</h1>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary" onclick="openModal('tableModal')"><i class="bi bi-plus"></i>添加桌台</button>
+      </div>
+    </div>
+    <div class="equipment-status" id="tableGrid"></div>
+  </section>
+
+  <!-- Game Scoring Page -->
+  <section id="page-scoring" class="page-section">
+    <div class="header">
+      <div>
+        <div class="breadcrumb">首页 / 比赛计分</div>
+        <h1>比赛计分</h1>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary" onclick="openModal('scoreModal')"><i class="bi bi-plus"></i>新建比赛</button>
+      </div>
+    </div>
+    <div class="row" style="gap:20px;">
+      <div class="card" style="flex:2;">
+        <div class="card-header"><h2>当前比赛</h2></div>
+        <div class="card-body">
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>桌号</th><th>玩家</th><th>初始分</th><th>当前分</th><th>胡牌次数</th><th>自摸次数</th></tr></thead>
+              <tbody id="scoreTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="flex:1;">
+        <div class="card-header"><h2>快速操作</h2></div>
+        <div class="card-body">
+          <div class="form-group">
+            <label class="form-label">选择桌台</label>
+            <select class="form-control" id="scoreTableSelect">
+              <option value="1">1号桌</option>
+              <option value="2">2号桌</option>
+              <option value="3">3号桌</option>
+              <option value="4">4号桌</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">玩家</label>
+            <select class="form-control" id="scorePlayerSelect">
+              <option value="张伟">张伟</option>
+              <option value="李娜">李娜</option>
+              <option value="王芳">王芳</option>
+              <option value="赵强">赵强</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">操作类型</label>
+            <select class="form-control" id="scoreActionSelect">
+              <option value="hu">胡牌 (+番)</option>
+              <option value="zimo">自摸 (+番)</option>
+              <option value="dianpao">点炮 (-番)</option>
+              <option value="gang">杠牌 (+1番)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">番数</label>
+            <input type="number" class="form-control" id="scoreFans" value="1" min="1" max="10">
+          </div>
+          <button class="btn btn-primary" style="width:100%;" onclick="addScore()">确认计分</button>
+          <hr style="border-color:var(--border-color);margin:20px 0;">
+          <button class="btn btn-danger" style="width:100%;" onclick="resetScores()">重置本桌</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Consumption Page -->
+  <section id="page-consumption" class="page-section">
+    <div class="header">
+      <div>
+        <div class="breadcrumb">首页 / 消费记录</div>
+        <h1>消费记录</h1>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary" onclick="openModal('consumptionModal')"><i class="bi bi-plus"></i>新增消费</button>
+      </div>
+    </div>
+    <div class="filters">
+      <input type="date" class="form-control" style="width:auto;" id="consumptionDate" value="2026-05-17">
+      <select class="form-control" style="width:auto;" id="consumptionType">
+        <option value="all">全部分类</option>
+        <option value="room">房间</option>
+        <option value="food">餐饮</option>
+        <option value="tea">茶水</option>
+        <option value="other">其他</option>
+      </select>
+      <div class="search-box">
+        <i class="bi bi-search"></i>
+        <input type="text" class="form-control" placeholder="搜索会员..." id="consumptionSearch">
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-body">
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th>时间</th><th>会员</th><th>房间/桌台</th><th>项目</th><th>金额</th><th>操作</th></tr></thead>
+            <tbody id="consumptionTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Employee Scheduling Page -->
+  <section id="page-employees" class="page-section">
+    <div class="header">
+      <div>
+        <div class="breadcrumb">首页 / 员工排班</div>
+        <h1>员工排班</h1>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary" onclick="openModal('scheduleModal')"><i class="bi bi-plus"></i>添加班次</button>
+      </div>
+    </div>
+    <div class="filters">
+      <button class="btn btn-secondary" onclick="changeWeek(-1)"><i class="bi bi-chevron-left"></i></button>
+      <span id="currentWeek" style="padding:8px 16px;font-weight:600;">2026年5月 第3周</span>
+      <button class="btn btn-secondary" onclick="changeWeek(1)"><i class="bi bi-chevron-right"></i></button>
+    </div>
+    <div class="card">
+      <div class="card-body" style="overflow-x:auto;">
+        <div class="schedule-grid" id="scheduleGrid"></div>
+      </div>
+    </div>
+    <div class="row" style="gap:20px;margin-top:20px;">
+      <div class="card" style="flex:1;">
+        <div class="card-header"><h2>员工列表</h2></div>
+        <div class="card-body" id="employeeList"></div>
+      </div>
+      <div class="card" style="flex:1;">
+        <div class="card-header"><h2>班次统计</h2></div>
+        <div class="card-body" id="shiftStats"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Revenue Page -->
+  <section id="page-revenue" class="page-section">
+    <div class="header">
+      <div>
+        <div class="breadcrumb">首页 / 营收报表</div>
+        <h1>营收报表</h1>
+      </div>
+      <div class="header-actions">
+        <select class="form-control" style="width:auto;" id="revenuePeriod">
+          <option value="today">今日</option>
+          <option value="week">本周</option>
+          <option value="month" selected>本月</option>
+          <option value="year">本年</option>
+        </select>
+      </div>
+    </div>
+    <div class="stat-cards">
+      <div class="stat-card">
+        <div class="icon yellow"><i class="bi bi-cash-stack"></i></div>
+        <div class="info">
+          <h3>¥128,420</h3>
+          <p>本月营收</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="icon green"><i class="bi bi-graph-up-arrow"></i></div>
+        <div class="info">
+          <h3>+12.5%</h3>
+          <p>环比增长</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="icon blue"><i class="bi bi-people-fill"></i></div>
+        <div class="info">
+          <h3>3,856</h3>
+          <p>服务人次</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="icon red"><i class="bi bi-receipt"></i></div>
+        <div class="info">
+          <h3>¥42,180</h3>
+          <p>本月成本</p>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="gap:20px;">
+      <div class="card" style="flex:2;">
+        <div class="card-header"><h2>营收趋势</h2></div>
+        <div class="card-body">
+          <div class="chart-container" id="monthlyRevenueChart"></div>
+        </div>
+      </div>
+      <div class="card" style="flex:1;">
+        <div class="card-header"><h2>收入构成</h2></div>
+        <div class="card-body">
+          <div id="revenueBreakdown"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:20px;">
+      <div class="card-header"><h2>详细报表</h2></div>
+      <div class="card-body">
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th>日期</th><th>房间收入</th><th>餐饮收入</th><th>茶水收入</th><th>其他收入</th><th>合计</th></tr></thead>
+            <tbody id="revenueTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Equipment Page -->
+  <section id="page-equipment" class="page-section">
+    <div class="header">
+      <div>
+        <div class="breadcrumb">首页 / 设备管理</div>
+        <h1>设备管理</h1>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary" onclick="openModal('equipmentModal')"><i class="bi bi-plus"></i>添加设备</button>
+      </div>
+    </div>
+    <div class="filters">
+      <select class="form-control" style="width:auto;" id="equipmentFilter" onchange="filterEquipment()">
+        <option value="all">全部设备</option>
+        <option value="good">正常</option>
+        <option value="warning">需维护</option>
+        <option value="broken">已损坏</option>
+      </select>
+    </div>
+    <div class="equipment-status" id="equipmentGrid"></div>
+  </section>
+
+  <!-- Loyalty Page -->
+  <section id="page-loyalty" class="page-section">
+    <div class="header">
+      <div>
+        <div class="breadcrumb">首页 / 积分商城</div>
+        <h1>积分商城</h1>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary" onclick="openModal('rewardModal')"><i class="bi bi-plus"></i>添加奖励</button>
+      </div>
+    </div>
+    <div class="row" style="gap:20px;">
+      <div class="card" style="flex:1;">
+        <div class="card-header"><h2>积分规则</h2></div>
+        <div class="card-body">
+          <div class="form-group"><label class="form-label">消费1元获得积分</label><input type="number" class="form-control" value="1" style="width:100px;"></div>
+          <div class="form-group"><label class="form-label">推荐新会员奖励</label><input type="number" class="form-control" value="200" style="width:100px;"></div>
+          <div class="form-group"><label class="form-label">生日双倍积分</label><select class="form-control" style="width:100px;"><option>开启</option><option>关闭</option></select></div>
+          <button class="btn btn-primary">保存规则</button>
+        </div>
+      </div>
+      <div class="card" style="flex:1;">
+        <div class="card-header"><h2>积分排行</h2></div>
+        <div class="card-body">
+          <div class="table-wrapper">
+            <table>
+              <thead><tr><th>排名</th><th>会员</th><th>积分</th><th>等级</th></tr></thead>
+              <tbody id="loyaltyRanking"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:20px;">
+      <div class="card-header"><h2>可用奖励</h2></div>
+      <div class="card-body" id="rewardList"></div>
+    </div>
+  </section>
+</main>
+
+<!-- Modals -->
+<div class="modal-overlay" id="roomModal">
+  <div class="modal">
+    <div class="modal-header"><h3>新建预订</h3><button class="modal-close" onclick="closeModal('roomModal')">&times;</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">房间</label><select class="form-control"><option>翡翠阁 (VIP)</option><option>琥珀厅 (豪华)</option><option>紫檀房 (普通)</option></select></div>
+        <div class="form-group"><label class="form-label">会员</label><select class="form-control"><option>张伟</option><option>李娜</option><option>王芳</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">日期</label><input type="date" class="form-control" value="2026-05-17"></div>
+        <div class="form-group"><label class="form-label">时段</label><select class="form-control"><option>上午 9:00-14:00</option><option>下午 14:00-20:00</option><option>晚上 20:00-02:00</option></select></div>
+      </div>
+      <div class="form-group"><label class="form-label">联系电话</label><input type="tel" class="form-control" placeholder="138xxxx8888"></div>
+      <div class="form-group"><label class="form-label">备注</label><textarea class="form-control" rows="2" placeholder="特殊要求..."></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('roomModal')">取消</button><button class="btn btn-primary">确认预订</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="memberModal">
+  <div class="modal">
+    <div class="modal-header"><h3>添加会员</h3><button class="modal-close" onclick="closeModal('memberModal')">&times;</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">姓名</label><input type="text" class="form-control" placeholder="张三"></div>
+        <div class="form-group"><label class="form-label">手机号</label><input type="tel" class="form-control" placeholder="13812345678"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">会员等级</label><select class="form-control"><option>黄金会员</option><option>白银会员</option><option>青铜会员</option></select></div>
+        <div class="form-group"><label class="form-label">初始储值</label><input type="number" class="form-control" placeholder="1000"></div>
+      </div>
+      <div class="form-group"><label class="form-label">身份证号</label><input type="text" class="form-control" placeholder="可选"></div>
+      <div class="form-group"><label class="form-label">生日</label><input type="date" class="form-control"></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('memberModal')">取消</button><button class="btn btn-primary">确认添加</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="tableModal">
+  <div class="modal">
+    <div class="modal-header"><h3>添加桌台</h3><button class="modal-close" onclick="closeModal('tableModal')">&times;</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">桌台编号</label><input type="text" class="form-control" placeholder="1"></div>
+        <div class="form-group"><label class="form-label">位置</label><select class="form-control"><option>大厅A区</option><option>大厅B区</option><option>包间一</option><option>包间二</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">类型</label><select class="form-control"><option>麻将桌</option><option>棋牌桌</option><option>扑克桌</option></select></div>
+        <div class="form-group"><label class="form-label">容纳人数</label><select class="form-control"><option>4人</option><option>6人</option><option>8人</option></select></div>
+      </div>
+      <div class="form-group"><label class="form-label">状态</label><select class="form-control"><option>正常</option><option>维护中</option></select></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('tableModal')">取消</button><button class="btn btn-primary">确认添加</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="scoreModal">
+  <div class="modal">
+    <div class="modal-header"><h3>新建比赛</h3><button class="modal-close" onclick="closeModal('scoreModal')">&times;</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">比赛名称</label><input type="text" class="form-control" placeholder="周末友谊赛"></div>
+        <div class="form-group"><label class="form-label">桌台</label><select class="form-control"><option>1号桌</option><option>2号桌</option><option>3号桌</option><option>4号桌</option></select></div>
+      </div>
+      <div class="form-group"><label class="form-label">参赛玩家</label><div id="playerSelect"></div></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">初始分数</label><input type="number" class="form-control" value="1000"></div>
+        <div class="form-group"><label class="form-label">底分</label><input type="number" class="form-control" value="1"></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('scoreModal')">取消</button><button class="btn btn-primary">开始比赛</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="consumptionModal">
+  <div class="modal">
+    <div class="modal-header"><h3>新增消费</h3><button class="modal-close" onclick="closeModal('consumptionModal')">&times;</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">会员</label><select class="form-control"><option>张伟</option><option>李娜</option><option>王芳</option><option>非会员</option></select></div>
+        <div class="form-group"><label class="form-label">房间/桌台</label><select class="form-control"><option>翡翠阁</option><option>琥珀厅</option><option>1号桌</option><option>2号桌</option></select></div>
+      </div>
+      <div class="form-group"><label class="form-label">消费类型</label><select class="form-control" id="consumptionTypeSelect"><option value="room">房间费</option><option value="food">餐饮</option><option value="tea">茶水</option><option value="other">其他</option></select></div>
+      <div class="form-group"><label class="form-label">金额</label><input type="number" class="form-control" placeholder="0.00"></div>
+      <div class="form-group"><label class="form-label">备注</label><textarea class="form-control" rows="2"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('consumptionModal')">取消</button><button class="btn btn-primary">确认</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="scheduleModal">
+  <div class="modal">
+    <div class="modal-header"><h3>添加班次</h3><button class="modal-close" onclick="closeModal('scheduleModal')">&times;</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">员工</label><select class="form-control"><option>刘师傅</option><option>小王</option><option>小李</option><option>阿姨</option></select></div>
+        <div class="form-group"><label class="form-label">班次类型</label><select class="form-control"><option>早班 9:00-17:00</option><option>中班 13:00-21:00</option><option>晚班 17:00-01:00</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">日期</label><input type="date" class="form-control" value="2026-05-17"></div>
+        <div class="form-group"><label class="form-label">岗位</label><select class="form-control"><option>前台接待</option><option>服务生</option><option>保洁</option><option>保安</option></select></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('scheduleModal')">取消</button><button class="btn btn-primary">确认排班</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="equipmentModal">
+  <div class="modal">
+    <div class="modal-header"><h3>添加设备</h3><button class="modal-close" onclick="closeModal('equipmentModal')">&times;</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">设备名称</label><input type="text" class="form-control" placeholder="麻将桌"></div>
+        <div class="form-group"><label class="form-label">设备编号</label><input type="text" class="form-control" placeholder="MJ-001"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">类型</label><select class="form-control"><option>麻将桌</option><option>空调</option><option>麻将牌</option><option>桌椅</option><option>电视</option></select></div>
+        <div class="form-group"><label class="form-label">状态</label><select class="form-control"><option>正常</option><option>需维护</option><option>已损坏</option></select></div>
+      </div>
+      <div class="form-group"><label class="form-label">位置</label><input type="text" class="form-control" placeholder="大厅A区"></div>
+      <div class="form-group"><label class="form-label">备注</label><textarea class="form-control" rows="2"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('equipmentModal')">取消</button><button class="btn btn-primary">确认添加</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="rewardModal">
+  <div class="modal">
+    <div class="modal-header"><h3>添加奖励</h3><button class="modal-close" onclick="closeModal('rewardModal')">&times;</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label class="form-label">奖励名称</label><input type="text" class="form-control" placeholder="免费包间2小时"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">所需积分</label><input type="number" class="form-control" placeholder="500"></div>
+        <div class="form-group"><label class="form-label">库存</label><input type="number" class="form-control" placeholder="10"></div>
+      </div>
+      <div class="form-group"><label class="form-label">描述</label><textarea class="form-control" rows="2"></textarea></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" onclick="closeModal('rewardModal')">取消</button><button class="btn btn-primary">确认添加</button></div>
+  </div>
+</div>
+
+<script>
+// ============ Data ============
+const rooms = [
+  {id:1,name:'翡翠阁',type:'VIP包间',capacity:8,price:288,status:'occupied',member:'张伟',endTime:'22:30'},
+  {id:2,name:'琥珀厅',type:'豪华包间',capacity:6,price:198,status:'available',member:null,endTime:null},
+  {id:3,name:'紫檀房',type:'普通包间',capacity:4,price:128,status:'occupied',member:'李娜',endTime:'21:00'},
+  {id:4,name:'红木轩',type:'普通包间',capacity:4,price:128,status:'maintenance',member:null,endTime:null},
+  {id:5,name:'雅集阁',type:'VIP包间',capacity:10,price:388,status:'available',member:null,endTime:null},
+  {id:6,name:'静心堂',type:'豪华包间',capacity:6,price:198,status:'occupied',member:'王芳',endTime:'23:00'},
+  {id:7,name:'清风阁',type:'普通包间',capacity:4,price:128,status:'available',member:null,endTime:null},
+  {id:8,name:'明月楼',type:'VIP包间',capacity:8,price:288,status:'occupied',member:'赵强',endTime:'01:00'},
+];
+
+const members = [
+  {id:1,name:'张伟',phone:'13812345678',level:'gold',balance:5000,points:12800,totalConsume:25800},
+  {id:2,name:'李娜',phone:'13956781234',level:'silver',balance:2800,points:6200,totalConsume:15200},
+  {id:3,name:'王芳',phone:'13698765432',level:'gold',balance:8200,points:18500,totalConsume:42000},
+  {id:4,name:'赵强',phone:'13543218765',level:'bronze',balance:1200,points:1800,totalConsume:5600},
+  {id:5,name:'刘美红',phone:'15823456789',level:'silver',balance:3500,points:7800,totalConsume:18900},
+  {id:6,name:'陈建国',phone:'15987654321',level:'gold',balance:12000,points:32000,totalConsume:68000},
+  {id:7,name:'周婷',phone:'13734567890',level:'bronze',balance:800,points:950,totalConsume:3200},
+  {id:8,name:'吴斌',phone:'15612347890',level:'silver',balance:2100,points:4100,totalConsume:9800},
+];
+
+const tables = [
+  {id:1,name:'1号桌',location:'大厅A区',type:'麻将桌',capacity:4,status:'occupied',currentPlayer:'张伟'},
+  {id:2,name:'2号桌',location:'大厅A区',type:'麻将桌',capacity:4,status:'available',currentPlayer:null},
+  {id:3,name:'3号桌',location:'大厅B区',type:'麻将桌',capacity:4,status:'occupied',currentPlayer:'李娜'},
+  {id:4,name:'4号桌',location:'大厅B区',type:'麻将桌',capacity:4,status:'maintenance',currentPlayer:null},
+  {id:5,name:'5号桌',location:'包间一',type:'麻将桌',capacity:6,status:'occupied',currentPlayer:'王芳'},
+  {id:6,name:'6号桌',location:'包间二',type:'麻将桌',capacity:6,status:'available',currentPlayer:null},
+  {id:7,name:'A1号',location:'大厅A区',type:'棋牌桌',capacity:4,status:'available',currentPlayer:null},
+  {id:8,name:'A2号',location:'大厅A区',type:'扑克桌',capacity:6,status:'occupied',currentPlayer:'赵强'},
+];
+
+const scores = [
+  {tableId:1,players:[
+    {name:'张伟',score:2450,hu:3,zimo:2},
+    {name:'李娜',score:1820,hu:2,zimo:1},
+    {name:'王芳',score:980,hu:1,zimo:0},
+    {name:'赵强',score:750,hu:0,zimo:1}
+  ]},
+  {tableId:3,players:[
+    {name:'刘美红',score:3200,hu:4,zimo:3},
+    {name:'陈建国',score:2100,hu:2,zimo:2},
+    {name:'周婷',score:1050,hu:1,zimo:0},
+    {name:'吴斌',score:650,hu:0,zimo:1}
+  ]},
+  {tableId:5,players:[
+    {name:'孙磊',score:1680,hu:2,zimo:1},
+    {name:'钱文',score:1420,hu:1,zimo:2},
+    {name:'郑强',score:1200,hu:1,zimo:1},
+    {name:'王秀英',score:700,hu:0,zimo:0}
+  ]},
+  {tableId:8,players:[
+    {name:'张明',score:2100,hu:2,zimo:2},
+    {name:'李静',score:1800,hu:2,zimo:1},
+    {name:'赵磊',score:1100,hu:1,zimo:1},
+    {name:'陈红',score:1000,hu:1,zimo:0}
+  ]},
+];
+
+const consumptions = [
+  {id:1,time:'10:32',member:'张伟',room:'翡翠阁',item:'包间费(4h)',amount:1152},
+  {id:2,time:'10:45',member:'李娜',room:'大厅',item:'龙井茶x2',amount:76},
+  {id:3,time:'11:15',member:'王芳',room:'紫檀房',item:'包间费(3h)+茶水',amount:458},
+  {id:4,time:'11:28',member:'非会员',room:'大厅',item:'铁观音x4',amount:112},
+  {id:5,time:'12:05',member:'赵强',room:'大厅',item:'麻将桌(2h)+零食',amount:186},
+  {id:6,time:'12:30',member:'刘美红',room:'大厅',item:'普洱茶x2+干果拼盘',amount:168},
+  {id:7,time:'13:15',member:'陈建国',room:'明月楼',item:'VIP包间(5h)',amount:1440},
+  {id:8,time:'14:22',member:'周婷',room:'大厅',item:'铁观音x2',amount:56},
+];
+
+const employees = [
+  {id:1,name:'刘师傅',position:'前台接待',phone:'13800001111'},
+  {id:2,name:'小王',position:'服务生',phone:'13800002222'},
+  {id:3,name:'小李',position:'服务生',phone:'13800003333'},
+  {id:4,name:'阿姨',position:'保洁',phone:'13800004444'},
+  {id:5,name:'老张',position:'保安',phone:'13800005555'},
+  {id:6,name:'小林',position:'服务生',phone:'13800006666'},
+];
+
+const schedule = {
+  '2026-05-11':[{empId:1,shift:'morning'},{empId:2,shift:'morning'},{empId:3,shift:'afternoon'},{empId:4,shift:'morning'},{empId:5,shift:'night'}],
+  '2026-05-12':[{empId:1,shift:'morning'},{empId:2,shift:'afternoon'},{empId:3,shift:'afternoon'},{empId:4,shift:'morning'},{empId:5,shift:'night'},{empId:6,shift:'night'}],
+  '2026-05-13':[{empId:1,shift:'morning'},{empId:2,shift:'morning'},{empId:3,shift:'morning'},{empId:4,shift:'afternoon'},{empId:5,shift:'night'}],
+  '2026-05-14':[{empId:1,shift:'afternoon'},{empId:2,shift:'morning'},{empId:3,shift:'afternoon'},{empId:4,shift:'morning'},{empId:5,shift:'night'},{empId:6,shift:'morning'}],
+  '2026-05-15':[{empId:1,shift:'afternoon'},{empId:2,shift:'afternoon'},{empId:3,shift:'morning'},{empId:4,shift:'morning'},{empId:5,shift:'night'}],
+  '2026-05-16':[{empId:1,shift:'night'},{empId:2,shift:'afternoon'},{empId:3,shift:'afternoon'},{empId:4,shift:'morning'},{empId:5,shift:'morning'},{empId:6,shift:'night'}],
+  '2026-05-17':[{empId:1,shift:'morning'},{empId:2,shift:'morning'},{empId:3,shift:'afternoon'},{empId:4,shift:'morning'},{empId:5,shift:'night'},{empId:6,shift:'afternoon'}],
+};
+
+const equipment = [
+  {id:1,name:'麻将桌1号',code:'MJ-001',type:'麻将桌',location:'大厅A区',status:'good',buyDate:'2024-03-15',remark:''},
+  {id:2,name:'麻将桌2号',code:'MJ-002',type:'麻将桌',location:'大厅A区',status:'good',buyDate:'2024-03-15',remark:''},
+  {id:3,name:'麻将桌3号',code:'MJ-003',type:'麻将桌',location:'大厅B区',status:'warning',buyDate:'2023-06-20',remark:'桌面磨损'},
+  {id:4,name:'麻将桌4号',code:'MJ-004',type:'麻将桌',location:'大厅B区',status:'good',buyDate:'2024-01-10',remark:''},
+  {id:5,name:'麻将桌5号',code:'MJ-005',type:'麻将桌',location:'包间一',status:'good',buyDate:'2024-05-01',remark:''},
+  {id:6,name:'空调1号',code:'KT-001',type:'空调',location:'大厅A区',status:'good',buyDate:'2023-04-10',remark:''},
+  {id:7,name:'空调2号',code:'KT-002',type:'空调',location:'大厅B区',status:'warning',buyDate:'2023-04-10',remark:'制冷效果下降'},
+  {id:8,name:'麻将牌套装A',code:'PA-001',type:'麻将牌',location:'仓库',status:'good',buyDate:'2024-02-20',remark:'备用'},
+  {id:9,name:'麻将牌套装B',code:'PA-002',type:'麻将牌',location:'仓库',status:'broken',buyDate:'2023-08-15',remark:'缺少3张牌'},
+  {id:10,name:'饮水机',code:'YS-001',type:'饮水机',location:'大厅',status:'good',buyDate:'2024-01-05',remark:''},
+  {id:11,name:'电视1号',code:'TV-001',type:'电视',location:'大厅A区',status:'good',buyDate:'2023-11-20',remark:''},
+  {id:12,name:'自动麻将机',code:'MJ-AUTO',type:'麻将桌',location:'包间二',status:'good',buyDate:'2024-06-01',remark:'新购'},
+];
+
+const rewards = [
+  {id:1,name:'免费包间2小时',points:500,stock:5,desc:'适用于普通包间，需提前预约'},
+  {id:2,name:'免费包间4小时',points:900,stock:3,desc:'适用于豪华包间，需提前预约'},
+  {id:3,name:'精美茶具一套',points:2000,stock:2,desc:'景德镇陶瓷茶具，限量兑换'},
+  {id:4,name:'店内消费8折券',points:300,stock:20,desc:'适用于所有消费项目'},
+  {id:5,name:'精品茶叶礼盒',points:800,stock:8,desc:'龙井/普洱/铁观音任选'},
+  {id:6,name:'会员专属停车位',points:1000,stock:1,desc:'有效期一个月'},
+];
+
+// ============ Navigation ============
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const page = item.dataset.page;
+    switchPage(page);
+  });
+});
+
+function switchPage(page) {
+  document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelector(`.nav-item[data-page="${page}"]`).classList.add('active');
+  document.getElementById('sidebar').style.transform = 'translateX(0)';
+}
+
+// ============ Modal ============
+function openModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.classList.remove('show');
+  });
+});
+
+// ============ Dashboard ============
+function renderDashboard() {
+  // Revenue Chart
+  const chartData = [5800, 7200, 6400, 8900, 9200, 7800, 8524];
+  const chartDays = ['周一','周二','周三','周四','周五','周六','周日'];
+  const maxVal = Math.max(...chartData);
+  let chartHtml = '';
+  chartData.forEach((val, i) => {
+    const height = (val / maxVal) * 200;
+    chartHtml += `<div class="chart-bar"><div class="bar" style="height:${height}px;background:var(--accent);"></div><span>${chartDays[i]}</span><small style="color:var(--accent);">${val}</small></div>`;
+  });
+  document.getElementById('revenueChart').innerHTML = chartHtml;
+
+  // Room Status
+  let roomStatusHtml = '';
+  rooms.slice(0,4).forEach(r => {
+    const statusClass = r.status === 'occupied' ? 'badge-green' : r.status === 'maintenance' ? 'badge-red' : 'badge-blue';
+    const statusText = r.status === 'occupied' ? '使用中' : r.status === 'maintenance' ? '维护' : '空闲';
+    roomStatusHtml += `<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border-color);">
+      <div><strong>${r.name}</strong><br><small class="text-muted">${r.type}</small></div>
+      <span class="badge ${statusClass}">${statusText}</span>
+    </div>`;
+  });
+  document.getElementById('roomStatusList').innerHTML = roomStatusHtml;
+
+  // Recent Consumptions
+  let consumHtml = '';
+  consumptions.slice(0,5).forEach(c => {
+    consumHtml += `<tr><td>${c.member}</td><td>${c.room}</td><td class="text-accent">¥${c.amount}</td><td class="text-muted">${c.time}</td></tr>`;
+  });
+  document.getElementById('recentConsumptions').innerHTML = consumHtml;
+}
+
+// ============ Rooms ============
+function renderRooms() {
+  const filter = document.getElementById('roomFilter')?.value || 'all';
+  let filtered = rooms;
+  if (filter !== 'all') filtered = rooms.filter(r => r.status === filter);
+  
+  let html = '';
+  filtered.forEach(r => {
+    const statusClass = r.status === 'occupied' ? 'badge-green' : r.status === 'maintenance' ? 'badge-red' : 'badge-blue';
+    const statusText = r.status === 'occupied' ? '使用中' : r.status === 'maintenance' ? '维护中' : '可预订';
+    const bgIcon = r.type.includes('VIP') ? 'bi-gem' : r.type.includes('豪华') ? 'bi-star' : 'bi-cup-hot';
+    html += `<div class="card fade-in" style="flex:1;min-width:260px;">
+      <div class="card-body">
+        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px;">
+          <div><i class="${bgIcon}" style="font-size:24px;color:var(--accent);"></i></div>
+          <span class="badge ${statusClass}">${statusText}</span>
+        </div>
+        <h3 style="margin:0 0 4px;">${r.name}</h3>
+        <p class="text-muted" style="margin:0 0 12px;font-size:13px;">${r.type} · ${r.capacity}人 · ¥${r.price}/h</p>
+        ${r.status === 'occupied' ? `<div style="background:var(--bg-dark);padding:10px;border-radius:6px;">
+          <div style="font-size:13px;"><i class="bi bi-person-fill text-accent"></i> ${r.member}</div>
+          <div style="font-size:12px;color:var(--text-secondary);">预计结束: ${r.endTime}</div>
+        </div>` : ''}
+        <div style="margin-top:12px;display:flex;gap:8px;">
+          ${r.status === 'available' ? `<button class="btn btn-primary btn-sm" style="flex:1;" onclick="openModal('roomModal')">预订</button>` : ''}
+          <button class="btn btn-secondary btn-sm" style="flex:1;">详情</button>
+        </div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('roomCards').innerHTML = html;
+}
+
+function filterRooms() { renderRooms(); }
+
+// ============ Members ============
+function renderMembers() {
+  const filter = document.getElementById('memberLevelFilter')?.value || 'all';
+  let filtered = members;
+  if (filter !== 'all') filtered = members.filter(m => m.level === filter);
+  
+  let html = '';
+  filtered.forEach(m => {
+    const levelClass = m.level === 'gold' ? 'badge-gold' : m.level === 'silver' ? 'badge-blue' : 'badge-yellow';
+    const levelText = m.level === 'gold' ? '黄金' : m.level === 'silver' ? '白银' : '青铜';
+    html += `<tr>
+      <td><div style="display:flex;align-items:center;gap:10px;"><div style="width:32px;height:32px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#000;font-weight:600;">${m.name[0]}</div><strong>${m.name}</strong></div></td>
+      <td class="text-muted">${m.phone}</td>
+      <td><span class="badge ${levelClass}">${levelText}</span></td>
+      <td class="text-accent">¥${m.balance.toLocaleString()}</td>
+      <td>${m.points.toLocaleString()}</td>
+      <td class="text-muted">¥${m.totalConsume.toLocaleString()}</td>
+      <td><button class="btn btn-sm btn-secondary">编辑</button></td>
+    </tr>`;
+  });
+  document.getElementById('memberTable').innerHTML = html;
+}
+
+function filterMembers() { renderMembers(); }
+
+// ============ Tables ============
+function renderTables() {
+  let html = '';
+  tables.forEach(t => {
+    const statusClass = t.status === 'occupied' ? 'badge-green' : t.status === 'maintenance' ? 'badge-red' : 'badge-blue';
+    const statusText = t.status === 'occupied' ? '使用中' : t.status === 'maintenance' ? '维护中' : '空闲';
+    const icon = t.type === '麻将桌' ? 'bi-dice-6' : 'bi-grid-3x2-gap';
+    html += `<div class="equipment-item fade-in">
+      <i class="${icon}" style="color:var(--accent);"></i>
+      <div class="info">
+        <h4>${t.name}</h4>
+        <p>${t.location} · ${t.capacity}人</p>
+        ${t.status === 'occupied' ? `<p class="text-success">当前: ${t.currentPlayer}</p>` : ''}
+      </div>
+      <span class="badge ${statusClass}">${statusText}</span>
+    </div>`;
+  });
+  document.getElementById('tableGrid').innerHTML = html;
+}
+
+// ============ Scoring ============
+function renderScores() {
+  let html = '';
+  scores.forEach(s => {
+    html += `<tr><td colspan="7" style="background:var(--bg-dark);padding:8px;font-weight:600;">${s.tableId}号桌</td></tr>`;
+    s.players.forEach(p => {
+      html += `<tr>
+        <td></td><td>${p.name}</td><td>1000</td><td class="${p.score >= 1000 ? 'text-success' : 'text-danger'}">${p.score}</td>
+        <td>${p.hu}</td><td>${p.zimo}</td><td><button class="btn btn-sm btn-secondary">详情</button></td>
+      </tr>`;
+    });
+  });
+  document.getElementById('scoreTable').innerHTML = html;
+}
+
+function addScore() {
+  const table = document.getElementById('scoreTableSelect').value;
+  const player = document.getElementById('scorePlayerSelect').value;
+  const action = document.getElementById('scoreActionSelect').value;
+  const fans = parseInt(document.getElementById('scoreFans').value) || 1;
+  alert(`${player} 在${table}执行了 ${action}，${fans}番`);
+}
+
+function resetScores() {
+  if(confirm('确定要重置本桌分数吗？')) alert('分数已重置');
+}
+
+// ============ Consumption ============
+function renderConsumptions() {
+  let html = '';
+  consumptions.forEach(c => {
+    html += `<tr>
+      <td class="text-muted">${c.time}</td>
+      <td>${c.member}</td>
+      <td>${c.room}</td>
+      <td>${c.item}</td>
+      <td class="text-accent">¥${c.amount}</td>
+      <td><button class="btn btn-sm btn-secondary">详情</button></td>
+    </tr>`;
+  });
+  document.getElementById('consumptionTable').innerHTML = html;
+}
+
+// ============ Employees/Schedule ============
+function renderSchedule() {
+  const weekDays = ['周一','周二','周三','周四','周五','周六','周日'];
+  const dates = ['2026-05-11','2026-05-12','2026-05-13','2026-05-14','2026-05-15','2026-05-16','2026-05-17'];
+  
+  let html = '<div class="schedule-cell header">员工</div>';
+  weekDays.forEach((d, i) => {
+    const isWeekend = i >= 5 ? 'style="color:var(--accent);"' : '';
+    html += `<div class="schedule-cell header" ${isWeekend}>${d}<br><small>${dates[i].slice(5)}</small></div>`;
+  });
+  
+  employees.forEach(emp => {
+    html += `<div class="schedule-cell header" style="justify-content:flex-start;gap:6px;">
+      <div><strong>${emp.name}</strong><br><small class="emp-name">${emp.position}</small></div>
+    </div>`;
+    dates.forEach(date => {
+      const shifts = schedule[date]?.filter(s => s.empId === emp.id) || [];
+      let cellContent = '';
+      shifts.forEach(s => {
+        const shiftClass = s.shift === 'morning' ? 'morning' : s.shift === 'afternoon' ? 'afternoon' : 'night';
+        const shiftText = s.shift === 'morning' ? '早' : s.shift === 'afternoon' ? '中' : '晚';
+        cellContent += `<span class="shift-type ${shiftClass}">${shiftText}</span>`;
+      });
+      html += `<div class="schedule-cell">${cellContent}</div>`;
+    });
+  });
+  document.getElementById('scheduleGrid').innerHTML = html;
+  
+  // Employee list
+  let empHtml = '';
+  employees.forEach(e => empHtml += `<div class="tag"><i class="bi bi-person"></i> ${e.name} <span class="text-muted">(${e.position})</span></div>`);
+  document.getElementById('employeeList').innerHTML = empHtml;
+  
+  // Shift stats
+  const stats = {morning:0,afternoon:0,night:0};
+  Object.values(schedule).forEach(dayShifts => {
+    dayShifts.forEach(s => stats[s.shift]++);
+  });
+  document.getElementById('shiftStats').innerHTML = `
+    <div style="margin-bottom:12px;"><span class="text-muted">早班:</span> <strong>${stats.morning}人次</strong></div>
+    <div style="margin-bottom:12px;"><span class="text-muted">中班:</span> <strong>${stats.afternoon}人次</strong></div>
+    <div><span class="text-muted">晚班:</span> <strong>${stats.night}人次</strong></div>
+  `;
+}
+
+function changeWeek(dir) {
+  document.getElementById('currentWeek').textContent = dir > 0 ? '2026年5月 第4周' : '2026年5月 第2周';
+}
+
+// ============ Revenue ============
+function renderRevenue() {
+  // Monthly chart
+  const monthData = [42000, 38000, 45000, 48000, 52000, 49000, 51000, 55000, 58000, 54000, 62000, 58000, 61000, 64000, 59000, 68000, 72000, 70000, 75000, 78000, 74000, 80000, 82000, 86000, 84000, 89000, 92000, 95000, 98000, 128420];
+  const maxVal = Math.max(...monthData);
+  let chartHtml = '';
+  const days = Array.from({length:30},(_,i)=>i+1);
+  days.forEach((d, i) => {
+    const val = monthData[i];
+    const height = (val / maxVal) * 220;
+    chartHtml += `<div class="chart-bar"><div class="bar" style="height:${height}px;background:var(--accent${i === 29 ? '' : '-light'});"></div><span>${d}</span></div>`;
+  });
+  document.getElementById('monthlyRevenueChart').innerHTML = chartHtml;
+  
+  // Revenue breakdown
+  const breakdown = [
+    {label:'房间收入',value:68200,percent:53,color:'var(--accent)'},
+    {label:'茶水收入',value:28400,percent:22,color:'var(--success)'},
+    {label:'餐饮收入',value:21800,percent:17,color:'var(--info)'},
+    {label:'其他收入',value:10020,percent:8,color:'var(--warning)'},
+  ];
+  let breakdownHtml = '';
+  breakdown.forEach(b => {
+    breakdownHtml += `<div style="margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+        <span>${b.label}</span><span class="text-accent">¥${b.value.toLocaleString()}</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${b.percent}%;background:${b.color};"></div></div>
+      <small class="text-muted">${b.percent}%</small>
+    </div>`;
+  });
+  document.getElementById('revenueBreakdown').innerHTML = breakdownHtml;
+  
+  // Revenue table
+  const tableData = [
+    {date:'05-01',room:4200,food:1800,tea:2100,other:450,total:8550},
+    {date:'05-02',room:3800,food:1500,tea:1900,other:320,total:7520},
+    {date:'05-03',room:4500,food:2100,tea:2400,other:580,total:9580},
+    {date:'05-04',room:4100,food:1700,tea:2000,other:420,total:8220},
+    {date:'05-05',room:5200,food:2400,tea:2800,other:680,total:11080},
+  ];
+  let tableHtml = '';
+  tableData.forEach(t => {
+    tableHtml += `<tr>
+      <td>2026年5月${t.date}</td>
+      <td>¥${t.room.toLocaleString()}</td>
+      <td>¥${t.food.toLocaleString()}</td>
+      <td>¥${t.tea.toLocaleString()}</td>
+      <td>¥${t.other.toLocaleString()}</td>
+      <td class="text-accent">¥${t.total.toLocaleString()}</td>
+    </tr>`;
+  });
+  document.getElementById('revenueTable').innerHTML = tableHtml;
+}
+
+// ============ Equipment ============
+function renderEquipment() {
+  const filter = document.getElementById('equipmentFilter')?.value || 'all';
+  let filtered = equipment;
+  if (filter !== 'good' && filter !== 'warning' && filter !== 'broken') {
+    // show all
+  } else {
+    filtered = equipment.filter(e => e.status === filter);
+  }
+  
+  let html = '';
+  filtered.forEach(e => {
+    const statusClass = e.status === 'good' ? 'badge-green' : e.status === 'warning' ? 'badge-yellow' : 'badge-red';
+    const statusText = e.status === 'good' ? '正常' : e.status === 'warning' ? '需维护' : '已损坏';
+    const icon = e.type === '麻将桌' ? 'bi-dice-6' : e.type === '空调' ? 'bi-snow' : e.type === '电视' ? 'bi-tv' : 'bi-box';
+    html += `<div class="equipment-item fade-in">
+      <i class="${icon}" style="color:${e.status === 'good' ? 'var(--accent)' : e.status === 'warning' ? 'var(--warning)' : 'var(--danger)'};"></i>
+      <div class="info">
+        <h4>${e.name}</h4>
+        <p>${e.location} · ${e.code}</p>
+        ${e.remark ? `<p class="text-muted" style="font-size:11px;">${e.remark}</p>` : ''}
+      </div>
+      <span class="badge ${statusClass}">${statusText}</span>
+    </div>`;
+  });
+  document.getElementById('equipmentGrid').innerHTML = html;
+}
+
+function filterEquipment() { renderEquipment(); }
+
+// ============ Loyalty ============
+function renderLoyalty() {
+  // Ranking
+  const sorted = [...members].sort((a,b) => b.points - a.points);
+  let rankHtml = '';
+  sorted.slice(0,6).forEach((m, i) => {
+    const levelClass = m.level === 'gold' ? 'badge-gold' : m.level === 'silver' ? 'badge-blue' : 'badge-yellow';
+    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}`;
+    rankHtml += `<tr>
+      <td>${medal}</td>
+      <td>${m.name}</td>
+      <td class="text-accent">${m.points.toLocaleString()}</td>
+      <td><span class="badge ${levelClass}">${m.level === 'gold' ? '黄金' : m.level === 'silver' ? '白银' : '青铜'}</span></td>
+    </tr>`;
+  });
+  document.getElementById('loyaltyRanking').innerHTML = rankHtml;
+  
+  // Rewards
+  let rewardHtml = '';
+  rewards.forEach(r => {
+    rewardHtml += `<div class="equipment-item fade-in" style="flex:1;min-width:200px;">
+      <i class="bi bi-gift" style="color:var(--accent);"></i>
+      <div class="info">
+        <h4>${r.name}</h4>
+        <p>${r.desc}</p>
+        <p class="text-accent">${r.points}积分 | 库存: ${r.stock}</p>
+      </div>
+    </div>`;
+  });
+  document.getElementById('rewardList').innerHTML = rewardHtml;
+}
+
+// ============ Init ============
+function init() {
+  renderDashboard();
+  renderRooms();
+  renderMembers();
+  renderTables();
+  renderScores();
+  renderConsumptions();
+  renderSchedule();
+  renderRevenue();
+  renderEquipment();
+  renderLoyalty();
+}
+
+init();
+</script>
+</body>
+</html>

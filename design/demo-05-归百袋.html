@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>归百袋 - 再生资源回收管理系统</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg-primary: #0a0e17;
+    --bg-secondary: #111827;
+    --bg-card: #1a2332;
+    --bg-hover: #243044;
+    --border: #2a3a52;
+    --text-primary: #e8edf5;
+    --text-secondary: #8b9cc4;
+    --accent: #10b981;
+    --accent-light: #34d399;
+    --accent-glow: rgba(16, 185, 129, 0.15);
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #3b82f6;
+  }
+  body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; background: var(--bg-primary); color: var(--text-primary); min-height: 100vh; }
+  .layout { display: flex; min-height: 100vh; }
+  
+  /* Sidebar */
+  .sidebar {
+    width: 240px;
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 100;
+  }
+  .logo {
+    padding: 24px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .logo-icon {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--accent), #059669);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  .logo-text h1 { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+  .logo-text span { font-size: 11px; color: var(--text-secondary); }
+  .nav-section { padding: 16px 12px; }
+  .nav-section-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); padding: 8px 12px; margin-bottom: 4px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; border-radius: 8px;
+    cursor: pointer; transition: all 0.2s;
+    color: var(--text-secondary); font-size: 14px;
+    margin-bottom: 2px;
+  }
+  .nav-item:hover { background: var(--bg-hover); color: var(--text-primary); }
+  .nav-item.active { background: var(--accent-glow); color: var(--accent); border-left: 3px solid var(--accent); }
+  .nav-item .icon { font-size: 18px; width: 22px; text-align: center; }
+  .nav-badge { margin-left: auto; background: var(--accent); color: #000; font-size: 10px; padding: 2px 6px; border-radius: 10px; font-weight: 700; }
+  
+  /* Main Content */
+  .main { flex: 1; margin-left: 240px; }
+  .header {
+    background: var(--bg-secondary); border-bottom: 1px solid var(--border);
+    padding: 16px 32px; display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 50;
+  }
+  .header-left { display: flex; align-items: center; gap: 16px; }
+  .page-title { font-size: 20px; font-weight: 600; }
+  .header-right { display: flex; align-items: center; gap: 20px; }
+  .search-box {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 8px 14px; display: flex; align-items: center; gap: 8px;
+  }
+  .search-box input { background: none; border: none; outline: none; color: var(--text-primary); width: 200px; font-size: 13px; }
+  .search-box input::placeholder { color: var(--text-secondary); }
+  .header-icon { font-size: 20px; cursor: pointer; color: var(--text-secondary); position: relative; }
+  .header-icon:hover { color: var(--text-primary); }
+  .notif-badge { position: absolute; top: -4px; right: -4px; background: var(--danger); width: 8px; height: 8px; border-radius: 50%; }
+  .user-avatar {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--info), #6366f1);
+    display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600;
+    cursor: pointer;
+  }
+  
+  /* Content Area */
+  .content { padding: 28px 32px; }
+  .page { display: none; }
+  .page.active { display: block; }
+  
+  /* Stats Cards */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 28px; }
+  .stat-card {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 22px; position: relative; overflow: hidden;
+  }
+  .stat-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+  }
+  .stat-card.warning::before { background: linear-gradient(90deg, var(--warning), transparent); }
+  .stat-card.danger::before { background: linear-gradient(90deg, var(--danger), transparent); }
+  .stat-card.info::before { background: linear-gradient(90deg, var(--info), transparent); }
+  .stat-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; }
+  .stat-value { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+  .stat-change { font-size: 12px; color: var(--accent); }
+  .stat-change.down { color: var(--danger); }
+  .stat-icon { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-size: 36px; opacity: 0.15; }
+  
+  /* Chart Area */
+  .charts-row { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 28px; }
+  .card {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 22px;
+  }
+  .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .card-title { font-size: 15px; font-weight: 600; }
+  .card-actions { display: flex; gap: 8px; }
+  .btn {
+    padding: 6px 14px; border-radius: 6px; border: 1px solid var(--border);
+    background: var(--bg-hover); color: var(--text-primary); font-size: 12px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+  .btn-primary { background: var(--accent); color: #000; border-color: var(--accent); }
+  .btn-primary:hover { background: var(--accent-light); }
+  .btn-sm { padding: 4px 10px; font-size: 11px; }
+  
+  /* Table */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  th { text-align: left; padding: 12px 16px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); border-bottom: 1px solid var(--border); }
+  td { padding: 14px 16px; font-size: 13px; border-bottom: 1px solid var(--border); }
+  tr:hover { background: var(--bg-hover); }
+  .status { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .status-active { background: rgba(16,185,129,0.15); color: var(--accent); }
+  .status-pending { background: rgba(245,158,11,0.15); color: var(--warning); }
+  .status-inactive { background: rgba(239,68,68,0.15); color: var(--danger); }
+  .status-in-transit { background: rgba(59,130,246,0.15); color: var(--info); }
+  
+  /* Tag */
+  .tag { display: inline-block; padding: 3px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+  .tag-metal { background: rgba(168,85,247,0.15); color: #a855f7; }
+  .tag-plastic { background: rgba(249,115,22,0.15); color: #f97316; }
+  .tag-paper { background: rgba(59,130,246,0.15); color: #3b82f6; }
+  .tag-glass { background: rgba(34,197,94,0.15); color: #22c55e; }
+  .tag-electronic { background: rgba(236,72,153,0.15); color: #ec4899; }
+  .tag-textile { background: rgba(234,179,8,0.15); color: #eab308; }
+  .tag-organic { background: rgba(132,204,22,0.15); color: #84cc16; }
+  
+  /* Chart placeholder */
+  .chart-container { height: 260px; display: flex; align-items: center; justify-content: center; position: relative; }
+  .bar-chart { display: flex; align-items: flex-end; gap: 20px; height: 200px; padding: 0 10px; }
+  .bar-item { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; }
+  .bar { width: 40px; border-radius: 6px 6px 0 0; transition: all 0.3s; cursor: pointer; position: relative; }
+  .bar:hover { filter: brightness(1.2); }
+  .bar-label { font-size: 11px; color: var(--text-secondary); }
+  .bar-value { font-size: 12px; font-weight: 600; position: absolute; top: -22px; left: 50%; transform: translateX(-50%); white-space: nowrap; }
+  .bar-value.top { position: absolute; bottom: -22px; color: var(--text-secondary); font-weight: 400; }
+  
+  .donut-chart { width: 200px; height: 200px; border-radius: 50%; position: relative; }
+  
+  /* Map placeholder */
+  .map-container { background: var(--bg-secondary); border-radius: 10px; height: 300px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+  .map-grid { position: absolute; inset: 0; opacity: 0.1; background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px); background-size: 40px 40px; }
+  .map-dot { position: absolute; width: 12px; height: 12px; border-radius: 50%; border: 2px solid #fff; cursor: pointer; transition: all 0.2s; }
+  .map-dot:hover { transform: scale(1.5); z-index: 10; }
+  .map-dot.active { width: 18px; height: 18px; box-shadow: 0 0 0 4px rgba(16,185,129,0.3); }
+  .map-label { position: absolute; font-size: 10px; background: var(--bg-card); padding: 2px 6px; border-radius: 4px; white-space: nowrap; }
+  
+  /* Form elements */
+  .form-group { margin-bottom: 16px; }
+  .form-label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+  .form-input, .form-select, .form-textarea {
+    width: 100%; padding: 10px 14px; border-radius: 8px;
+    border: 1px solid var(--border); background: var(--bg-secondary);
+    color: var(--text-primary); font-size: 13px; outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+  .form-textarea { resize: vertical; min-height: 80px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+  
+  /* Modal */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  }
+  .modal-overlay.show { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+    width: 560px; max-height: 85vh; overflow-y: auto; padding: 28px;
+    transform: translateY(20px); transition: transform 0.2s;
+  }
+  .modal-overlay.show .modal { transform: translateY(0); }
+  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+  .modal-title { font-size: 18px; font-weight: 600; }
+  .modal-close { background: none; border: none; color: var(--text-secondary); font-size: 24px; cursor: pointer; }
+  .modal-close:hover { color: var(--text-primary); }
+  
+  /* Tabs */
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
+  .tab { padding: 10px 18px; font-size: 13px; cursor: pointer; color: var(--text-secondary); border-bottom: 2px solid transparent; transition: all 0.2s; }
+  .tab:hover { color: var(--text-primary); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  
+  /* Grid layouts */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  
+  /* List items */
+  .list-item { display: flex; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border); gap: 14px; }
+  .list-item:last-child { border-bottom: none; }
+  .list-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .list-info { flex: 1; }
+  .list-title { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+  .list-sub { font-size: 12px; color: var(--text-secondary); }
+  .list-action { font-size: 12px; color: var(--accent); cursor: pointer; }
+  
+  /* Progress bar */
+  .progress-bar { height: 6px; background: var(--bg-secondary); border-radius: 3px; overflow: hidden; margin: 8px 0; }
+  .progress-fill { height: 100%; border-radius: 3px; transition: width 0.5s; }
+  
+  /* Route line animation */
+  .route-line { stroke: var(--accent); stroke-width: 2; fill: none; stroke-dasharray: 8 4; animation: dash 1s linear infinite; }
+  @keyframes dash { to { stroke-dashoffset: -12; } }
+  
+  /* Driver popup */
+  .driver-card { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .driver-avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #059669); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  
+  /* Animations */
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeIn 0.3s ease forwards; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+  .pulse { animation: pulse 2s infinite; }
+  
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg-primary); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+  
+  /* Misc */
+  .flex { display: flex; }
+  .items-center { align-items: center; }
+  .justify-between { justify-content: space-between; }
+  .gap-8 { gap: 8px; }
+  .gap-12 { gap: 12px; }
+  .gap-16 { gap: 16px; }
+  .mb-4 { margin-bottom: 4px; }
+  .mb-8 { margin-bottom: 8px; }
+  .mb-16 { margin-bottom: 16px; }
+  .mb-20 { margin-bottom: 20px; }
+  .mb-24 { margin-bottom: 24px; }
+  .text-sm { font-size: 12px; }
+  .text-xs { font-size: 11px; }
+  .text-secondary { color: var(--text-secondary); }
+  .font-semibold { font-weight: 600; }
+  .font-bold { font-weight: 700; }
+  .text-accent { color: var(--accent); }
+  .text-warning { color: var(--warning); }
+  .text-danger { color: var(--danger); }
+  .text-info { color: var(--info); }
+  .w-full { width: 100%; }
+  .cursor-pointer { cursor: pointer; }
+  
+  /* Notification panel */
+  .notif-panel {
+    position: fixed; top: 70px; right: 32px; width: 360px;
+    background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4); z-index: 200;
+    display: none;
+  }
+  .notif-panel.show { display: block; }
+  .notif-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .notif-item { padding: 14px 20px; display: flex; gap: 12px; border-bottom: 1px solid var(--border); cursor: pointer; transition: background 0.2s; }
+  .notif-item:hover { background: var(--bg-hover); }
+  .notif-item:last-child { border-bottom: none; }
+  .notif-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  
+  /* Toggle switch */
+  .toggle { width: 44px; height: 24px; background: var(--border); border-radius: 12px; position: relative; cursor: pointer; transition: background 0.3s; }
+  .toggle.on { background: var(--accent); }
+  .toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; background: #fff; border-radius: 50%; transition: transform 0.3s; }
+  .toggle.on::after { transform: translateX(20px); }
+  
+  /* Timeline */
+  .timeline { padding-left: 24px; border-left: 2px solid var(--border); }
+  .timeline-item { position: relative; padding-bottom: 20px; }
+  .timeline-item::before { content: ''; position: absolute; left: -29px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); border: 2px solid var(--bg-card); }
+  .timeline-item:last-child { padding-bottom: 0; }
+  .timeline-date { font-size: 11px; color: var(--text-secondary); }
+  .timeline-content { font-size: 13px; margin-top: 4px; }
+  
+  /* Counter animation */
+  .counter { display: inline-block; }
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">♻️</div>
+      <div class="logo-text">
+        <h1>归百袋</h1>
+        <span>再生资源回收管理</span>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">主控台</div>
+      <div class="nav-item active" data-page="dashboard">
+        <span class="icon">📊</span> 数据概览
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">回收作业</div>
+      <div class="nav-item" data-page="pickup">
+        <span class="icon">🚛</span> 预约取件
+        <span class="nav-badge">12</span>
+      </div>
+      <div class="nav-item" data-page="routes">
+        <span class="icon">🗺️</span> 路线优化
+      </div>
+      <div class="nav-item" data-page="tracking">
+        <span class="icon">📍</span> 车辆跟踪
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">物资管理</div>
+      <div class="nav-item" data-page="materials">
+        <span class="icon">📦</span> 物料分类
+      </div>
+      <div class="nav-item" data-page="inventory">
+        <span class="icon">🏭</span> 库存管理
+      </div>
+      <div class="nav-item" data-page="suppliers">
+        <span class="icon">🏢</span> 供应商管理
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">交易结算</div>
+      <div class="nav-item" data-page="pricing">
+        <span class="icon">💰</span> 回收定价
+      </div>
+      <div class="nav-item" data-page="payments">
+        <span class="icon">💳</span> 支付记录
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">分析报表</div>
+      <div class="nav-item" data-page="environment">
+        <span class="icon">🌱</span> 环保报告
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="main">
+    <header class="header">
+      <div class="header-left">
+        <div class="page-title" id="pageTitle">数据概览</div>
+      </div>
+      <div class="header-right">
+        <div class="search-box">
+          <span>🔍</span>
+          <input type="text" placeholder="搜索订单、车辆、供应商...">
+        </div>
+        <div class="header-icon" id="notifBtn">
+          🔔
+          <div class="notif-badge"></div>
+        </div>
+        <div class="user-avatar" title="管理员：张伟">张</div>
+      </div>
+    </header>
+
+    <div class="content">
+      <!-- Dashboard -->
+      <div class="page active" id="page-dashboard">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">今日回收量</div>
+            <div class="stat-value"><span class="counter" data-target="2847">0</span> kg</div>
+            <div class="stat-change">↑ 12.5% 较昨日</div>
+            <div class="stat-icon">♻️</div>
+          </div>
+          <div class="stat-card warning">
+            <div class="stat-label">待处理订单</div>
+            <div class="stat-value"><span class="counter" data-target="47">0</span></div>
+            <div class="stat-change down">↑ 3 单需加急</div>
+            <div class="stat-icon">📦</div>
+          </div>
+          <div class="stat-card info">
+            <div class="stat-label">在线车辆</div>
+            <div class="stat-value"><span class="counter" data-target="18">0</span> / 24</div>
+            <div class="stat-change">75% 运行中</div>
+            <div class="stat-icon">🚛</div>
+          </div>
+          <div class="stat-card danger">
+            <div class="stat-label">本月碳减排</div>
+            <div class="stat-value"><span class="counter" data-target="156">0</span> t</div>
+            <div class="stat-change">相当于植树 6,240 棵</div>
+            <div class="stat-icon">🌍</div>
+          </div>
+        </div>
+
+        <div class="charts-row">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📈 近七日回收量趋势</div>
+              <div class="card-actions">
+                <button class="btn btn-sm">本周</button>
+                <button class="btn btn-sm btn-primary">本月</button>
+              </div>
+            </div>
+            <div class="chart-container">
+              <div class="bar-chart" id="weeklyChart"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📊 物料分类占比</div>
+            </div>
+            <div class="chart-container">
+              <div id="categoryDonut" style="position:relative;width:200px;height:200px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2 mb-24">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">🚛 在线车辆状态</div>
+              <span class="btn btn-sm">查看全部</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>车牌号</th><th>司机</th><th>状态</th><th>当前位置</th><th>载重</th></tr></thead>
+                <tbody>
+                  <tr><td>沪A·88821</td><td>李建国</td><td><span class="status status-in-transit">运输中</span></td><td>浦东新区张江路</td><td>68%</td></tr>
+                  <tr><td>沪B·35629</td><td>王大海</td><td><span class="status status-active">空闲</span></td><td>宝山区回收中心</td><td>0%</td></tr>
+                  <tr><td>沪C·72190</td><td>赵志远</td><td><span class="status status-in-transit">运输中</span></td><td>徐汇区漕河泾</td><td>85%</td></tr>
+                  <tr><td>沪D·44782</td><td>钱明辉</td><td><span class="status status-pending">等待中</span></td><td>静安区昌平路</td><td>0%</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📋 最新回收订单</div>
+            </div>
+            <div class="list-item">
+              <div class="list-icon" style="background:rgba(168,85,247,0.15);">🔱</div>
+              <div class="list-info"><div class="list-title">黄浦区南京东路写字楼</div><div class="list-sub">废金属 120kg · 订单号 WD2025051701</div></div>
+              <div class="list-action">处理中</div>
+            </div>
+            <div class="list-item">
+              <div class="list-icon" style="background:rgba(59,130,246,0.15);">📄</div>
+              <div class="list-info"><div class="list-title">长宁区虹桥新城小区</div><div class="list-sub">废纸板 85kg · 订单号 WD2025051702</div></div>
+              <div class="list-action">待揽收</div>
+            </div>
+            <div class="list-item">
+              <div class="list-icon" style="background:rgba(249,115,22,0.15);">🥤</div>
+              <div class="list-info"><div class="list-title">普陀区曹杨家乐福</div><div class="list-sub">塑料瓶 45kg · 订单号 WD2025051703</div></div>
+              <div class="list-action">已完成</div>
+            </div>
+            <div class="list-item">
+              <div class="list-icon" style="background:rgba(34,197,94,0.15);">🍾</div>
+              <div class="list-info"><div class="list-title">虹口区四川北路商场</div><div class="list-sub">玻璃瓶 200kg · 订单号 WD2025051704</div></div>
+              <div class="list-action">运输中</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pickup Scheduling -->
+      <div class="page" id="page-pickup">
+        <div class="flex justify-between items-center mb-20">
+          <div class="flex gap-8">
+            <button class="btn btn-primary" onclick="openModal('pickupModal')">+ 新建预约</button>
+            <button class="btn">批量导入</button>
+          </div>
+          <div class="flex gap-8">
+            <select class="form-select" style="width:auto;">
+              <option>全部状态</option><option>待确认</option><option>已确认</option><option>已完成</option>
+            </select>
+            <select class="form-select" style="width:auto;">
+              <option>全部区域</option><option>浦东新区</option><option>黄浦区</option><option>静安区</option>
+            </select>
+          </div>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>订单号</th><th>预约时间</th><th>客户名称</th><th>地址</th><th>物料类型</th><th>预估重量</th><th>状态</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>WD2025051701</td><td>05-17 09:00</td><td>上海金茂大厦物业</td><td>浦东新区世纪大道88号</td><td><span class="tag tag-metal">废金属</span></td><td>120kg</td><td><span class="status status-pending">待确认</span></td><td><span class="btn btn-sm btn-primary">确认</span> <span class="btn btn-sm">详情</span></td></tr>
+                <tr><td>WD2025051702</td><td>05-17 10:30</td><td>虹桥新城业主委员会</td><td>长宁区延安西路2088号</td><td><span class="tag tag-paper">废纸</span></td><td>85kg</td><td><span class="status status-active">已确认</span></td><td><span class="btn btn-sm">详情</span></td></tr>
+                <tr><td>WD2025051703</td><td>05-17 11:00</td><td>曹杨家乐福超市</td><td>普陀区曹安路565号</td><td><span class="tag tag-plastic">废塑料</span></td><td>45kg</td><td><span class="status status-active">已确认</span></td><td><span class="btn btn-sm">详情</span></td></tr>
+                <tr><td>WD2025051704</td><td>05-17 14:00</td><td>四川北路商业广场</td><td>虹口区四川北路1688号</td><td><span class="tag tag-glass">废玻璃</span></td><td>200kg</td><td><span class="status status-in-transit">已派车</span></td><td><span class="btn btn-sm">跟踪</span></td></tr>
+                <tr><td>WD2025051705</td><td>05-17 15:30</td><td>张江高科园区</td><td>浦东新区碧波路690号</td><td><span class="tag tag-electronic">电子废弃物</span></td><td>30kg</td><td><span class="status status-pending">待确认</span></td><td><span class="btn btn-sm btn-primary">确认</span> <span class="btn btn-sm">详情</span></td></tr>
+                <tr><td>WD2025051706</td><td>05-18 09:00</td><td>徐汇滨江建设指挥部</td><td>徐汇区龙腾大道2350号</td><td><span class="tag tag-metal">废金属</span></td><td>350kg</td><td><span class="status status-active">已确认</span></td><td><span class="btn btn-sm">详情</span></td></tr>
+                <tr><td>WD2025051707</td><td>05-18 10:00</td><td>杨浦区文化创意园</td><td>杨浦区政立路485号</td><td><span class="tag tag-textile">废纺织品</span></td><td>60kg</td><td><span class="status status-active">已确认</span></td><td><span class="btn btn-sm">详情</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Route Optimization -->
+      <div class="page" id="page-routes">
+        <div class="grid-2 mb-24">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">🗺️ 今日配送路线</div>
+              <div class="flex gap-8">
+                <select class="form-select" style="width:auto;" id="routeVehicle">
+                  <option value="">选择车辆</option>
+                  <option value="v1">沪A·88821 - 李建国</option>
+                  <option value="v2">沪C·72190 - 赵志远</option>
+                  <option value="v3">沪D·44782 - 钱明辉</option>
+                </select>
+                <button class="btn btn-primary" onclick="optimizeRoute()">🚀 智能优化</button>
+              </div>
+            </div>
+            <div class="map-container" id="routeMap">
+              <div class="map-grid"></div>
+              <!-- Animated route -->
+              <svg style="position:absolute;inset:0;width:100%;height:100%;" id="routeSvg">
+                <path class="route-line" d="M 120,150 Q 200,80 280,140 T 400,120 T 520,180" id="routePath"/>
+              </svg>
+              <!-- Waypoints -->
+              <div class="map-dot active" style="left:120px;top:150px;background:#10b981;" title="回收中心"></div>
+              <div class="map-dot" style="left:200px;top:100px;background:#3b82f6;" title="金茂大厦"></div>
+              <div class="map-dot" style="left:280px;top:140px;background:#a855f7;" title="虹桥新城"></div>
+              <div class="map-dot" style="left:400px;top:120px;background:#f97316;" title="曹杨家乐福"></div>
+              <div class="map-dot" style="left:520px;top:180px;background:#ef4444;" title="四川北路"></div>
+              <div class="map-label" style="left:130px;top:168px;">回收中心</div>
+              <div class="map-label" style="left:210px;top:88px;">金茂大厦</div>
+              <div class="map-label" style="left:290px;top:128px;">虹桥新城</div>
+              <div class="map-label" style="left:410px;top:108px;">曹杨家乐福</div>
+              <div class="map-label" style="left:530px;top:168px;">四川北路</div>
+              <!-- Vehicle icon -->
+              <div id="vehicleIcon" style="position:absolute;left:115px;top:145px;font-size:24px;transition:left 2s linear,top 2s linear;">🚛</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📋 路线详情</div>
+            </div>
+            <div id="routeDetails">
+              <div class="timeline">
+                <div class="timeline-item">
+                  <div class="timeline-date">08:00</div>
+                  <div class="timeline-content"><strong>宝山区回收中心</strong> - 车辆出发，装载空箱</div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-date">08:45</div>
+                  <div class="timeline-content"><strong>浦东新区世纪大道88号</strong> - 金茂大厦，废金属 120kg，预计停留15分钟</div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-date">09:30</div>
+                  <div class="timeline-content"><strong>长宁区延安西路2088号</strong> - 虹桥新城，废纸 85kg，预计停留10分钟</div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-date">10:15</div>
+                  <div class="timeline-content"><strong>普陀区曹安路565号</strong> - 曹杨家乐福，废塑料 45kg，预计停留10分钟</div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-date">11:00</div>
+                  <div class="timeline-content"><strong>虹口区四川北路1688号</strong> - 四川北路商场，废玻璃 200kg，预计停留20分钟</div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-date">11:30</div>
+                  <div class="timeline-content"><strong>返回回收中心</strong> - 卸货入库</div>
+                </div>
+              </div>
+              <div class="mt-16 p-16" style="background:var(--bg-secondary);border-radius:8px;">
+                <div class="flex justify-between mb-8">
+                  <span class="text-secondary">总里程</span><span class="font-semibold">58.6 km</span>
+                </div>
+                <div class="flex justify-between mb-8">
+                  <span class="text-secondary">预计时长</span><span class="font-semibold">3小时30分钟</span>
+                </div>
+                <div class="flex justify-between mb-8">
+                  <span class="text-secondary">总回收量</span><span class="font-semibold text-accent">450 kg</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width:72%;background:var(--accent);"></div>
+                </div>
+                <div class="text-xs text-secondary">车辆利用率 72%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📊 路线效率统计</div>
+            <div class="card-actions">
+              <button class="btn btn-sm">本周</button><button class="btn btn-sm btn-primary">本月</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>日期</th><th>车辆</th><th>路线</th><th>里程(km)</th><th>回收量(kg)</th><th>效率(kg/km)</th><th>评分</th></tr></thead>
+              <tbody>
+                <tr><td>05-16</td><td>沪A·88821</td><td>浦东→黄浦→静安</td><td>62.3</td><td>520</td><td>8.35</td><td class="text-accent">⭐ 4.8</td></tr>
+                <tr><td>05-16</td><td>沪C·72190</td><td>徐汇→长宁→普陀</td><td>55.8</td><td>385</td><td>6.90</td><td class="text-accent">⭐ 4.5</td></tr>
+                <tr><td>05-15</td><td>沪B·35629</td><td>宝山→虹口→杨浦</td><td>48.2</td><td>410</td><td>8.51</td><td class="text-accent">⭐ 4.9</td></tr>
+                <tr><td>05-15</td><td>沪A·88821</td><td>浦东→南汇→奉贤</td><td>78.5</td><td>680</td><td>8.66</td><td class="text-accent">⭐ 4.7</td></tr>
+                <tr><td>05-14</td><td>沪D·44782</td><td>闵行→松江→青浦</td><td>82.1</td><td>590</td><td>7.19</td><td class="text-warning">⭐ 4.2</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vehicle Tracking -->
+      <div class="page" id="page-tracking">
+        <div class="grid-2 mb-24">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📍 车辆实时位置</div>
+              <div class="flex gap-8">
+                <button class="btn btn-sm" onclick="filterVehicle('all')">全部</button>
+                <button class="btn btn-sm btn-primary" onclick="filterVehicle('active')">运输中</button>
+                <button class="btn btn-sm" onclick="filterVehicle('idle')">空闲</button>
+              </div>
+            </div>
+            <div class="map-container" id="trackingMap" style="height:380px;">
+              <div class="map-grid"></div>
+              <svg style="position:absolute;inset:0;width:100%;height:100%;">
+                <path class="route-line" d="M 100,200 Q 180,120 280,180 T 450,140 T 600,200"/>
+                <path class="route-line" style="stroke:#f59e0b;animation-delay:0.5s;" d="M 300,80 Q 380,150 480,100 T 620,160"/>
+              </svg>
+              <div class="map-dot" style="left:100px;top:200px;background:#10b981;" data-status="active"></div>
+              <div class="map-dot" style="left:280px;top:180px;background:#3b82f6;" data-status="active"></div>
+              <div class="map-dot" style="left:450px;top:140px;background:#10b981;" data-status="active"></div>
+              <div class="map-dot" style="left:600px;top:200px;background:#10b981;" data-status="active"></div>
+              <div class="map-dot" style="left:300px;top:80px;background:#f59e0b;" data-status="idle"></div>
+              <div class="map-dot" style="left:480px;top:100px;background:#10b981;" data-status="active"></div>
+              <div class="map-dot" style="left:620px;top:160px;background:#f59e0b;" data-status="idle"></div>
+              <div class="map-label" style="left:106px;top:218px;">沪A·88821</div>
+              <div class="map-label" style="left:286px;top:198px;">沪B·35629</div>
+              <div class="map-label" style="left:456px;top:158px;">沪C·72190</div>
+              <div class="map-label" style="left:606px;top:218px;">沪D·44782</div>
+              <div class="map-label" style="left:306px;top:58px;font-style:italic;color:#f59e0b;">空闲</div>
+              <div class="map-label" style="left:486px;top:78px;">沪E·55123</div>
+              <div class="map-label" style="left:626px;top:138px;font-style:italic;color:#f59e0b;">空闲</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">🚛 选中车辆详情</div>
+            </div>
+            <div class="driver-card" id="selectedVehicle">
+              <div class="flex gap-16 items-center mb-16">
+                <div class="driver-avatar">李</div>
+                <div>
+                  <div class="font-bold text-lg">李建国</div>
+                  <div class="text-secondary text-sm">沪A·88821 · 驾龄12年</div>
+                </div>
+                <span class="status status-in-transit ml-auto">运输中</span>
+              </div>
+              <div class="grid-2 gap-16 mb-16">
+                <div style="background:var(--bg-secondary);padding:12px;border-radius:8px;">
+                  <div class="text-secondary text-xs mb-4">当前速度</div>
+                  <div class="font-bold text-lg">38 km/h</div>
+                </div>
+                <div style="background:var(--bg-secondary);padding:12px;border-radius:8px;">
+                  <div class="text-secondary text-xs mb-4">今日里程</div>
+                  <div class="font-bold text-lg">124.6 km</div>
+                </div>
+                <div style="background:var(--bg-secondary);padding:12px;border-radius:8px;">
+                  <div class="text-secondary text-xs mb-4">载重率</div>
+                  <div class="font-bold text-lg">68%</div>
+                  <div class="progress-bar"><div class="progress-fill" style="width:68%;background:var(--info);"></div></div>
+                </div>
+                <div style="background:var(--bg-secondary);padding:12px;border-radius:8px;">
+                  <div class="text-secondary text-xs mb-4">今日回收</div>
+                  <div class="font-bold text-lg">520 kg</div>
+                </div>
+              </div>
+              <div class="text-sm text-secondary">当前位置：浦东新区张江路与科苑路路口</div>
+              <div class="flex gap-8 mt-16">
+                <button class="btn btn-primary flex-1">📞 联系司机</button>
+                <button class="btn flex-1">📍 查看历史轨迹</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📋 全量车辆列表</div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>车牌号</th><th>司机</th><th>状态</th><th>当前位置</th><th>载重</th><th>今日里程</th><th>今日回收</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>沪A·88821</td><td>李建国</td><td><span class="status status-in-transit">运输中</span></td><td>浦东新区张江路</td><td><div class="progress-bar" style="width:80px;margin:0;"><div class="progress-fill" style="width:68%;background:var(--info);"></div></div></td><td>124.6 km</td><td>520 kg</td><td><button class="btn btn-sm">跟踪</button></td></tr>
+                <tr><td>沪B·35629</td><td>王大海</td><td><span class="status status-active">空闲</span></td><td>宝山区回收中心</td><td><div class="progress-bar" style="width:80px;margin:0;"><div class="progress-fill" style="width:0%;background:var(--accent);"></div></div></td><td>0 km</td><td>0 kg</td><td><button class="btn btn-sm">指派</button></td></tr>
+                <tr><td>沪C·72190</td><td>赵志远</td><td><span class="status status-in-transit">运输中</span></td><td>徐汇区漕河泾</td><td><div class="progress-bar" style="width:80px;margin:0;"><div class="progress-fill" style="width:85%;background:var(--warning);"></div></div></td><td>98.2 km</td><td>385 kg</td><td><button class="btn btn-sm">跟踪</button></td></tr>
+                <tr><td>沪D·44782</td><td>钱明辉</td><td><span class="status status-pending">等待中</span></td><td>静安区昌平路</td><td><div class="progress-bar" style="width:80px;margin:0;"><div class="progress-fill" style="width:0%;background:var(--text-secondary);"></div></div></td><td>12.4 km</td><td>0 kg</td><td><button class="btn btn-sm">指派</button></td></tr>
+                <tr><td>沪E·55123</td><td>孙伟民</td><td><span class="status status-active">空闲</span></td><td>闵行区莘庄</td><td><div class="progress-bar" style="width:80px;margin:0;"><div class="progress-fill" style="width:0%;background:var(--accent);"></div></div></td><td>45.8 km</td><td>180 kg</td><td><button class="btn btn-sm">指派</button></td></tr>
+                <tr><td>沪F·90714</td><td>周建设</td><td><span class="status status-in-transit">运输中</span></td><td>嘉定区安亭</td><td><div class="progress-bar" style="width:80px;margin:0;"><div class="progress-fill" style="width:55%;background:var(--info);"></div></div></td><td>156.3 km</td><td>640 kg</td><td><button class="btn btn-sm">跟踪</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Materials -->
+      <div class="page" id="page-materials">
+        <div class="flex justify-between items-center mb-20">
+          <div class="text-secondary">管理所有可回收物料类型及属性</div>
+          <button class="btn btn-primary" onclick="openModal('materialModal')">+ 添加物料</button>
+        </div>
+        <div class="grid-3 mb-24">
+          <div class="card cursor-pointer" onclick="showMaterialDetail('metal')">
+            <div style="font-size:40px;margin-bottom:12px;">🔱</div>
+            <div class="font-bold mb-4">废金属</div>
+            <div class="text-secondary text-sm mb-8">金属类可回收物</div>
+            <div class="flex justify-between text-sm">
+              <span class="text-secondary">库存</span><span class="font-semibold">3,240 kg</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:65%;background:#a855f7;"></div></div>
+          </div>
+          <div class="card cursor-pointer" onclick="showMaterialDetail('plastic')">
+            <div style="font-size:40px;margin-bottom:12px;">🥤</div>
+            <div class="font-bold mb-4">废塑料</div>
+            <div class="text-secondary text-sm mb-8">塑料瓶、塑料包装等</div>
+            <div class="flex justify-between text-sm">
+              <span class="text-secondary">库存</span><span class="font-semibold">5,180 kg</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:80%;background:#f97316;"></div></div>
+          </div>
+          <div class="card cursor-pointer" onclick="showMaterialDetail('paper')">
+            <div style="font-size:40px;margin-bottom:12px;">📄</div>
+            <div class="font-bold mb-4">废纸</div>
+            <div class="text-secondary text-sm mb-8">纸板、书报纸张等</div>
+            <div class="flex justify-between text-sm">
+              <span class="text-secondary">库存</span><span class="font-semibold">8,920 kg</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:45%;background:#3b82f6;"></div></div>
+          </div>
+          <div class="card cursor-pointer" onclick="showMaterialDetail('glass')">
+            <div style="font-size:40px;margin-bottom:12px;">🍾</div>
+            <div class="font-bold mb-4">废玻璃</div>
+            <div class="text-secondary text-sm mb-8">酒瓶、饮料瓶等玻璃</div>
+            <div class="flex justify-between text-sm">
+              <span class="text-secondary">库存</span><span class="font-semibold">2,340 kg</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:38%;background:#22c55e;"></div></div>
+          </div>
+          <div class="card cursor-pointer" onclick="showMaterialDetail('electronic')">
+            <div style="font-size:40px;margin-bottom:12px;">📱</div>
+            <div class="font-bold mb-4">电子废弃物</div>
+            <div class="text-secondary text-sm mb-8">手机、电脑、电器等</div>
+            <div class="flex justify-between text-sm">
+              <span class="text-secondary">库存</span><span class="font-semibold">890 kg</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:22%;background:#ec4899;"></div></div>
+          </div>
+          <div class="card cursor-pointer" onclick="showMaterialDetail('textile')">
+            <div style="font-size:40px;margin-bottom:12px;">👕</div>
+            <div class="font-bold mb-4">废纺织品</div>
+            <div class="text-secondary text-sm mb-8">旧衣物、布料边角料等</div>
+            <div class="flex justify-between text-sm">
+              <span class="text-secondary">库存</span><span class="font-semibold">1,450 kg</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" style="width:55%;background:#eab308;"></div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📊 物料库存明细</div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>物料编码</th><th>物料名称</th><th>类别</th><th>单位</th><th>当前库存</th><th>安全库存</th><th>状态</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>MT-001</td><td>废紫铜</td><td><span class="tag tag-metal">废金属</span></td><td>kg</td><td>1,280</td><td>500</td><td><span class="status status-active">正常</span></td><td><button class="btn btn-sm">调整</button></td></tr>
+                <tr><td>MT-002</td><td>废黄铜</td><td><span class="tag tag-metal">废金属</span></td><td>kg</td><td>960</td><td>400</td><td><span class="status status-active">正常</span></td><td><button class="btn btn-sm">调整</button></td></tr>
+                <tr><td>MT-003</td><td>废铝材</td><td><span class="tag tag-metal">废金属</span></td><td>kg</td><td>1,000</td><td>300</td><td><span class="status status-active">正常</span></td><td><button class="btn btn-sm">调整</button></td></tr>
+                <tr><td>MT-004</td><td>PET塑料瓶</td><td><span class="tag tag-plastic">废塑料</span></td><td>kg</td><td>2,800</td><td>1000</td><td><span class="status status-active">正常</span></td><td><button class="btn btn-sm">调整</button></td></tr>
+                <tr><td>MT-005</td><td>废纸板</td><td><span class="tag tag-paper">废纸</span></td><td>kg</td><td>6,200</td><td>2000</td><td><span class="status status-warning">偏高</span></td><td><button class="btn btn-sm">调整</button></td></tr>
+                <tr><td>MT-006</td><td>废报纸</td><td><span class="tag tag-paper">废纸</span></td><td>kg</td><td>2,720</td><td>1000</td><td><span class="status status-active">正常</span></td><td><button class="btn btn-sm">调整</button></td></tr>
+                <tr><td>MT-007</td><td>玻璃酒瓶</td><td><span class="tag tag-glass">废玻璃</span></td><td>kg</td><td>1,840</td><td>500</td><td><span class="status status-active">正常</span></td><td><button class="btn btn-sm">调整</button></td></tr>
+                <tr><td>MT-008</td><td>废手机</td><td><span class="tag tag-electronic">电子废弃物</span></td><td>台</td><td>245</td><td>50</td><td><span class="status status-active">正常</span></td><td><button class="btn btn-sm">调整</button></td></tr>
+                <tr><td>MT-009</td><td>废旧衣物</td><td><span class="tag tag-textile">废纺织品</span></td><td>kg</td><td>1,450</td><td>500</td><td><span class="status status-active">正常</span></td><td><button class="btn btn-sm">调整</button></td></tr>
+                <tr><td>MT-010</td><td>厨余垃圾</td><td><span class="tag tag-organic">有机垃圾</span></td><td>kg</td><td>320</td><td>800</td><td><span class="status status-danger">偏低</span></td><td><button class="btn btn-sm">调整</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inventory -->
+      <div class="page" id="page-inventory">
+        <div class="flex justify-between items-center mb-20">
+          <div class="text-secondary">仓库库存实时查询及出入库管理</div>
+          <div class="flex gap-8">
+            <button class="btn btn-primary" onclick="openModal('inventoryInModal')">📥 入库</button>
+            <button class="btn" onclick="openModal('inventoryOutModal')">📤 出库</button>
+          </div>
+        </div>
+        <div class="stats-grid mb-24" style="grid-template-columns:repeat(5,1fr);">
+          <div class="stat-card">
+            <div class="stat-label">总库存量</div>
+            <div class="stat-value">22,020</div>
+            <div class="stat-change">kg</div>
+          </div>
+          <div class="stat-card info">
+            <div class="stat-label">今日入库</div>
+            <div class="stat-value">2,847</div>
+            <div class="stat-change">kg</div>
+          </div>
+          <div class="stat-card warning">
+            <div class="stat-label">今日出库</div>
+            <div class="stat-value">1,920</div>
+            <div class="stat-change">kg</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">库存品种</div>
+            <div class="stat-value">48</div>
+            <div class="stat-change">种</div>
+          </div>
+          <div class="stat-card danger">
+            <div class="stat-label">低于安全库存</div>
+            <div class="stat-value">3</div>
+            <div class="stat-change">种</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="tabs">
+            <div class="tab active" onclick="switchTab(this, 'inventoryAll')">全部物料</div>
+            <div class="tab" onclick="switchTab(this, 'inventoryIn')">入库记录</div>
+            <div class="tab" onclick="switchTab(this, 'inventoryOut')">出库记录</div>
+          </div>
+          <div class="table-wrap" id="inventoryAll">
+            <table>
+              <thead><tr><th>物料编码</th><th>物料名称</th><th>类别</th><th>仓库</th><th>当前库存</th><th>单位</th><th>单价(元)</th><th>库存价值(元)</th><th>状态</th></tr></thead>
+              <tbody>
+                <tr><td>MT-001</td><td>废紫铜</td><td><span class="tag tag-metal">废金属</span></td><td>宝山总仓</td><td>1,280</td><td>kg</td><td>45.00</td><td>57,600</td><td><span class="status status-active">正常</span></td></tr>
+                <tr><td>MT-004</td><td>PET塑料瓶</td><td><span class="tag tag-plastic">废塑料</span></td><td>浦东分仓</td><td>2,800</td><td>kg</td><td>3.20</td><td>8,960</td><td><span class="status status-active">正常</span></td></tr>
+                <tr><td>MT-005</td><td>废纸板</td><td><span class="tag tag-paper">废纸</span></td><td>宝山总仓</td><td>6,200</td><td>kg</td><td>1.10</td><td>6,820</td><td><span class="status status-warning">偏高</span></td></tr>
+                <tr><td>MT-007</td><td>玻璃酒瓶</td><td><span class="tag tag-glass">废玻璃</span></td><td>闵行分仓</td><td>1,840</td><td>kg</td><td>0.60</td><td>1,104</td><td><span class="status status-active">正常</span></td></tr>
+                <tr><td>MT-008</td><td>废手机</td><td><span class="tag tag-electronic">电子废弃物</span></td><td>宝山总仓</td><td>245</td><td>台</td><td>80.00</td><td>19,600</td><td><span class="status status-active">正常</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-wrap" id="inventoryIn" style="display:none;">
+            <table>
+              <thead><tr><th>入库单号</th><th>时间</th><th>物料</th><th>数量</th><th>单价</th><th>金额</th><th>来源</th><th>操作员</th></tr></thead>
+              <tbody>
+                <tr><td>IN2025051701</td><td>05-17 08:30</td><td>废紫铜</td><td>120 kg</td><td>45.00</td><td>5,400</td><td>金茂大厦</td><td>张伟</td></tr>
+                <tr><td>IN2025051702</td><td>05-17 09:15</td><td>PET塑料瓶</td><td>85 kg</td><td>3.20</td><td>272</td><td>虹桥新城</td><td>李娜</td></tr>
+                <tr><td>IN2025051703</td><td>05-17 10:00</td><td>废纸板</td><td>200 kg</td><td>1.10</td><td>220</td><td>曹杨家乐福</td><td>张伟</td></tr>
+                <tr><td>IN2025051704</td><td>05-17 11:30</td><td>玻璃酒瓶</td><td>200 kg</td><td>0.60</td><td>120</td><td>四川北路商场</td><td>王明</td></tr>
+                <tr><td>IN2025051705</td><td>05-17 14:00</td><td>废手机</td><td>30 台</td><td>80.00</td><td>2,400</td><td>张江高科园区</td><td>李娜</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-wrap" id="inventoryOut" style="display:none;">
+            <table>
+              <thead><tr><th>出库单号</th><th>时间</th><th>物料</th><th>数量</th><th>单价</th><th>金额</th><th>去向</th><th>操作员</th></tr></thead>
+              <tbody>
+                <tr><td>OUT2025051701</td><td>05-17 09:00</td><td>废紫铜</td><td>300 kg</td><td>45.00</td><td>13,500</td><td>上海有色金属加工厂</td><td>张伟</td></tr>
+                <tr><td>OUT2025051702</td><td>05-17 10:30</td><td>PET塑料瓶</td><td>500 kg</td><td>3.20</td><td>1,600</td><td>浙江塑料再生厂</td><td>李娜</td></tr>
+                <tr><td>OUT2025051703</td><td>05-17 13:00</td><td>废纸板</td><td>800 kg</td><td>1.10</td><td>880</td><td>江苏纸业集团</td><td>王明</td></tr>
+                <tr><td>OUT2025051704</td><td>05-17 15:00</td><td>废手机</td><td>15 台</td><td>80.00</td><td>1,200</td><td>深圳电子回收中心</td><td>张伟</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Suppliers -->
+      <div class="page" id="page-suppliers">
+        <div class="flex justify-between items-center mb-20">
+          <div class="text-secondary">供应商信息维护及评估管理</div>
+          <button class="btn btn-primary" onclick="openModal('supplierModal')">+ 添加供应商</button>
+        </div>
+        <div class="card">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>供应商名称</th><th>类型</th><th>联系人</th><th>联系电话</th><th>合作物料</th><th>评分</th><th>交易次数</th><th>状态</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>上海有色金属加工厂</td><td><span class="tag tag-metal">废金属</span></td><td>陈国强</td><td>138-1728-5531</td><td>废铜、废铝、废钢</td><td class="text-accent">⭐ 4.9</td><td>128</td><td><span class="status status-active">良好</span></td><td><button class="btn btn-sm">详情</button></td></tr>
+                <tr><td>浙江塑料再生利用有限公司</td><td><span class="tag tag-plastic">废塑料</span></td><td>林美华</td><td>137-5839-2241</td><td>PET、PP、PE</td><td class="text-accent">⭐ 4.7</td><td>96</td><td><span class="status status-active">良好</span></td><td><button class="btn btn-sm">详情</button></td></tr>
+                <tr><td>江苏纸业集团再生分公司</td><td><span class="tag tag-paper">废纸</span></td><td>吴建平</td><td>139-1582-6673</td><td>废纸板、废报纸</td><td class="text-accent">⭐ 4.8</td><td>215</td><td><span class="status status-active">良好</span></td><td><button class="btn btn-sm">详情</button></td></tr>
+                <tr><td>上海玻璃制品回收站</td><td><span class="tag tag-glass">废玻璃</span></td><td>黄志明</td><td>136-2901-4482</td><td>玻璃瓶、碎玻璃</td><td class="text-warning">⭐ 4.3</td><td>67</td><td><span class="status status-active">良好</span></td><td><button class="btn btn-sm">详情</button></td></tr>
+                <tr><td>深圳绿环电子处理中心</td><td><span class="tag tag-electronic">电子废弃物</span></td><td>张晓东</td><td>135-8823-1109</td><td>废手机、电脑配件</td><td class="text-accent">⭐ 4.9</td><td>54</td><td><span class="status status-active">良好</span></td><td><button class="btn btn-sm">详情</button></td></tr>
+                <tr><td>上海织物再生纺织厂</td><td><span class="tag tag-textile">废纺织品</span></td><td>刘德华</td><td>138-0023-7721</td><td>旧衣物、布料</td><td class="text-warning">⭐ 4.1</td><td>38</td><td><span class="status status-pending">待审核</span></td><td><button class="btn btn-sm">详情</button></td></tr>
+                <tr><td>安徽有机肥料加工厂</td><td><span class="tag tag-organic">有机垃圾</span></td><td>李大成</td><td>139-4456-8823</td><td>厨余垃圾、果蔬</td><td class="text-accent">⭐ 4.6</td><td>82</td><td><span class="status status-active">良好</td><td><button class="btn btn-sm">详情</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="grid-2 mt-24">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">🏆 供应商排行榜</div>
+            </div>
+            <div class="list-item">
+              <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#fbbf24,#f59e0b);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">1</div>
+              <div class="list-info"><div class="list-title">上海有色金属加工厂</div><div class="list-sub">废金属 · 评分 4.9 · 交易 128 次</div></div>
+              <div class="text-warning font-semibold">98分</div>
+            </div>
+            <div class="list-item">
+              <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#d1d5db,#9ca3af);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">2</div>
+              <div class="list-info"><div class="list-title">深圳绿环电子处理中心</div><div class="list-sub">电子废弃物 · 评分 4.9 · 交易 54 次</div></div>
+              <div class="text-secondary font-semibold">96分</div>
+            </div>
+            <div class="list-item">
+              <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#d97706,#b45309);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">3</div>
+              <div class="list-info"><div class="list-title">江苏纸业集团再生分公司</div><div class="list-sub">废纸 · 评分 4.8 · 交易 215 次</div></div>
+              <div class="text-secondary font-semibold">94分</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📊 本月采购统计</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:16px;">
+              <div>
+                <div class="flex justify-between mb-4"><span class="text-sm">废金属</span><span class="text-sm font-semibold">¥ 128,450</span></div>
+                <div class="progress-bar"><div class="progress-fill" style="width:48%;background:#a855f7;"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-4"><span class="text-sm">废塑料</span><span class="text-sm font-semibold">¥ 42,800</span></div>
+                <div class="progress-bar"><div class="progress-fill" style="width:26%;background:#f97316;"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-4"><span class="text-sm">废纸</span><span class="text-sm font-semibold">¥ 38,200</span></div>
+                <div class="progress-bar"><div class="progress-fill" style="width:22%;background:#3b82f6;"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-4"><span class="text-sm">其他</span><span class="text-sm font-semibold">¥ 18,900</span></div>
+                <div class="progress-bar"><div class="progress-fill" style="width:11%;background:#22c55e;"></div></div>
+              </div>
+              <div style="border-top:1px solid var(--border);padding-top:12px;" class="flex justify-between">
+                <span class="font-semibold">总计</span><span class="font-bold text-accent">¥ 228,350</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pricing -->
+      <div class="page" id="page-pricing">
+        <div class="flex justify-between items-center mb-20">
+          <div class="text-secondary">每日回收价格设定及历史走势</div>
+          <button class="btn btn-primary" onclick="openModal('priceModal')">⚙️ 价格设置</button>
+        </div>
+        <div class="card mb-24">
+          <div class="card-header">
+            <div class="card-title">💰 今日回收指导价</div>
+            <div class="text-sm text-secondary">更新于 2025-05-17 08:00</div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>物料类型</th><th>规格/等级</th><th>回收价(元/kg)</th><th>昨日价格</th><th>涨跌</th><th>供应量</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td><span class="tag tag-metal">废金属</span></td><td>废紫铜</td><td class="font-semibold text-accent">45.00</td><td>44.50</td><td class="text-accent">↑ +1.1%</td><td>充足</td><td><button class="btn btn-sm">调价</button></td></tr>
+                <tr><td><span class="tag tag-metal">废金属</span></td><td>废黄铜</td><td class="font-semibold text-accent">38.00</td><td>38.00</td><td class="text-secondary">持平</td><td>充足</td><td><button class="btn btn-sm">调价</button></td></tr>
+                <tr><td><span class="tag tag-metal">废金属</span></td><td>废铝材</td><td class="font-semibold text-accent">14.50</td><td>14.20</td><td class="text-accent">↑ +2.1%</td><td>正常</td><td><button class="btn btn-sm">调价</button></td></tr>
+                <tr><td><span class="tag tag-plastic">废塑料</span></td><td>PET塑料瓶</td><td class="font-semibold">3.20</td><td>3.30</td><td class="text-danger">↓ -3.0%</td><td>正常</td><td><button class="btn btn-sm">调价</button></td></tr>
+                <tr><td><span class="tag tag-plastic">废塑料</span></td><td>PP/PE</td><td class="font-semibold">2.80</td><td>2.80</td><td class="text-secondary">持平</td><td>充足</td><td><button class="btn btn-sm">调价</button></td></tr>
+                <tr><td><span class="tag tag-paper">废纸</span></td><td>废纸板</td><td class="font-semibold">1.10</td><td>1.15</td><td class="text-danger">↓ -4.3%</td><td>充足</td><td><button class="btn btn-sm">调价</button></td></tr>
+                <tr><td><span class="tag tag-paper">废纸</span></td><td>废报纸</td><td class="font-semibold">1.40</td><td>1.40</td><td class="text-secondary">持平</td><td>正常</td><td><button class="btn btn-sm">调价</button></td></tr>
+                <tr><td><span class="tag tag-glass">废玻璃</span></td><td>玻璃酒瓶</td><td class="font-semibold">0.60</td><td>0.60</td><td class="text-secondary">持平</td><td>正常</td><td><button class="btn btn-sm">调价</button></td></tr>
+                <tr><td><span class="tag tag-electronic">电子废弃物</span></td><td>废手机</td><td class="font-semibold">80.00</td><td>78.00</td><td class="text-accent">↑ +2.6%</td><td>偏紧</td><td><button class="btn btn-sm">调价</button></td></tr>
+                <tr><td><span class="tag tag-textile">废纺织品</span></td><td>旧衣物</td><td class="font-semibold">1.50</td><td>1.50</td><td class="text-secondary">持平</td><td>正常</td><td><button class="btn btn-sm">调价</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📈 近30日价格走势</div>
+          </div>
+          <div class="chart-container">
+            <div class="bar-chart" id="priceChart"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payments -->
+      <div class="page" id="page-payments">
+        <div class="flex justify-between items-center mb-20">
+          <div class="text-secondary">回收款项收付记录及对账</div>
+          <div class="flex gap-8">
+            <button class="btn btn-primary" onclick="openModal('paymentModal')">+ 新建收款</button>
+            <button class="btn">导出报表</button>
+          </div>
+        </div>
+        <div class="stats-grid mb-24" style="grid-template-columns:repeat(4,1fr);">
+          <div class="stat-card">
+            <div class="stat-label">本月收款总额</div>
+            <div class="stat-value text-accent">¥ 384,250</div>
+            <div class="stat-change">↑ 8.2% 较上月</div>
+          </div>
+          <div class="stat-card warning">
+            <div class="stat-label">本月付款总额</div>
+            <div class="stat-value">¥ 228,350</div>
+            <div class="stat-change">↑ 5.4% 较上月</div>
+          </div>
+          <div class="stat-card info">
+            <div class="stat-label">本月净收益</div>
+            <div class="stat-value">¥ 155,900</div>
+            <div class="stat-change">↑ 12.3%</div>
+          </div>
+          <div class="stat-card danger">
+            <div class="stat-label">待结算款项</div>
+            <div class="stat-value">¥ 28,640</div>
+            <div class="stat-change">5 笔待处理</div>
+          </div>
+        </div>
+        <div class="card mb-24">
+          <div class="tabs">
+            <div class="tab active">收款记录</div>
+            <div class="tab">付款记录</div>
+            <div class="tab">待结算</div>
+            <div class="tab">对账单</div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>单号</th><th>时间</th><th>客户名称</th><th>类型</th><th>物料</th><th>重量</th><th>金额</th><th>状态</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>PAY-IN-2025051701</td><td>05-17 10:30</td><td>上海金茂大厦物业</td><td><span class="tag tag-metal">废金属</span></td><td>废紫铜</td><td>120kg</td><td class="font-semibold">¥ 5,400</td><td><span class="status status-active">已到账</span></td><td><button class="btn btn-sm">详情</button></td></tr>
+                <tr><td>PAY-IN-2025051702</td><td>05-17 11:15</td><td>虹桥新城业主委员会</td><td><span class="tag tag-paper">废纸</span></td><td>废纸板</td><td>85kg</td><td class="font-semibold">¥ 93.50</td><td><span class="status status-active">已到账</span></td><td><button class="btn btn-sm">详情</button></td></tr>
+                <tr><td>PAY-IN-2025051703</td><td>05-17 14:00</td><td>曹杨家乐福超市</td><td><span class="tag tag-plastic">废塑料</span></td><td>PET塑料瓶</td><td>45kg</td><td class="font-semibold">¥ 144.00</td><td><span class="status status-pending">处理中</span></td><td><button class="btn btn-sm">详情</button></td></tr>
+                <tr><td>PAY-OUT-2025051701</td><td>05-17 09:00</td><td>上海有色金属加工厂</td><td><span class="tag tag-metal">废金属</span></td><td>废紫铜</td><td>300kg</td><td class="font-semibold">¥ 13,500</td><td><span class="status status-active">已付款</span></td><td><button class="btn btn-sm">详情</button></td></tr>
+                <tr><td>PAY-OUT-2025051702</td><td>05-17 11:30</td><td>浙江塑料再生利用有限公司</td><td><span class="tag tag-plastic">废塑料</span></td><td>PET</td><td>500kg</td><td class="font-semibold">¥ 1,600</td><td><span class="status status-active">已付款</span></td><td><button class="btn btn-sm">详情</button></td></tr>
+                <tr><td>PAY-IN-2025051704</td><td>05-17 16:00</td><td>四川北路商业广场</td><td><span class="tag tag-glass">废玻璃</span></td><td>玻璃酒瓶</td><td>200kg</td><td class="font-semibold">¥ 120.00</td><td><span class="status status-pending">处理中</span></td><td><button class="btn btn-sm">详情</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title mb-16">💵 收款方式分布</div>
+            <div class="flex flex-col gap-12">
+              <div class="flex justify-between items-center">
+                <div class="flex items-center gap-8"><div style="width:12px;height:12px;border-radius:3px;background:#3b82f6;"></div>支付宝</div>
+                <div class="flex items-center gap-12"><div class="progress-bar" style="width:120px;"><div class="progress-fill" style="width:45%;background:#3b82f6;"></div></div><span class="font-semibold">45%</span></div>
+              </div>
+              <div class="flex justify-between items-center">
+                <div class="flex items-center gap-8"><div style="width:12px;height:12px;border-radius:3px;background:#10b981;"></div>微信支付</div>
+                <div class="flex items-center gap-12"><div class="progress-bar" style="width:120px;"><div class="progress-fill" style="width:32%;background:#10b981;"></div></div><span class="font-semibold">32%</span></div>
+              </div>
+              <div class="flex justify-between items-center">
+                <div class="flex items-center gap-8"><div style="width:12px;height:12px;border-radius:3px;background:#a855f7;"></div>银行转账</div>
+                <div class="flex items-center gap-12"><div class="progress-bar" style="width:120px;"><div class="progress-fill" style="width:18%;background:#a855f7;"></div></div><span class="font-semibold">18%</span></div>
+              </div>
+              <div class="flex justify-between items-center">
+                <div class="flex items-center gap-8"><div style="width:12px;height:12px;border-radius:3px;background:#f59e0b;"></div>现金</div>
+                <div class="flex items-center gap-12"><div class="progress-bar" style="width:120px;"><div class="progress-fill" style="width:5%;background:#f59e0b;"></div></div><span class="font-semibold">5%</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title mb-16">📊 周收款趋势</div>
+            <div class="chart-container" style="height:180px;">
+              <div class="bar-chart" id="weeklyPayChart"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Environment Report -->
+      <div class="page" id="page-environment">
+        <div class="flex justify-between items-center mb-20">
+          <div class="text-secondary">环境效益数据统计及报告生成</div>
+          <div class="flex gap-8">
+            <button class="btn" onclick="openModal('exportModal')">📥 导出报告</button>
+            <button class="btn btn-primary">📊 生成报告</button>
+          </div>
+        </div>
+        <div class="stats-grid mb-24" style="grid-template-columns:repeat(4,1fr);">
+          <div class="stat-card">
+            <div class="stat-label">本月碳减排量</div>
+            <div class="stat-value text-accent">156.2 t</div>
+            <div class="stat-change">CO₂ 当量</div>
+          </div>
+          <div class="stat-card info">
+            <div class="stat-label">节约电能</div>
+            <div class="stat-value">48.5 MWh</div>
+            <div class="stat-change">相当于减排 38.4t</div>
+          </div>
+          <div class="stat-card warning">
+            <div class="stat-label">节约水资源</div>
+            <div class="stat-value">2,840 m³</div>
+            <div class="stat-change">减少污水排放</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label"> Equivalent 植树</div>
+            <div class="stat-value">6,240 棵</div>
+            <div class="stat-change">每年碳汇量</div>
+          </div>
+        </div>
+        <div class="grid-2 mb-24">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">🌿 月度碳减排趋势</div>
+            </div>
+            <div class="chart-container">
+              <div class="bar-chart" id="carbonChart"></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">♻️ 各类物料碳减排贡献</div>
+            </div>
+            <div class="chart-container">
+              <div id="envDonut" style="position:relative;width:200px;height:200px;margin:0 auto;"></div>
+            </div>
+          </div>
+        </div>
+        <div class="grid-2 mb-24">
+          <div class="card">
+            <div class="card-title mb-16">📋 环保贡献明细</div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>物料类型</th><th>回收量</th><th>碳减排(t)</th><th>节能(MWh)</th><th>节水(m³)</th></tr></thead>
+                <tbody>
+                  <tr><td><span class="tag tag-metal">废金属</span></td><td>8,420 kg</td><td>62.4</td><td>21.5</td><td>1,260</td></tr>
+                  <tr><td><span class="tag tag-plastic">废塑料</span></td><td>5,680 kg</td><td>28.6</td><td>12.8</td><td>840</td></tr>
+                  <tr><td><span class="tag tag-paper">废纸</span></td><td>12,400 kg</td><td>41.2</td><td>9.6</td><td>580</td></tr>
+                  <tr><td><span class="tag tag-glass">废玻璃</span></td><td>3,200 kg</td><td>8.5</td><td>2.1</td><td>120</td></tr>
+                  <tr><td><span class="tag tag-electronic">电子废弃物</span></td><td>480 台</td><td>12.8</td><td>2.2</td><td>32</td></tr>
+                  <tr><td><span class="tag tag-textile">废纺织品</span></td><td>1,850 kg</td><td>2.7</td><td>0.3</td><td>8</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title mb-16">🏆 环保等级认证</div>
+            <div style="text-align:center;padding:20px;">
+              <div style="width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,#10b981,#059669);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:48px;">🌟</div>
+              <div class="font-bold text-lg mb-4">上海市绿色回收示范企业</div>
+              <div class="text-secondary text-sm mb-8">认证编号: SH-GREEN-2025-0158</div>
+              <div class="text-accent font-semibold mb-4">AAA 级信用企业</div>
+              <div class="text-xs text-secondary">有效期至: 2026-06-30</div>
+            </div>
+            <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:16px;">
+              <div class="flex justify-between mb-8">
+                <span class="text-secondary">年度回收目标</span><span class="font-semibold">已完成 58%</span>
+              </div>
+              <div class="progress-bar" style="height:10px;"><div class="progress-fill" style="width:58%;background:var(--accent);"></div></div>
+              <div class="flex justify-between mt-8">
+                <span class="text-secondary">28,450 / 50,000 kg</span><span class="text-accent font-semibold">达标中</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📝 环境报告记录</div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>报告编号</th><th>报告类型</th><th>报告周期</th><th>生成时间</th><th>碳减排量</th><th>状态</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>ER-2025-05</td><td>月度环境报告</td><td>2025-05</td><td>2025-05-17 08:00</td><td>156.2 t</td><td><span class="status status-active">已生成</span></td><td><button class="btn btn-sm">下载</button></td></tr>
+                <tr><td>ER-2025-04</td><td>月度环境报告</td><td>2025-04</td><td>2025-04-30 18:00</td><td>142.8 t</td><td><span class="status status-active">已生成</span></td><td><button class="btn btn-sm">下载</button></td></tr>
+                <tr><td>ER-2025-Q1</td><td>季度环境报告</td><td>2025-Q1</td><td>2025-03-31 20:00</td><td>418.5 t</td><td><span class="status status-active">已生成</span></td><td><button class="btn btn-sm">下载</button></td></tr>
+                <tr><td>ER-2025-03</td><td>月度环境报告</td><td>2025-03</td><td>2025-03-31 18:00</td><td>138.2 t</td><td><span class="status status-active">已生成</span></td><td><button class="btn btn-sm">下载</button></td></tr>
+                <tr><td>ER-2025-02</td><td>月度环境报告</td><td>2025-02</td><td>2025-02-28 18:00</td><td>125.4 t</td><td><span class="status status-active">已生成</span></td><td><button class="btn btn-sm">下载</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Modals -->
+<div class="modal-overlay" id="pickupModal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">新建回收预约</div><button class="modal-close" onclick="closeModal('pickupModal')">×</button></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">客户名称</label><input type="text" class="form-input" placeholder="请输入客户名称"></div><div class="form-group"><label class="form-label">联系电话</label><input type="tel" class="form-input" placeholder="请输入联系电话"></div></div>
+    <div class="form-group"><label class="form-label">回收地址</label><input type="text" class="form-input" placeholder="请输入详细地址"></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">预约日期</label><input type="date" class="form-input"></div><div class="form-group"><label class="form-label">预约时间</label><select class="form-select"><option>09:00-10:00</option><option>10:00-11:00</option><option>11:00-12:00</option><option>14:00-15:00</option><option>15:00-16:00</option><option>16:00-17:00</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">物料类型</label><select class="form-select"><option>废金属</option><option>废塑料</option><option>废纸</option><option>废玻璃</option><option>电子废弃物</option><option>废纺织品</option></select></div><div class="form-group"><label class="form-label">预估重量(kg)</label><input type="number" class="form-input" placeholder="请输入预估重量"></div></div>
+    <div class="form-group"><label class="form-label">备注</label><textarea class="form-textarea" placeholder="特殊要求或备注信息"></textarea></div>
+    <div class="form-actions"><button class="btn" onclick="closeModal('pickupModal')">取消</button><button class="btn btn-primary" onclick="closeModal('pickupModal')">确认创建</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="materialModal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">添加物料类别</div><button class="modal-close" onclick="closeModal('materialModal')">×</button></div>
+    <div class="form-group"><label class="form-label">物料编码</label><input type="text" class="form-input" placeholder="系统自动生成，可不填"></div>
+    <div class="form-group"><label class="form-label">物料名称</label><input type="text" class="form-input" placeholder="请输入物料名称"></div>
+    <div class="form-group"><label class="form-label">物料类别</label><select class="form-select"><option>废金属</option><option>废塑料</option><option>废纸</option><option>废玻璃</option><option>电子废弃物</option><option>废纺织品</option><option>有机垃圾</option></select></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">计量单位</label><select class="form-select"><option>kg</option><option>台</option><option>个</option><option>件</option></select></div><div class="form-group"><label class="form-label">安全库存</label><input type="number" class="form-input" placeholder="最低库存预警值"></div></div>
+    <div class="form-group"><label class="form-label">备注</label><textarea class="form-textarea" placeholder="物料说明"></textarea></div>
+    <div class="form-actions"><button class="btn" onclick="closeModal('materialModal')">取消</button><button class="btn btn-primary" onclick="closeModal('materialModal')">确认添加</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="priceModal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">调整回收价格</div><button class="modal-close" onclick="closeModal('priceModal')">×</button></div>
+    <div class="form-group"><label class="form-label">物料类型</label><select class="form-select"><option>废紫铜</option><option>废黄铜</option><option>废铝材</option><option>PET塑料瓶</option><option>废纸板</option></select></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">当前价格(元/kg)</label><input type="number" class="form-input" value="45.00" step="0.01"></div><div class="form-group"><label class="form-label">新价格(元/kg)</label><input type="number" class="form-input" placeholder="请输入新价格" step="0.01"></div></div>
+    <div class="form-group"><label class="form-label">调价原因</label><select class="form-select"><option>市场价格变动</option><option>成本调整</option><option>季节性调整</option><option>其他</option></select></div>
+    <div class="form-group"><label class="form-label">生效日期</label><input type="date" class="form-input"></div>
+    <div class="form-actions"><button class="btn" onclick="closeModal('priceModal')">取消</button><button class="btn btn-primary" onclick="closeModal('priceModal')">确认调价</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="paymentModal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">新建收款记录</div><button class="modal-close" onclick="closeModal('paymentModal')">×</button></div>
+    <div class="form-group"><label class="form-label">客户名称</label><input type="text" class="form-input" placeholder="请输入客户名称"></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">收款金额(元)</label><input type="number" class="form-input" placeholder="请输入金额" step="0.01"></div><div class="form-group"><label class="form-label">收款方式</label><select class="form-select"><option>支付宝</option><option>微信支付</option><option>银行转账</option><option>现金</option></select></div></div>
+    <div class="form-group"><label class="form-label">关联订单</label><select class="form-select"><option>WD2025051701 - 金茂大厦</option><option>WD2025051702 - 虹桥新城</option><option>WD2025051703 - 曹杨家乐福</option></select></div>
+    <div class="form-group"><label class="form-label">备注</label><textarea class="form-textarea" placeholder="备注信息"></textarea></div>
+    <div class="form-actions"><button class="btn" onclick="closeModal('paymentModal')">取消</button><button class="btn btn-primary" onclick="closeModal('paymentModal')">确认收款</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="supplierModal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">添加供应商</div><button class="modal-close" onclick="closeModal('supplierModal')">×</button></div>
+    <div class="form-group"><label class="form-label">供应商名称</label><input type="text" class="form-input" placeholder="请输入供应商名称"></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">联系人</label><input type="text" class="form-input" placeholder="联系人姓名"></div><div class="form-group"><label class="form-label">联系电话</label><input type="tel" class="form-input" placeholder="联系电话"></div></div>
+    <div class="form-group"><label class="form-label">供应物料类型</label><select class="form-select"><option>废金属</option><option>废塑料</option><option>废纸</option><option>废玻璃</option><option>电子废弃物</option><option>废纺织品</option></select></div>
+    <div class="form-group"><label class="form-label">地址</label><input type="text" class="form-input" placeholder="请输入详细地址"></div>
+    <div class="form-group"><label class="form-label">备注</label><textarea class="form-textarea" placeholder="备注信息"></textarea></div>
+    <div class="form-actions"><button class="btn" onclick="closeModal('supplierModal')">取消</button><button class="btn btn-primary" onclick="closeModal('supplierModal')">确认添加</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="inventoryInModal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">入库登记</div><button class="modal-close" onclick="closeModal('inventoryInModal')">×</button></div>
+    <div class="form-group"><label class="form-label">物料</label><select class="form-select"><option>废紫铜</option><option>PET塑料瓶</option><option>废纸板</option><option>玻璃酒瓶</option></select></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">入库数量</label><input type="number" class="form-input" placeholder="数量"></div><div class="form-group"><label class="form-label">单价(元)</label><input type="number" class="form-input" step="0.01" placeholder="单价"></div></div>
+    <div class="form-group"><label class="form-label">来源</label><input type="text" class="form-input" placeholder="供应商或客户"></div>
+    <div class="form-group"><label class="form-label">仓库</label><select class="form-select"><option>宝山总仓</option><option>浦东分仓</option><option>闵行分仓</option></select></div>
+    <div class="form-actions"><button class="btn" onclick="closeModal('inventoryInModal')">取消</button><button class="btn btn-primary" onclick="closeModal('inventoryInModal')">确认入库</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="inventoryOutModal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">出库登记</div><button class="modal-close" onclick="closeModal('inventoryOutModal')">×</button></div>
+    <div class="form-group"><label class="form-label">物料</label><select class="form-select"><option>废紫铜</option><option>PET塑料瓶</option><option>废纸板</option><option>玻璃酒瓶</option></select></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">出库数量</label><input type="number" class="form-input" placeholder="数量"></div><div class="form-group"><label class="form-label">单价(元)</label><input type="number" class="form-input" step="0.01" placeholder="单价"></div></div>
+    <div class="form-group"><label class="form-label">去向</label><input type="text" class="form-input" placeholder="供应商或客户"></div>
+    <div class="form-actions"><button class="btn" onclick="closeModal('inventoryOutModal')">取消</button><button class="btn btn-primary" onclick="closeModal('inventoryOutModal')">确认出库</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="exportModal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">导出环境报告</div><button class="modal-close" onclick="closeModal('exportModal')">×</button></div>
+    <div class="form-group"><label class="form-label">报告类型</label><select class="form-select"><option>月度环境报告</option><option>季度环境报告</option><option>年度环境报告</option></select></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">开始日期</label><input type="date" class="form-input"></div><div class="form-group"><label class="form-label">结束日期</label><input type="date" class="form-input"></div></div>
+    <div class="form-group"><label class="form-label">导出格式</label><select class="form-select"><option>PDF</option><option>Excel</option><option>Word</option></select></div>
+    <div class="form-group"><label class="form-label">报告内容</label><div class="flex flex-col gap-8" style="color:var(--text-secondary);font-size:13px;"><label class="flex items-center gap-8"><input type="checkbox" checked> 碳减排数据</label><label class="flex items-center gap-8"><input type="checkbox" checked> 节能数据</label><label class="flex items-center gap-8"><input type="checkbox" checked> 回收量统计</label><label class="flex items-center gap-8"><input type="checkbox"> 详细交易记录</label></div></div>
+    <div class="form-actions"><button class="btn" onclick="closeModal('exportModal')">取消</button><button class="btn btn-primary" onclick="closeModal('exportModal')">确认导出</button></div>
+  </div>
+</div>
+
+<!-- Notification Panel -->
+<div class="notif-panel" id="notifPanel">
+  <div class="notif-header"><span class="font-semibold">通知消息</span><span class="text-xs text-secondary cursor-pointer" onclick="document.getElementById('notifPanel').classList.remove('show')">关闭</span></div>
+  <div class="notif-item">
+    <div class="notif-icon" style="background:rgba(16,185,129,0.15);">✅</div>
+    <div class="list-info"><div class="list-title">订单 WD2025051703 已完成</div><div class="list-sub">曹杨家乐福 · 废塑料 45kg 已入库</div></div>
+  </div>
+  <div class="notif-item">
+    <div class="notif-icon" style="background:rgba(245,158,11,0.15);">⚠️</div>
+    <div class="list-info"><div class="list-title">库存预警：厨余垃圾低于安全库存</div><div class="list-sub">当前库存 320kg，低于安全库存 800kg</div></div>
+  </div>
+  <div class="notif-item">
+    <div class="notif-icon" style="background:rgba(59,130,246,0.15);">🚛</div>
+    <div class="list-info"><div class="list-title">车辆沪A·88821已完成路线</div><div class="list-sub">返回宝山区回收中心 · 回收量 450kg</div></div>
+  </div>
+  <div class="notif-item">
+    <div class="notif-icon" style="background:rgba(168,85,247,0.15);">💰</div>
+    <div class="list-info"><div class="list-title">新收款到账</div><div class="list-sub">上海金茂大厦 · ¥5,400 已到账</div></div>
+  </div>
+</div>
+
+<script>
+// Navigation
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+    const page = item.dataset.page;
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    document.getElementById('pageTitle').textContent = item.textContent.trim().replace(/\d+$/, '');
+    initPage(page);
+  });
+});
+
+// Modal
+function openModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('show'); });
+});
+
+// Notification panel
+document.getElementById('notifBtn').addEventListener('click', () => {
+  document.getElementById('notifPanel').classList.toggle('show');
+});
+document.addEventListener('click', e => {
+  if (!e.target.closest('#notifBtn') && !e.target.closest('#notifPanel')) {
+    document.getElementById('notifPanel').classList.remove('show');
+  }
+});
+
+// Counter animation
+function animateCounters() {
+  document.querySelectorAll('.counter').forEach(counter => {
+    const target = parseFloat(counter.dataset.target);
+    const duration = 1500;
+    const start = performance.now();
+    const isFloat = target % 1 !== 0;
+    function update(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = target * eased;
+      counter.textContent = isFloat ? current.toFixed(1) : Math.floor(current).toLocaleString();
+      if (progress < 1) requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+  });
+}
+
+// Bar chart rendering
+function renderBarChart(containerId, data, colors) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = '';
+  const max = Math.max(...data.map(d => d.value));
+  data.forEach((d, i) => {
+    const item = document.createElement('div');
+    item.className = 'bar-item';
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+    bar.style.height = (d.value / max * 160) + 'px';
+    bar.style.background = colors[i % colors.length];
+    const label = document.createElement('div');
+    label.className = 'bar-label';
+    label.textContent = d.label;
+    item.appendChild(bar);
+    item.appendChild(label);
+    container.appendChild(item);
+    // Hover effect
+    bar.addEventListener('mouseenter', () => {
+      bar.style.filter = 'brightness(1.3)';
+      bar.style.boxShadow = `0 0 20px ${colors[i % colors.length]}40`;
+    });
+    bar.addEventListener('mouseleave', () => {
+      bar.style.filter = '';
+      bar.style.boxShadow = '';
+    });
+  });
+}
+
+// Donut chart
+function renderDonut(containerId, data, colors) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = '';
+  const total = data.reduce((s, d) => s + d.value, 0);
+  let cumulative = 0;
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 200 200');
+  svg.style.transform = 'rotate(-90deg)';
+  data.forEach((d, i) => {
+    const pct = d.value / total;
+    const startAngle = cumulative * 360;
+    const endAngle = (cumulative + pct) * 360;
+    const start = (cumulative * 100).toFixed(1);
+    const end = ((cumulative + pct) * 100).toFixed(1);
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    path.setAttribute('cx', '100');
+    path.setAttribute('cy', '100');
+    path.setAttribute('r', '70');
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', colors[i % colors.length]);
+    path.setAttribute('stroke-width', '30');
+    path.setAttribute('stroke-dasharray', `${pct * 440} ${440 - pct * 440}`);
+    path.setAttribute('stroke-dashoffset', '0');
+    path.style.transition = 'all 0.3s';
+    path.style.cursor = 'pointer';
+    path.addEventListener('mouseenter', () => path.setAttribute('stroke-width', '35'));
+    path.addEventListener('mouseleave', () => path.setAttribute('stroke-width', '30'));
+    svg.appendChild(path);
+    cumulative += pct;
+  });
+  // Center text
+  const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  text.setAttribute('x', '100');
+  text.setAttribute('y', '95');
+  text.setAttribute('text-anchor', 'middle');
+  text.setAttribute('fill', '#e8edf5');
+  text.setAttribute('font-size', '22');
+  text.setAttribute('font-weight', '700');
+  text.textContent = total.toLocaleString();
+  const text2 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  text2.setAttribute('x', '100');
+  text2.setAttribute('y', '115');
+  text2.setAttribute('text-anchor', 'middle');
+  text2.setAttribute('fill', '#8b9cc4');
+  text2.setAttribute('font-size', '12');
+  text2.textContent = '总 kg';
+  container.appendChild(svg);
+  container.querySelector('svg').style.transform = 'rotate(-90deg)';
+  // Legend
+  const legend = document.createElement('div');
+  legend.style.cssText = 'position:absolute;right:20px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:6px;font-size:11px;';
+  data.forEach((d, i) => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:6px;';
+    row.innerHTML = `<span style="width:10px;height:10px;border-radius:2px;background:${colors[i % colors.length]};flex-shrink:0;"></span><span style="color:#8b9cc4;">${d.label}</span>`;
+    legend.appendChild(row);
+  });
+  container.style.position = 'relative';
+  container.appendChild(legend);
+}
+
+// Page init
+const pageInit = {};
+function initPage(page) {
+  if (pageInit[page]) return;
+  pageInit[page] = true;
+  if (page === 'dashboard') {
+    renderBarChart('weeklyChart', [
+      {label:'05-11',value:1850},{label:'05-12',value:2100},{label:'05-13',value:1680},{label:'05-14',value:2450},{label:'05-15',value:2890},{label:'05-16',value:2640},{label:'05-17',value:2847}
+    ], ['#10b981','#10b981','#10b981','#10b981','#10b981','#10b981','#34d399']);
+    renderDonut('categoryDonut', [
+      {label:'废金属',value:8420},{label:'废塑料',value:5680},{label:'废纸',value:12400},{label:'废玻璃',value:3200},{label:'电子废弃物',value:480},{label:'废纺织品',value:1850}
+    ], ['#a855f7','#f97316','#3b82f6','#22c55e','#ec4899','#eab308']);
+  }
+  if (page === 'pricing') {
+    renderBarChart('priceChart', [
+      {label:'04-18',value:42.5},{label:'04-25',value:44.0},{label:'05-02',value:43.8},{label:'05-09',value:45.2},{label:'05-17',value:45.0}
+    ], ['#3b82f6','#3b82f6','#3b82f6','#3b82f6','#10b981']);
+  }
+  if (page === 'payments') {
+    renderBarChart('weeklyPayChart', [
+      {label:'周一',value:48500},{label:'周二',value:56200},{label:'周三',value:42800},{label:'周四',value:62100},{label:'周五',value:55300},{label:'周六',value:38900},{label:'周日',value:28400}
+    ], ['#10b981','#10b981','#10b981','#10b981','#10b981','#10b981','#34d399']);
+  }
+  if (page === 'environment') {
+    renderBarChart('carbonChart', [
+      {label:'01月',value:128},{label:'02月',value:125},{label:'03月',value:138},{label:'04月',value:143},{label:'05月',value:156}
+    ], ['#3b82f6','#3b82f6','#3b82f6','#3b82f6','#10b981']);
+    renderDonut('envDonut', [
+      {label:'废金属',value:62.4},{label:'废塑料',value:28.6},{label:'废纸',value:41.2},{label:'废玻璃',value:8.5},{label:'电子废弃物',value:12.8},{label:'废纺织品',value:2.7}
+    ], ['#a855f7','#f97316','#3b82f6','#22c55e','#ec4899','#eab308']);
+  }
+}
+
+// Route optimization
+let vehicleAnim = null;
+function optimizeRoute() {
+  const optMsg = document.createElement('div');
+  optMsg.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--bg-card);border:1px solid var(--accent);border-radius:12px;padding:24px;text-align:center;z-index:2000;';
+  optMsg.innerHTML = '<div style="font-size:32px;margin-bottom:12px;">🚀</div><div class="font-semibold">正在智能优化路线...</div><div class="text-secondary text-sm mt-4">预计节省 18% 里程</div>';
+  document.body.appendChild(optMsg);
+  setTimeout(() => {
+    optMsg.innerHTML = '<div style="font-size:32px;margin-bottom:12px;">✅</div><div class="font-semibold text-accent">路线优化完成！</div><div class="text-secondary text-sm mt-4">新路线已规划，总里程减少 10.5 km</div>';
+    setTimeout(() => optMsg.remove(), 2000);
+  }, 2000);
+}
+
+// Vehicle tracking filter
+function filterVehicle(type) {
+  document.querySelectorAll('#trackingMap .map-dot').forEach(dot => {
+    const status = dot.dataset.status;
+    if (type === 'all') { dot.style.opacity = '1'; }
+    else if (type === 'active') { dot.style.opacity = status === 'active' ? '1' : '0.2'; }
+    else if (type === 'idle') { dot.style.opacity = status === 'idle' ? '1' : '0.2'; }
+  });
+}
+
+// Tab switching
+function switchTab(tabEl, targetId) {
+  tabEl.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  tabEl.classList.add('active');
+  const parent = tabEl.closest('.card');
+  parent.querySelectorAll('.table-wrap').forEach(t => t.style.display = 'none');
+  document.getElementById(targetId).style.display = 'block';
+}
+
+// Material detail
+function showMaterialDetail(type) {
+  alert('查看 ' + type + ' 类物料详情');
+}
+
+// Route vehicle animation
+function animateVehicle() {
+  const icon = document.getElementById('vehicleIcon');
+  if (!icon) return;
+  const steps = [
+    {left:115,top:145},{left:195,top:95},{left:275,top:135},{left:395,top:115},{left:515,top:175}
+  ];
+  let step = 0;
+  if (vehicleAnim) clearInterval(vehicleAnim);
+  vehicleAnim = setInterval(() => {
+    step = (step + 1) % steps.length;
+    icon.style.left = steps[step].left + 'px';
+    icon.style.top = steps[step].top + 'px';
+    // Update dots
+    document.querySelectorAll('#routeMap .map-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === step + 1);
+    });
+  }, 2500);
+}
+
+// Init
+setTimeout(() => {
+  animateCounters();
+  initPage('dashboard');
+  animateVehicle();
+}, 100);
+
+// Route vehicle select
+document.getElementById('routeVehicle')?.addEventListener('change', function() {
+  if (this.value) {
+    document.querySelectorAll('#routeMap .map-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === 0);
+    });
+    document.getElementById('vehicleIcon').style.left = '115px';
+    document.getElementById('vehicleIcon').style.top = '145px';
+  }
+});
+</script>
+</body>
+</html>

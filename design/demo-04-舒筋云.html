@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>舒筋云 - SPA/按摩店管理系统</title>
+<style>
+:root {
+  --bg-primary: #0f0f1a;
+  --bg-secondary: #1a1a2e;
+  --bg-card: #16213e;
+  --bg-sidebar: #0d0d1a;
+  --accent: #e94560;
+  --accent2: #0f3460;
+  --text-primary: #eaeaea;
+  --text-secondary: #8892b0;
+  --border: #2a2a4a;
+  --success: #00d9a5;
+  --warning: #f39c12;
+  --danger: #e74c3c;
+  --info: #3498db;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; background: var(--bg-primary); color: var(--text-primary); height: 100vh; overflow: hidden; }
+.app-container { display: flex; height: 100vh; }
+
+/* Sidebar */
+.sidebar { width: 240px; background: var(--bg-sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; }
+.logo { padding: 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); }
+.logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, var(--accent), #ff6b6b); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.logo-text { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+.logo-sub { font-size: 10px; color: var(--text-secondary); }
+.nav-section { padding: 12px 0; flex: 1; overflow-y: auto; }
+.nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; cursor: pointer; color: var(--text-secondary); transition: all 0.2s; border-left: 3px solid transparent; font-size: 14px; }
+.nav-item:hover { background: rgba(233,69,96,0.08); color: var(--text-primary); }
+.nav-item.active { background: rgba(233,69,96,0.12); color: var(--accent); border-left-color: var(--accent); }
+.nav-item .icon { font-size: 18px; width: 24px; text-align: center; }
+.nav-divider { height: 1px; background: var(--border); margin: 8px 20px; }
+.nav-badge { margin-left: auto; background: var(--accent); color: white; font-size: 11px; padding: 2px 8px; border-radius: 10px; min-width: 20px; text-align: center; }
+.sidebar-footer { padding: 16px 20px; border-top: 1px solid var(--border); }
+.staff-info { display: flex; align-items: center; gap: 10px; }
+.staff-avatar { width: 36px; height: 36px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.staff-name { font-size: 13px; font-weight: 600; }
+.staff-role { font-size: 11px; color: var(--text-secondary); }
+
+/* Main Content */
+.main-content { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.topbar { background: var(--bg-secondary); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); height: 60px; flex-shrink: 0; }
+.topbar-left { display: flex; align-items: center; gap: 16px; }
+.page-title { font-size: 18px; font-weight: 600; }
+.topbar-right { display: flex; align-items: center; gap: 16px; }
+.topbar-btn { width: 36px; height: 36px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-secondary); transition: all 0.2s; font-size: 16px; position: relative; }
+.topbar-btn:hover { border-color: var(--accent); color: var(--accent); }
+.notif-badge { position: absolute; top: -4px; right: -4px; width: 16px; height: 16px; background: var(--accent); border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; }
+
+.content-area { flex: 1; overflow-y: auto; padding: 24px; }
+
+/* Cards */
+.card { background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); padding: 20px; margin-bottom: 20px; }
+.card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.card-title { font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.card-title .icon { color: var(--accent); }
+
+/* Stats Grid */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px; }
+.stat-card { background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); padding: 20px; }
+.stat-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.stat-value { font-size: 28px; font-weight: 700; }
+.stat-change { font-size: 12px; margin-top: 6px; }
+.stat-change.up { color: var(--success); }
+.stat-change.down { color: var(--danger); }
+.stat-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 10px; }
+
+/* Table */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; padding: 12px 16px; font-size: 12px; color: var(--text-secondary); border-bottom: 1px solid var(--border); font-weight: 500; }
+td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid rgba(42,42,74,0.5); }
+tr:hover td { background: rgba(233,69,96,0.04); }
+.tag { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 500; }
+.tag-red { background: rgba(231,76,60,0.15); color: #e74c3c; }
+.tag-green { background: rgba(0,217,165,0.15); color: #00d9a5; }
+.tag-blue { background: rgba(52,152,219,0.15); color: #3498db; }
+.tag-yellow { background: rgba(243,156,18,0.15); color: #f39c12; }
+.tag-purple { background: rgba(155,89,182,0.15); color: #9b59b6; }
+
+/* Buttons */
+.btn { padding: 8px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; font-family: inherit; }
+.btn-primary { background: var(--accent); color: white; }
+.btn-primary:hover { background: #d13652; }
+.btn-secondary { background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border); }
+.btn-secondary:hover { border-color: var(--accent); }
+.btn-sm { padding: 5px 12px; font-size: 12px; }
+.btn-icon { width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); cursor: pointer; transition: all 0.2s; font-size: 14px; }
+.btn-icon:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Modal */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+.modal-overlay.show { opacity: 1; pointer-events: all; }
+.modal { background: var(--bg-secondary); border-radius: 16px; border: 1px solid var(--border); width: 90%; max-width: 600px; max-height: 85vh; overflow-y: auto; transform: scale(0.95); transition: transform 0.3s; }
+.modal-overlay.show .modal { transform: scale(1); }
+.modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.modal-title { font-size: 16px; font-weight: 600; }
+.modal-close { width: 32px; height: 32px; border-radius: 8px; border: none; background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; }
+.modal-close:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); }
+.modal-body { padding: 24px; }
+.modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
+
+/* Form */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-group { margin-bottom: 16px; }
+.form-group.full { grid-column: span 2; }
+.form-label { font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; display: block; }
+.form-input, .form-select, .form-textarea { width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-primary); font-size: 13px; font-family: inherit; transition: border-color 0.2s; }
+.form-input:focus, .form-select:focus, .form-textarea:focus { outline: none; border-color: var(--accent); }
+.form-textarea { resize: vertical; min-height: 80px; }
+.form-select { appearance: none; cursor: pointer; }
+
+/* Tabs */
+.tabs { display: flex; gap: 4px; background: var(--bg-secondary); padding: 4px; border-radius: 10px; margin-bottom: 20px; }
+.tab { padding: 8px 20px; border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--text-secondary); transition: all 0.2s; border: none; background: transparent; font-family: inherit; }
+.tab:hover { color: var(--text-primary); }
+.tab.active { background: var(--accent); color: white; }
+
+/* Schedule Grid */
+.schedule-grid { display: grid; grid-template-columns: 80px repeat(7, 1fr); gap: 1px; background: var(--border); border-radius: 10px; overflow: hidden; }
+.schedule-header { background: var(--bg-secondary); padding: 10px 8px; text-align: center; font-size: 12px; color: var(--text-secondary); }
+.schedule-cell { background: var(--bg-card); padding: 8px; min-height: 60px; font-size: 11px; position: relative; }
+.schedule-cell .time { color: var(--text-secondary); margin-bottom: 4px; }
+.schedule-cell .booking { background: var(--accent); color: white; padding: 4px 8px; border-radius: 4px; font-size: 10px; margin-bottom: 2px; cursor: pointer; }
+.schedule-cell .booking.break { background: var(--warning); }
+
+/* Room Status */
+.room-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+.room-card { background: var(--bg-secondary); border-radius: 10px; padding: 16px; border: 1px solid var(--border); }
+.room-card.occupied { border-color: var(--success); }
+.room-card.occupied .room-status { background: var(--success); }
+.room-card.booked { border-color: var(--warning); }
+.room-card.booked .room-status { background: var(--warning); }
+.room-card.idle .room-status { background: var(--text-secondary); }
+.room-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.room-name { font-size: 14px; font-weight: 600; }
+.room-status { width: 8px; height: 8px; border-radius: 50%; }
+.room-info { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
+.room-service { font-size: 12px; color: var(--accent); }
+
+/* Inventory */
+.inventory-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: var(--bg-secondary); border-radius: 10px; margin-bottom: 8px; border: 1px solid var(--border); }
+.inventory-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.inventory-info { flex: 1; }
+.inventory-name { font-size: 13px; font-weight: 600; }
+.inventory-stock { font-size: 11px; color: var(--text-secondary); }
+.inventory-bar { flex: 1; height: 6px; background: var(--bg-primary); border-radius: 3px; overflow: hidden; }
+.inventory-fill { height: 100%; border-radius: 3px; transition: width 0.5s; }
+.stock-low { background: var(--danger); }
+.stock-mid { background: var(--warning); }
+.stock-ok { background: var(--success); }
+
+/* Loyalty */
+.loyalty-card { background: linear-gradient(135deg, var(--accent2), #1a1a3e); border-radius: 16px; padding: 24px; margin-bottom: 16px; position: relative; overflow: hidden; }
+.loyalty-card::before { content: ''; position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(233,69,96,0.2); border-radius: 50%; }
+.loyalty-level { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; margin-bottom: 12px; }
+.level-gold { background: linear-gradient(135deg, #f1c40f, #e67e22); color: #1a1a2e; }
+.level-silver { background: linear-gradient(135deg, #bdc3c7, #95a5a6); color: #1a1a2e; }
+.level-bronze { background: linear-gradient(135deg, #cd7f32, #a0522d); color: white; }
+.member-name { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+.member-phone { font-size: 13px; color: var(--text-secondary); }
+.loyalty-points { font-size: 36px; font-weight: 700; color: var(--accent); margin: 16px 0 8px; }
+.loyalty-progress { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; margin-top: 12px; }
+.loyalty-progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #ff6b6b); border-radius: 4px; transition: width 0.5s; }
+
+/* Chart Placeholders */
+.chart-box { background: var(--bg-secondary); border-radius: 12px; border: 1px solid var(--border); padding: 20px; height: 200px; position: relative; }
+.chart-bars { display: flex; align-items: flex-end; justify-content: space-around; height: 140px; padding-top: 20px; }
+.chart-bar { width: 30px; background: linear-gradient(to top, var(--accent), rgba(233,69,96,0.3)); border-radius: 4px 4px 0 0; transition: height 0.5s; position: relative; cursor: pointer; }
+.chart-bar:hover { background: linear-gradient(to top, #ff6b6b, var(--accent)); }
+.chart-bar-label { position: absolute; bottom: -20px; left: 50%; transform: translateX(-50%); font-size: 10px; color: var(--text-secondary); }
+
+/* Health Record */
+.health-record { background: var(--bg-secondary); border-radius: 10px; padding: 16px; border: 1px solid var(--border); margin-bottom: 12px; }
+.health-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.health-date { font-size: 12px; color: var(--text-secondary); }
+.health-title { font-size: 14px; font-weight: 600; }
+.health-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.health-note { font-size: 12px; color: var(--text-secondary); margin-top: 8px; }
+
+/* Search Bar */
+.search-bar { display: flex; align-items: center; gap: 10px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 8px 14px; width: 280px; }
+.search-bar input { background: transparent; border: none; color: var(--text-primary); font-size: 13px; flex: 1; font-family: inherit; }
+.search-bar input:focus { outline: none; }
+.search-bar .icon { color: var(--text-secondary); }
+
+/* Page Sections */
+.page-section { display: none; }
+.page-section.active { display: block; }
+
+/* Timeline */
+.timeline { position: relative; padding-left: 24px; }
+.timeline::before { content: ''; position: absolute; left: 7px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+.timeline-item { position: relative; margin-bottom: 16px; }
+.timeline-item::before { content: ''; position: absolute; left: -24px; top: 6px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); border: 2px solid var(--bg-primary); }
+.timeline-time { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; }
+.timeline-content { font-size: 13px; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+
+/* Animation */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.fade-in { animation: fadeIn 0.3s ease forwards; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+.pulse { animation: pulse 2s infinite; }
+
+/* Toast */
+.toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 2000; display: flex; flex-direction: column; gap: 8px; }
+.toast { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 10px; padding: 14px 20px; display: flex; align-items: center; gap: 10px; font-size: 13px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); animation: slideIn 0.3s ease; }
+@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.toast.success { border-left: 3px solid var(--success); }
+.toast.error { border-left: 3px solid var(--danger); }
+.toast.info { border-left: 3px solid var(--info); }
+
+/* Calendar */
+.calendar { background: var(--bg-secondary); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
+.calendar-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--bg-card); }
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+.calendar-day { padding: 10px; text-align: center; font-size: 12px; border: 1px solid transparent; cursor: pointer; border-radius: 6px; transition: all 0.2s; }
+.calendar-day:hover { background: rgba(233,69,96,0.1); }
+.calendar-day.header { color: var(--text-secondary); font-weight: 500; cursor: default; }
+.calendar-day.today { background: var(--accent); color: white; font-weight: 600; }
+.calendar-day.selected { background: rgba(233,69,96,0.2); border-color: var(--accent); }
+.calendar-day.has-booking::after { content: ''; display: block; width: 4px; height: 4px; background: var(--success); border-radius: 50%; margin: 2px auto 0; }
+
+/* Utility */
+.flex { display: flex; }
+.flex-between { display: flex; align-items: center; justify-content: space-between; }
+.gap-8 { gap: 8px; }
+.gap-12 { gap: 12px; }
+.mt-8 { margin-top: 8px; }
+.mt-16 { margin-top: 16px; }
+.text-sm { font-size: 12px; }
+.text-muted { color: var(--text-secondary); }
+.text-accent { color: var(--accent); }
+.text-success { color: var(--success); }
+.text-warning { color: var(--warning); }
+.text-danger { color: var(--danger); }
+.font-bold { font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="app-container">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">🧘</div>
+      <div>
+        <div class="logo-text">舒筋云</div>
+        <div class="logo-sub">SPA管理系统 v2.0</div>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-item active" data-page="dashboard">
+        <span class="icon">📊</span><span>工作台</span>
+      </div>
+      <div class="nav-divider"></div>
+      <div class="nav-item" data-page="appointments">
+        <span class="icon">📅</span><span>预约管理</span>
+        <span class="nav-badge">5</span>
+      </div>
+      <div class="nav-item" data-page="schedule">
+        <span class="icon">📆</span><span>排班日历</span>
+      </div>
+      <div class="nav-item" data-page="rooms">
+        <span class="icon">🚪</span><span>房间状态</span>
+      </div>
+      <div class="nav-item" data-page="services">
+        <span class="icon">💆</span><span>服务项目</span>
+      </div>
+      <div class="nav-divider"></div>
+      <div class="nav-item" data-page="customers">
+        <span class="icon">👥</span><span>客户管理</span>
+      </div>
+      <div class="nav-item" data-page="health">
+        <span class="icon">📋</span><span>健康档案</span>
+      </div>
+      <div class="nav-item" data-page="inventory">
+        <span class="icon">📦</span><span>库存管理</span>
+        <span class="nav-badge" style="background:var(--warning)">3</span>
+      </div>
+      <div class="nav-item" data-page="loyalty">
+        <span class="icon">🎁</span><span>会员积分</span>
+      </div>
+      <div class="nav-divider"></div>
+      <div class="nav-item" data-page="reports">
+        <span class="icon">📈</span><span>数据报表</span>
+      </div>
+      <div class="nav-item" data-page="settings">
+        <span class="icon">⚙️</span><span>系统设置</span>
+      </div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="staff-info">
+        <div class="staff-avatar">陈</div>
+        <div>
+          <div class="staff-name">陈美玲</div>
+          <div class="staff-role">店长</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="page-title" id="pageTitle">工作台</div>
+      </div>
+      <div class="topbar-right">
+        <div class="search-bar">
+          <span class="icon">🔍</span>
+          <input type="text" placeholder="搜索客户、项目、技师..." id="globalSearch">
+        </div>
+        <div class="topbar-btn">🔔<span class="notif-badge">3</span></div>
+        <div class="topbar-btn">⚙️</div>
+      </div>
+    </div>
+
+    <div class="content-area" id="contentArea">
+      <!-- Dashboard -->
+      <div class="page-section active" id="page-dashboard">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label"><span>📅</span> 今日预约</div>
+            <div class="stat-value">28</div>
+            <div class="stat-change up">↑ 12% 较昨日</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label"><span>💰</span> 今日营收</div>
+            <div class="stat-value" style="color:var(--success)">¥8,640</div>
+            <div class="stat-change up">↑ 8.5% 较昨日</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label"><span>👥</span> 在店客户</div>
+            <div class="stat-value">14</div>
+            <div class="stat-change down">↓ 2 较昨日</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label"><span>⭐</span> 客户好评率</div>
+            <div class="stat-value" style="color:var(--warning)">96.8%</div>
+            <div class="stat-change up">↑ 1.2% 本周</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px;">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><span class="icon">📊</span>本周营收趋势</div>
+              <div class="tabs" style="margin:0">
+                <button class="tab active">本周</button>
+                <button class="tab">本月</button>
+              </div>
+            </div>
+            <div class="chart-box">
+              <div class="chart-bars" id="revenueChart">
+                <div class="chart-bar" style="height:60%" data-value="3200"><div class="chart-bar-label">周一</div></div>
+                <div class="chart-bar" style="height:45%" data-value="2400"><div class="chart-bar-label">周二</div></div>
+                <div class="chart-bar" style="height:80%" data-value="4200"><div class="chart-bar-label">周三</div></div>
+                <div class="chart-bar" style="height:65%" data-value="3500"><div class="chart-bar-label">周四</div></div>
+                <div class="chart-bar" style="height:90%" data-value="4800"><div class="chart-bar-label">周五</div></div>
+                <div class="chart-bar" style="height:100%" data-value="5200"><div class="chart-bar-label">周六</div></div>
+                <div class="chart-bar" style="height:70%" data-value="3800"><div class="chart-bar-label">周日</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><span class="icon">🧘</span>热门服务</div>
+              <button class="btn btn-sm btn-secondary">查看全部</button>
+            </div>
+            <div style="font-size:12px;">
+              <div style="display:flex;justify-content:space-between;margin-bottom:12px;align-items:center;">
+                <div><div style="font-weight:600">中式推拿</div><div style="color:var(--text-secondary)">已预约 86次</div></div>
+                <span class="tag tag-red">热门</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:12px;align-items:center;">
+                <div><div style="font-weight:600">芳香SPA</div><div style="color:var(--text-secondary)">已预约 72次</div></div>
+                <span class="tag tag-yellow">推荐</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:12px;align-items:center;">
+                <div><div style="font-weight:600">足底反射</div><div style="color:var(--text-secondary)">已预约 65次</div></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:12px;align-items:center;">
+                <div><div style="font-weight:600">热石疗法</div><div style="color:var(--text-secondary)">已预约 48次</div></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div><div style="font-weight:600">肩颈理疗</div><div style="color:var(--text-secondary)">已预约 41次</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:20px;">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><span class="icon">🚪</span>房间状态</div>
+              <button class="btn btn-sm btn-secondary" onclick="navigateTo('rooms')">全部房间</button>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div class="room-card occupied">
+                <div class="room-header">
+                  <div class="room-name">云水阁 1号</div>
+                  <div class="room-status"></div>
+                </div>
+                <div class="room-info">技师：李晓婷</div>
+                <div class="room-service">中式推拿 60分钟</div>
+              </div>
+              <div class="room-card occupied">
+                <div class="room-header">
+                  <div class="room-name">静心坊 3号</div>
+                  <div class="room-status"></div>
+                </div>
+                <div class="room-info">技师：王建国</div>
+                <div class="room-service">足底反射 45分钟</div>
+              </div>
+              <div class="room-card booked">
+                <div class="room-header">
+                  <div class="room-name">禅意居 5号</div>
+                  <div class="room-status"></div>
+                </div>
+                <div class="room-info">10:00 已有预约</div>
+                <div class="room-service">芳香SPA 90分钟</div>
+              </div>
+              <div class="room-card idle">
+                <div class="room-header">
+                  <div class="room-name">清风轩 2号</div>
+                  <div class="room-status"></div>
+                </div>
+                <div class="room-info">空闲中</div>
+                <div class="room-service">—</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><span class="icon">👥</span>今日待到店</div>
+              <span class="tag tag-green">5人</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>客户</th><th>服务</th><th>技师</th><th>时间</th></tr></thead>
+                <tbody>
+                  <tr><td>张伟</td><td>中式推拿</td><td>李晓婷</td><td>10:00</td></tr>
+                  <tr><td>李娜</td><td>芳香SPA</td><td>张丽华</td><td>10:30</td></tr>
+                  <tr><td>王芳</td><td>肩颈理疗</td><td>王建国</td><td>11:00</td></tr>
+                  <tr><td>刘洋</td><td>热石疗法</td><td>陈美玲</td><td>14:00</td></tr>
+                  <tr><td>赵敏</td><td>足底反射</td><td>张丽华</td><td>14:30</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Appointments -->
+      <div class="page-section" id="page-appointments">
+        <div class="card">
+          <div class="card-header">
+            <div class="flex gap-8">
+              <button class="btn btn-primary" onclick="openModal('addAppointment')">+ 新增预约</button>
+              <button class="btn btn-secondary">今日</button>
+              <button class="btn btn-secondary">本周</button>
+              <button class="btn btn-secondary">本月</button>
+            </div>
+            <div class="flex gap-8">
+              <div class="search-bar" style="width:200px">
+                <span class="icon">🔍</span>
+                <input type="text" placeholder="搜索预约...">
+              </div>
+              <button class="btn btn-secondary">导出</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>预约编号</th><th>客户姓名</th><th>联系电话</th><th>服务项目</th><th>技师</th><th>房间</th><th>预约时间</th><th>时长</th><th>金额</th><th>状态</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>#A2024051701</td>
+                  <td>张伟</td><td>138****6721</td><td>中式推拿</td><td>李晓婷</td><td>云水阁1号</td><td>2024-05-17 10:00</td><td>60分钟</td><td>¥298</td>
+                  <td><span class="tag tag-green">已确认</span></td>
+                  <td><button class="btn-icon">✏️</button> <button class="btn-icon">❌</button></td>
+                </tr>
+                <tr>
+                  <td>#A2024051702</td>
+                  <td>李娜</td><td>139****8823</td><td>芳香SPA</td><td>张丽华</td><td>禅意居5号</td><td>2024-05-17 10:30</td><td>90分钟</td><td>¥528</td>
+                  <td><span class="tag tag-green">服务中</span></td>
+                  <td><button class="btn-icon">✏️</button> <button class="btn-icon">❌</button></td>
+                </tr>
+                <tr>
+                  <td>#A2024051703</td>
+                  <td>王芳</td><td>137****4456</td><td>肩颈理疗</td><td>王建国</td><td>静心坊3号</td><td>2024-05-17 11:00</td><td>45分钟</td><td>¥198</td>
+                  <td><span class="tag tag-yellow">待到店</span></td>
+                  <td><button class="btn-icon">✏️</button> <button class="btn-icon">❌</button></td>
+                </tr>
+                <tr>
+                  <td>#A2024051704</td>
+                  <td>刘洋</td><td>136****9901</td><td>热石疗法</td><td>陈美玲</td><td>云水阁2号</td><td>2024-05-17 14:00</td><td>75分钟</td><td>¥458</td>
+                  <td><span class="tag tag-blue">已预约</span></td>
+                  <td><button class="btn-icon">✏️</button> <button class="btn-icon">❌</button></td>
+                </tr>
+                <tr>
+                  <td>#A2024051705</td>
+                  <td>赵敏</td><td>158****2234</td><td>足底反射</td><td>张丽华</td><td>清风轩4号</td><td>2024-05-17 14:30</td><td>45分钟</td><td>¥168</td>
+                  <td><span class="tag tag-blue">已预约</span></td>
+                  <td><button class="btn-icon">✏️</button> <button class="btn-icon">❌</button></td>
+                </tr>
+                <tr>
+                  <td>#A2024051601</td>
+                  <td>周杰</td><td>155****6678</td><td>中式推拿</td><td>李晓婷</td><td>云水阁1号</td><td>2024-05-16 15:00</td><td>60分钟</td><td>¥298</td>
+                  <td><span class="tag tag-red">已取消</span></td>
+                  <td><button class="btn-icon">✏️</button> <button class="btn-icon">❌</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Schedule -->
+      <div class="page-section" id="page-schedule">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="icon">📆</span>技师排班 - 2024年5月</div>
+            <div class="flex gap-8">
+              <button class="btn btn-secondary">◀ 上周</button>
+              <button class="btn btn-primary">本周</button>
+              <button class="btn btn-secondary">下周 ▶</button>
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <div class="schedule-grid">
+              <div class="schedule-header"></div>
+              <div class="schedule-header">周一 5/13</div>
+              <div class="schedule-header">周二 5/14</div>
+              <div class="schedule-header">周三 5/15</div>
+              <div class="schedule-header">周四 5/16</div>
+              <div class="schedule-header">周五 5/17</div>
+              <div class="schedule-header">周六 5/18</div>
+              <div class="schedule-header">周日 5/19</div>
+              
+              <div class="schedule-cell" style="background:var(--bg-secondary);font-weight:600;display:flex;align-items:center;justify-content:center;">李晓婷</div>
+              <div class="schedule-cell"><div class="booking">10:00 张伟</div><div class="booking">14:00 孙丽</div></div>
+              <div class="schedule-cell"><div class="booking">11:00 钱伟</div><div class="booking break">午休</div></div>
+              <div class="schedule-cell"><div class="booking">09:00 赵敏</div><div class="booking">15:00 周杰</div></div>
+              <div class="schedule-cell"><div class="booking">10:00 张伟</div><div class="booking">14:00 吴欢</div></div>
+              <div class="schedule-cell"><div class="booking">10:00 班</div><div class="booking">14:00 班</div></div>
+              <div class="schedule-cell"><div class="booking break">休息</div></div>
+
+              <div class="schedule-cell" style="background:var(--bg-secondary);font-weight:600;display:flex;align-items:center;justify-content:center;">王建国</div>
+              <div class="schedule-cell"><div class="booking">11:00 王芳</div></div>
+              <div class="schedule-cell"><div class="booking">10:00 李娜</div><div class="booking">15:00 刘洋</div></div>
+              <div class="schedule-cell"><div class="booking break">午休</div></div>
+              <div class="schedule-cell"><div class="booking">10:00 王芳</div><div class="booking">14:00 赵敏</div></div>
+              <div class="schedule-cell"><div class="booking">10:00 班</div></div>
+              <div class="schedule-cell"><div class="booking">11:00 班</div></div>
+
+              <div class="schedule-cell" style="background:var(--bg-secondary);font-weight:600;display:flex;align-items:center;justify-content:center;">张丽华</div>
+              <div class="schedule-cell"><div class="booking break">休息</div></div>
+              <div class="schedule-cell"><div class="booking">10:00 李娜</div><div class="booking">14:30 赵敏</div></div>
+              <div class="schedule-cell"><div class="booking">10:00 班</div><div class="booking">15:00 班</div></div>
+              <div class="schedule-cell"><div class="booking break">午休</div></div>
+              <div class="schedule-cell"><div class="booking">10:00 班</div><div class="booking">14:00 班</div></div>
+              <div class="schedule-cell"><div class="booking">10:00 班</div><div class="booking">15:00 班</div></div>
+            </div>
+          </div>
+          <div class="flex gap-8 mt-16">
+            <span class="tag tag-green">⬜ 已预约</span>
+            <span class="tag tag-yellow">⬜ 午休/休息</span>
+            <span class="tag tag-blue">⬜ 班次</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rooms -->
+      <div class="page-section" id="page-rooms">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="icon">🚪</span>房间管理</div>
+            <button class="btn btn-primary" onclick="openModal('addRoom')">+ 添加房间</button>
+          </div>
+          <div class="room-grid">
+            <div class="room-card occupied">
+              <div class="room-header">
+                <div class="room-name">云水阁 1号</div>
+                <div class="room-status"></div>
+              </div>
+              <div class="room-info">类型：VIP单人间</div>
+              <div class="room-info">技师：李晓婷</div>
+              <div class="room-service">中式推拿 | 剩余15分钟</div>
+              <div style="margin-top:10px;display:flex;gap:6px;">
+                <button class="btn btn-sm btn-secondary" style="flex:1">详情</button>
+                <button class="btn btn-sm btn-secondary" style="flex:1">换房</button>
+              </div>
+            </div>
+            <div class="room-card occupied">
+              <div class="room-header">
+                <div class="room-name">静心坊 3号</div>
+                <div class="room-status"></div>
+              </div>
+              <div class="room-info">类型：标准单人间</div>
+              <div class="room-info">技师：王建国</div>
+              <div class="room-service">足底反射 | 剩余30分钟</div>
+              <div style="margin-top:10px;display:flex;gap:6px;">
+                <button class="btn btn-sm btn-secondary" style="flex:1">详情</button>
+                <button class="btn btn-sm btn-secondary" style="flex:1">换房</button>
+              </div>
+            </div>
+            <div class="room-card booked">
+              <div class="room-header">
+                <div class="room-name">禅意居 5号</div>
+                <div class="room-status"></div>
+              </div>
+              <div class="room-info">类型：VIP单人间</div>
+              <div class="room-info">下一位：10:30 李娜</div>
+              <div class="room-service">芳香SPA | 等待中</div>
+              <div style="margin-top:10px;display:flex;gap:6px;">
+                <button class="btn btn-sm btn-secondary" style="flex:1">详情</button>
+                <button class="btn btn-sm btn-secondary" style="flex:1">换房</button>
+              </div>
+            </div>
+            <div class="room-card idle">
+              <div class="room-header">
+                <div class="room-name">清风轩 2号</div>
+                <div class="room-status"></div>
+              </div>
+              <div class="room-info">类型：标准单人间</div>
+              <div class="room-info">状态：空闲</div>
+              <div class="room-service">可预约</div>
+              <div style="margin-top:10px;display:flex;gap:6px;">
+                <button class="btn btn-sm btn-primary" style="flex:1">开台</button>
+                <button class="btn btn-sm btn-secondary" style="flex:1">详情</button>
+              </div>
+            </div>
+            <div class="room-card idle">
+              <div class="room-header">
+                <div class="room-name">明月阁 6号</div>
+                <div class="room-status"></div>
+              </div>
+              <div class="room-info">类型：双人包间</div>
+              <div class="room-info">状态：空闲</div>
+              <div class="room-service">可预约</div>
+              <div style="margin-top:10px;display:flex;gap:6px;">
+                <button class="btn btn-sm btn-primary" style="flex:1">开台</button>
+                <button class="btn btn-sm btn-secondary" style="flex:1">详情</button>
+              </div>
+            </div>
+            <div class="room-card idle">
+              <div class="room-header">
+                <div class="room-name">悠然居 7号</div>
+                <div class="room-status"></div>
+              </div>
+              <div class="room-info">类型：VIP包间</div>
+              <div class="room-info">状态：维护中</div>
+              <div class="room-service" style="color:var(--warning)">设备维护中</div>
+              <div style="margin-top:10px;display:flex;gap:6px;">
+                <button class="btn btn-sm btn-secondary" style="flex:1">查看</button>
+                <button class="btn btn-sm btn-primary" style="flex:1">完成维护</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Services -->
+      <div class="page-section" id="page-services">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="icon">💆</span>服务项目</div>
+            <button class="btn btn-primary" onclick="openModal('addService')">+ 新增服务</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>项目名称</th><th>分类</th><th>时长</th><th>价格</th><th>提成比例</th><th>所需产品</th><th>状态</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>中式推拿</td><td><span class="tag tag-red">热门</span></td><td>60分钟</td><td>¥298</td><td>25%</td><td>按摩油</td><td><span class="tag tag-green">上架</span></td><td><button class="btn-icon">✏️</button></td></tr>
+                <tr><td>芳香SPA</td><td><span class="tag tag-yellow">推荐</span></td><td>90分钟</td><td>¥528</td><td>25%</td><td>精油、按摩油</td><td><span class="tag tag-green">上架</span></td><td><button class="btn-icon">✏️</button></td></tr>
+                <tr><td>足底反射</td><td><span class="tag tag-blue">基础</span></td><td>45分钟</td><td>¥168</td><td>20%</td><td>足浴盐</td><td><span class="tag tag-green">上架</span></td><td><button class="btn-icon">✏️</button></td></tr>
+                <tr><td>热石疗法</td><td><span class="tag tag-purple">特色</span></td><td>75分钟</td><td>¥458</td><td>25%</td><td>火山石、热石油</td><td><span class="tag tag-green">上架</span></td><td><button class="btn-icon">✏️</button></td></tr>
+                <tr><td>肩颈理疗</td><td><span class="tag tag-blue">基础</span></td><td>45分钟</td><td>¥198</td><td>20%</td><td>热敷包、按摩油</td><td><span class="tag tag-green">上架</span></td><td><button class="btn-icon">✏️</button></td></tr>
+                <tr><td>泰式按摩</td><td><span class="tag tag-red">热门</span></td><td>60分钟</td><td>¥358</td><td>25%</td><td>按摩油</td><td><span class="tag tag-green">上架</span></td><td><button class="btn-icon">✏️</button></td></tr>
+                <tr><td>面部护理</td><td><span class="tag tag-purple">美容</span></td><td>60分钟</td><td>¥388</td><td>20%</td><td>面膜、精华液</td><td><span class="tag tag-yellow">待上架</span></td><td><button class="btn-icon">✏️</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Customers -->
+      <div class="page-section" id="page-customers">
+        <div class="card">
+          <div class="card-header">
+            <div class="flex gap-8">
+              <button class="btn btn-primary" onclick="openModal('addCustomer')">+ 新增客户</button>
+              <button class="btn btn-secondary">导入</button>
+              <button class="btn btn-secondary">导出</button>
+            </div>
+            <div class="search-bar" style="width:240px">
+              <span class="icon">🔍</span>
+              <input type="text" placeholder="搜索客户姓名/电话...">
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>客户姓名</th><th>性别</th><th>电话</th><th>会员等级</th><th>积分</th><th>累计消费</th><th>最近到店</th><th>偏好技师</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>张伟</td><td>男</td><td>138****6721</td><td><span class="tag" style="background:linear-gradient(135deg,#f1c40f,#e67e22);color:#1a1a2e">黄金会员</span></td><td>8,860</td><td>¥12,580</td><td>2024-05-17</td><td>李晓婷</td><td><button class="btn-icon">👁️</button> <button class="btn-icon">✏️</button></td></tr>
+                <tr><td>李娜</td><td>女</td><td>139****8823</td><td><span class="tag" style="background:linear-gradient(135deg,#bdc3c7,#95a5a6);color:#1a1a2e">白银会员</span></td><td>5,240</td><td>¥7,890</td><td>2024-05-17</td><td>张丽华</td><td><button class="btn-icon">👁️</button> <button class="btn-icon">✏️</button></td></tr>
+                <tr><td>王芳</td><td>女</td><td>137****4456</td><td><span class="tag" style="background:linear-gradient(135deg,#cd7f32,#a0522d);color:#fff">青铜会员</span></td><td>2,180</td><td>¥3,240</td><td>2024-05-17</td><td>王建国</td><td><button class="btn-icon">👁️</button> <button class="btn-icon">✏️</button></td></tr>
+                <tr><td>刘洋</td><td>男</td><td>136****9901</td><td><span class="tag" style="background:linear-gradient(135deg,#f1c40f,#e67e22);color:#1a1a2e">黄金会员</span></td><td>12,450</td><td>¥18,920</td><td>2024-05-14</td><td>陈美玲</td><td><button class="btn-icon">👁️</button> <button class="btn-icon">✏️</button></td></tr>
+                <tr><td>赵敏</td><td>女</td><td>158****2234</td><td><span class="tag tag-green">普通</span></td><td>890</td><td>¥1,340</td><td>2024-05-10</td><td>张丽华</td><td><button class="btn-icon">👁️</button> <button class="btn-icon">✏️</button></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Health Records -->
+      <div class="page-section" id="page-health">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="icon">📋</span>健康档案</div>
+            <button class="btn btn-primary" onclick="openModal('addHealthRecord')">+ 新建档案</button>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+            <div>
+              <div style="margin-bottom:16px">
+                <div class="form-label">选择客户</div>
+                <select class="form-select">
+                  <option>张伟 - 138****6721</option>
+                  <option>李娜 - 139****8823</option>
+                  <option>王芳 - 137****4456</option>
+                  <option>刘洋 - 136****9901</option>
+                  <option>赵敏 - 158****2234</option>
+                </select>
+              </div>
+              <div class="health-record">
+                <div class="health-header">
+                  <div class="health-title">首次建档</div>
+                  <div class="health-date">2024-01-15</div>
+                </div>
+                <div class="health-tags">
+                  <span class="tag tag-blue">肩颈不适</span>
+                  <span class="tag tag-yellow">久坐办公</span>
+                </div>
+                <div class="health-note">客户长期伏案工作，肩颈肌肉僵硬，睡眠质量一般。建议增加肩颈理疗项目频率。</div>
+              </div>
+              <div class="health-record">
+                <div class="health-header">
+                  <div class="health-title">服务记录 #2</div>
+                  <div class="health-date">2024-03-20</div>
+                </div>
+                <div class="health-tags">
+                  <span class="tag tag-green">有所改善</span>
+                  <span class="tag tag-blue">肩颈放松</span>
+                </div>
+                <div class="health-note">经4次肩颈理疗后，肌肉僵硬情况明显改善。继续建议每周1次护理。</div>
+              </div>
+              <div class="health-record">
+                <div class="health-header">
+                  <div class="health-title">服务记录 #3</div>
+                  <div class="health-date">2024-05-10</div>
+                </div>
+                <div class="health-tags">
+                  <span class="tag tag-green">睡眠好转</span>
+                  <span class="tag tag-purple">全身调理</span>
+                </div>
+                <div class="health-note">配合芳香SPA后，睡眠质量明显提升。客户满意度高，愿意继续疗程。</div>
+              </div>
+            </div>
+            <div>
+              <div class="card" style="background:var(--bg-secondary)">
+                <div class="card-title"><span class="icon">📝</span>健康备注</div>
+                <div class="form-group">
+                  <div class="form-label">体质类型</div>
+                  <select class="form-select">
+                    <option>气虚质</option>
+                    <option>阳虚质</option>
+                    <option>阴虚质</option>
+                    <option>痰湿质</option>
+                    <option selected>湿热质</option>
+                    <option>血瘀质</option>
+                    <option>气郁质</option>
+                    <option>特禀质</option>
+                    <option>平和质</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <div class="form-label">过敏史</div>
+                  <input type="text" class="form-input" placeholder="请输入过敏史" value="对花粉轻微过敏">
+                </div>
+                <div class="form-group">
+                  <div class="form-label">慢性病史</div>
+                  <input type="text" class="form-input" placeholder="请输入慢性病史" value="轻度颈椎劳损">
+                </div>
+                <div class="form-group">
+                  <div class="form-label">服务禁忌</div>
+                  <input type="text" class="form-input" placeholder="请输入服务禁忌" value="避免使用含花香成分精油">
+                </div>
+                <div class="form-group">
+                  <div class="form-label">备注</div>
+                  <textarea class="form-textarea">客户偏好温热疗法，适合热石项目和热敷理疗。每次服务前建议热石预热到位。</textarea>
+                </div>
+                <button class="btn btn-primary" style="width:100%">保存更新</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inventory -->
+      <div class="page-section" id="page-inventory">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="icon">📦</span>库存管理</div>
+            <div class="flex gap-8">
+              <button class="btn btn-primary" onclick="openModal('addInventory')">+ 采购入库</button>
+              <button class="btn btn-secondary">库存预警</button>
+              <button class="btn btn-secondary">导出报表</button>
+            </div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px;">
+            <div style="background:var(--bg-secondary);border-radius:10px;padding:16px;border:1px solid var(--border);">
+              <div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;">库存总量</div>
+              <div style="font-size:24px;font-weight:700;">1,286 件</div>
+              <div style="font-size:12px;color:var(--success);margin-top:4px;">↑ 本月入库 320件</div>
+            </div>
+            <div style="background:var(--bg-secondary);border-radius:10px;padding:16px;border:1px solid var(--border);">
+              <div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;">预警产品</div>
+              <div style="font-size:24px;font-weight:700;color:var(--warning);">3 种</div>
+              <div style="font-size:12px;color:var(--warning);margin-top:4px;">需尽快采购补货</div>
+            </div>
+            <div style="background:var(--bg-secondary);border-radius:10px;padding:16px;border:1px solid var(--border);">
+              <div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;">本月消耗</div>
+              <div style="font-size:24px;font-weight:700;">¥4,280</div>
+              <div style="font-size:12px;color:var(--text-secondary);margin-top:4px;">环比 +12.5%</div>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>产品名称</th><th>分类</th><th>库存</th><th>预警线</th><th>本月消耗</th><th>平均单价</th><th>库存状态</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>按摩精油 100ml</td><td><span class="tag tag-blue">耗材</span></td>
+                  <td>42 瓶</td><td>30 瓶</td><td>28 瓶</td><td>¥68</td>
+                  <td><div style="display:flex;align-items:center;gap:8px;"><div style="width:80px;height:6px;background:var(--bg-primary);border-radius:3px;overflow:hidden;"><div style="width:85%;height:100%;background:var(--success);border-radius:3px;"></div></div><span class="tag tag-green">正常</span></div></td>
+                  <td><button class="btn btn-sm btn-secondary">入库</button></td>
+                </tr>
+                <tr>
+                  <td>热石油 500ml</td><td><span class="tag tag-blue">耗材</span></td>
+                  <td>18 瓶</td><td>20 瓶</td><td>22 瓶</td><td>¥85</td>
+                  <td><div style="display:flex;align-items:center;gap:8px;"><div style="width:80px;height:6px;background:var(--bg-primary);border-radius:3px;overflow:hidden;"><div style="width:30%;height:100%;background:var(--danger);border-radius:3px;"></div></div><span class="tag tag-red">过低</span></div></td>
+                  <td><button class="btn btn-sm btn-primary">立即采购</button></td>
+                </tr>
+                <tr>
+                  <td>足浴盐 500g</td><td><span class="tag tag-blue">耗材</span></td>
+                  <td>65 包</td><td>50 包</td><td>35 包</td><td>¥25</td>
+                  <td><div style="display:flex;align-items:center;gap:8px;"><div style="width:80px;height:6px;background:var(--bg-primary);border-radius:3px;overflow:hidden;"><div style="width:75%;height:100%;background:var(--success);border-radius:3px;"></div></div><span class="tag tag-green">正常</span></div></td>
+                  <td><button class="btn btn-sm btn-secondary">入库</button></td>
+                </tr>
+                <tr>
+                  <td>火山石套装</td><td><span class="tag tag-purple">设备</span></td>
+                  <td>8 套</td><td>5 套</td><td>3 套</td><td>¥320</td>
+                  <td><div style="display:flex;align-items:center;gap:8px;"><div style="width:80px;height:6px;background:var(--bg-primary);border-radius:3px;overflow:hidden;"><div style="width:65%;height:100%;background:var(--success);border-radius:3px;"></div></div><span class="tag tag-green">正常</span></div></td>
+                  <td><button class="btn btn-sm btn-secondary">入库</button></td>
+                </tr>
+                <tr>
+                  <td>面膜（玻尿酸）</td><td><span class="tag tag-blue">耗材</span></td>
+                  <td>25 盒</td><td>40 盒</td><td>30 盒</td><td>¥45</td>
+                  <td><div style="display:flex;align-items:center;gap:8px;"><div style="width:80px;height:6px;background:var(--bg-primary);border-radius:3px;overflow:hidden;"><div style="width:40%;height:100%;background:var(--warning);border-radius:3px;"></div></div><span class="tag tag-yellow">偏低</span></div></td>
+                  <td><button class="btn btn-sm btn-secondary">入库</button></td>
+                </tr>
+                <tr>
+                  <td>按摩床单（大）</td><td><span class="tag tag-yellow">布草</span></td>
+                  <td>120 张</td><td>50 张</td><td>25 张</td><td>¥18</td>
+                  <td><div style="display:flex;align-items:center;gap:8px;"><div style="width:80px;height:6px;background:var(--bg-primary);border-radius:3px;overflow:hidden;"><div style="width:95%;height:100%;background:var(--success);border-radius:3px;"></div></div><span class="tag tag-green">充足</span></div></td>
+                  <td><button class="btn btn-sm btn-secondary">入库</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loyalty -->
+      <div class="page-section" id="page-loyalty">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+          <div>
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title"><span class="icon">🎁</span>会员权益</div>
+                <button class="btn btn-primary">+ 充值</button>
+              </div>
+              <div class="loyalty-card">
+                <div class="loyalty-level level-gold">🌟 黄金会员</div>
+                <div class="member-name">张伟</div>
+                <div class="member-phone">138****6721</div>
+                <div class="loyalty-points">8,860</div>
+                <div style="font-size:12px;color:var(--text-secondary);">可用积分</div>
+                <div style="display:flex;justify-content:space-between;margin-top:12px;font-size:12px;">
+                  <span>再消费 ¥1,140 可升级钻石会员</span>
+                  <span style="color:var(--accent);">58%</span>
+                </div>
+                <div class="loyalty-progress">
+                  <div class="loyalty-progress-fill" style="width:58%"></div>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;">
+                <div style="background:var(--bg-secondary);border-radius:10px;padding:14px;text-align:center;">
+                  <div style="font-size:20px;font-weight:700;color:var(--success);">¥12,580</div>
+                  <div style="font-size:11px;color:var(--text-secondary);margin-top:4px;">累计充值</div>
+                </div>
+                <div style="background:var(--bg-secondary);border-radius:10px;padding:14px;text-align:center;">
+                  <div style="font-size:20px;font-weight:700;color:var(--accent);">32次</div>
+                  <div style="font-size:11px;color:var(--text-secondary);margin-top:4px;">到店次数</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title"><span class="icon">🏆</span>会员等级规则</div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;text-align:center;">
+                <div style="background:var(--bg-secondary);border-radius:10px;padding:14px;">
+                  <div style="display:inline-block;padding:4px 12px;border-radius:20px;font-size:11px;background:linear-gradient(135deg,#cd7f32,#a0522d);color:#fff;margin-bottom:8px;">青铜</div>
+                  <div style="font-size:11px;color:var(--text-secondary);">累计消费 ¥0</div>
+                </div>
+                <div style="background:var(--bg-secondary);border-radius:10px;padding:14px;">
+                  <div style="display:inline-block;padding:4px 12px;border-radius:20px;font-size:11px;background:linear-gradient(135deg,#bdc3c7,#95a5a6);color:#1a1a2e;margin-bottom:8px;">白银</div>
+                  <div style="font-size:11px;color:var(--text-secondary);">累计消费 ¥3,000</div>
+                </div>
+                <div style="background:var(--bg-secondary);border-radius:10px;padding:14px;border:1px solid var(--accent);">
+                  <div style="display:inline-block;padding:4px 12px;border-radius:20px;font-size:11px;background:linear-gradient(135deg,#f1c40f,#e67e22);color:#1a1a2e;margin-bottom:8px;">黄金</div>
+                  <div style="font-size:11px;color:var(--text-secondary);">累计消费 ¥10,000</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><span class="icon">💳</span>积分记录</div>
+            </div>
+            <div class="timeline">
+              <div class="timeline-item">
+                <div class="timeline-time">2024-05-17 10:30</div>
+                <div class="timeline-content">消费中式推拿 <span style="color:var(--success)">+298</span> 积分</div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-time">2024-05-10 14:00</div>
+                <div class="timeline-content">兑换热石疗法 <span style="color:var(--danger)">-2000</span> 积分</div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-time">2024-04-28 11:00</div>
+                <div class="timeline-content">充值500元 <span style="color:var(--success)">+500</span> 积分</div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-time">2024-04-15 15:30</div>
+                <div class="timeline-content">消费芳香SPA <span style="color:var(--success)">+528</span> 积分</div>
+              </div>
+              <div class="timeline-item">
+                <div class="timeline-time">2024-03-20 10:00</div>
+                <div class="timeline-content">消费肩颈理疗 <span style="color:var(--success)">+198</span> 积分</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reports -->
+      <div class="page-section" id="page-reports">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label"><span>📅</span> 本月营收</div>
+            <div class="stat-value" style="color:var(--success)">¥168,420</div>
+            <div class="stat-change up">↑ 15.3% 较上月</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label"><span>👥</span> 本月到店</div>
+            <div class="stat-value">486 人次</div>
+            <div class="stat-change up">↑ 8.2% 较上月</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label"><span>💆</span> 服务次数</div>
+            <div class="stat-value">612 次</div>
+            <div class="stat-change up">↑ 12.8% 较上月</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label"><span>⭐</span> 客户满意度</div>
+            <div class="stat-value" style="color:var(--warning)">96.8%</div>
+            <div class="stat-change up">↑ 0.5% 较上月</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px;">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title"><span class="icon">📊</span>月度营收对比</div>
+              <div class="tabs" style="margin:0">
+                <button class="tab active">柱状图</button>
+                <button class="tab">折线图</button>
+              </div>
+            </div>
+            <div class="chart-box">
+              <div class="chart-bars" id="monthlyChart">
+                <div class="chart-bar" style="height:50%" data-value="84200"><div class="chart-bar-label">1月</div></div>
+                <div class="chart-bar" style="height:55%" data-value="92100"><div class="chart-bar-label">2月</div></div>
+                <div class="chart-bar" style="height:60%" data-value="98600"><div class="chart-bar-label">3月</div></div>
+                <div class="chart-bar" style="height:75%" data-value="124500"><div class="chart-bar-label">4月</div></div>
+                <div class="chart-bar" style="height:100%" data-value="168420"><div class="chart-bar-label">5月</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title" style="margin-bottom:16px;"><span class="icon">🏅</span>技师业绩排行</div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#f1c40f,#e67e22);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;color:#1a1a2e;">1</div>
+                <div style="flex:1"><div style="font-weight:600;font-size:13px;">李晓婷</div><div style="font-size:11px;color:var(--text-secondary);">完成 128 次服务</div></div>
+                <div style="font-weight:600;color:var(--success);">¥38,400</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#bdc3c7,#95a5a6);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;color:#1a1a2e;">2</div>
+                <div style="flex:1"><div style="font-weight:600;font-size:13px;">王建国</div><div style="font-size:11px;color:var(--text-secondary);">完成 112 次服务</div></div>
+                <div style="font-weight:600;color:var(--success);">¥33,600</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#cd7f32,#a0522d);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;color:#fff;">3</div>
+                <div style="flex:1"><div style="font-weight:600;font-size:13px;">张丽华</div><div style="font-size:11px;color:var(--text-secondary);">完成 98 次服务</div></div>
+                <div style="font-weight:600;color:var(--success);">¥29,400</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div style="width:24px;height:24px;border-radius:50%;background:var(--bg-secondary);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;color:var(--text-secondary);">4</div>
+                <div style="flex:1"><div style="font-weight:600;font-size:13px;">陈美玲</div><div style="font-size:11px;color:var(--text-secondary);">完成 86 次服务</div></div>
+                <div style="font-weight:600;color:var(--text-secondary);">¥25,800</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings -->
+      <div class="page-section" id="page-settings">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="icon">⚙️</span>系统设置</div>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <div class="form-label">店铺名称</div>
+              <input type="text" class="form-input" value="舒筋云·养生会所">
+            </div>
+            <div class="form-group">
+              <div class="form-label">联系电话</div>
+              <input type="text" class="form-input" value="021-6588-8899">
+            </div>
+            <div class="form-group">
+              <div class="form-label">营业时间</div>
+              <input type="text" class="form-input" value="10:00 - 22:00">
+            </div>
+            <div class="form-group">
+              <div class="form-label">地址</div>
+              <input type="text" class="form-input" value="上海市静安区南京西路1266号">
+            </div>
+            <div class="form-group full">
+              <div class="form-label">营业提醒</div>
+              <select class="form-select">
+                <option>提前15分钟提醒</option>
+                <option selected>提前30分钟提醒</option>
+                <option>提前1小时提醒</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <div class="form-label">积分规则说明</div>
+              <textarea class="form-textarea">每消费1元累积1积分，积分可兑换指定服务项目。1000积分可抵扣50元。</textarea>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:16px;">
+            <button class="btn btn-primary">保存设置</button>
+            <button class="btn btn-secondary">重置</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modals -->
+<div class="modal-overlay" id="modal-addAppointment">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">新增预约</div>
+      <button class="modal-close" onclick="closeModal('addAppointment')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <div class="form-label">客户姓名 *</div>
+          <input type="text" class="form-input" placeholder="请输入客户姓名">
+        </div>
+        <div class="form-group">
+          <div class="form-label">联系电话 *</div>
+          <input type="text" class="form-input" placeholder="请输入手机号">
+        </div>
+        <div class="form-group">
+          <div class="form-label">服务项目 *</div>
+          <select class="form-select">
+            <option>请选择服务项目</option>
+            <option>中式推拿 - ¥298/60分钟</option>
+            <option>芳香SPA - ¥528/90分钟</option>
+            <option>足底反射 - ¥168/45分钟</option>
+            <option>热石疗法 - ¥458/75分钟</option>
+            <option>肩颈理疗 - ¥198/45分钟</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <div class="form-label">指定技师</div>
+          <select class="form-select">
+            <option>不指定</option>
+            <option>李晓婷</option>
+            <option>王建国</option>
+            <option>张丽华</option>
+            <option>陈美玲</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <div class="form-label">预约日期 *</div>
+          <input type="date" class="form-input" value="2024-05-17">
+        </div>
+        <div class="form-group">
+          <div class="form-label">预约时间 *</div>
+          <select class="form-select">
+            <option>10:00</option>
+            <option>10:30</option>
+            <option>11:00</option>
+            <option>14:00</option>
+            <option>14:30</option>
+            <option>15:00</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <div class="form-label">备注</div>
+          <textarea class="form-textarea" placeholder="如有特殊需求请在此备注"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('addAppointment')">取消</button>
+      <button class="btn btn-primary" onclick="showToast('预约创建成功','success');closeModal('addAppointment')">确认创建</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-addCustomer">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">新增客户</div>
+      <button class="modal-close" onclick="closeModal('addCustomer')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <div class="form-label">姓名 *</div>
+          <input type="text" class="form-input" placeholder="请输入客户姓名">
+        </div>
+        <div class="form-group">
+          <div class="form-label">性别</div>
+          <select class="form-select">
+            <option>男</option>
+            <option>女</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <div class="form-label">手机号 *</div>
+          <input type="text" class="form-input" placeholder="请输入手机号">
+        </div>
+        <div class="form-group">
+          <div class="form-label">生日</div>
+          <input type="date" class="form-input">
+        </div>
+        <div class="form-group full">
+          <div class="form-label">地址</div>
+          <input type="text" class="form-input" placeholder="请输入地址">
+        </div>
+        <div class="form-group full">
+          <div class="form-label">健康备注</div>
+          <textarea class="form-textarea" placeholder="过敏史、慢性病等"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('addCustomer')">取消</button>
+      <button class="btn btn-primary" onclick="showToast('客户创建成功','success');closeModal('addCustomer')">确认创建</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-addService">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">新增服务项目</div>
+      <button class="modal-close" onclick="closeModal('addService')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group full">
+          <div class="form-label">项目名称 *</div>
+          <input type="text" class="form-input" placeholder="请输入服务项目名称">
+        </div>
+        <div class="form-group">
+          <div class="form-label">服务时长</div>
+          <select class="form-select">
+            <option>30分钟</option>
+            <option>45分钟</option>
+            <option>60分钟</option>
+            <option>75分钟</option>
+            <option>90分钟</option>
+            <option>120分钟</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <div class="form-label">定价 *</div>
+          <input type="text" class="form-input" placeholder="¥0">
+        </div>
+        <div class="form-group">
+          <div class="form-label">技师提成比例</div>
+          <select class="form-select">
+            <option>15%</option>
+            <option>20%</option>
+            <option selected>25%</option>
+            <option>30%</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <div class="form-label">所属分类</div>
+          <select class="form-select">
+            <option>热门</option>
+            <option>推荐</option>
+            <option>基础</option>
+            <option>特色</option>
+            <option>美容</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <div class="form-label">所需产品</div>
+          <input type="text" class="form-input" placeholder="如：按摩油、精油（用逗号分隔）">
+        </div>
+        <div class="form-group full">
+          <div class="form-label">项目描述</div>
+          <textarea class="form-textarea" placeholder="请输入项目服务描述"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('addService')">取消</button>
+      <button class="btn btn-primary" onclick="showToast('服务项目创建成功','success');closeModal('addService')">确认创建</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-addInventory">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">采购入库</div>
+      <button class="modal-close" onclick="closeModal('addInventory')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group full">
+          <div class="form-label">产品名称 *</div>
+          <select class="form-select">
+            <option>请选择产品</option>
+            <option>按摩精油 100ml</option>
+            <option>热石油 500ml</option>
+            <option>足浴盐 500g</option>
+            <option>火山石套装</option>
+            <option>面膜（玻尿酸）</option>
+            <option>按摩床单（大）</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <div class="form-label">入库数量 *</div>
+          <input type="number" class="form-input" placeholder="0">
+        </div>
+        <div class="form-group">
+          <div class="form-label">采购单价</div>
+          <input type="text" class="form-input" placeholder="¥0">
+        </div>
+        <div class="form-group">
+          <div class="form-label">供应商</div>
+          <input type="text" class="form-input" placeholder="请输入供应商">
+        </div>
+        <div class="form-group">
+          <div class="form-label">入库日期</div>
+          <input type="date" class="form-input" value="2024-05-17">
+        </div>
+        <div class="form-group full">
+          <div class="form-label">备注</div>
+          <textarea class="form-textarea" placeholder="备注信息"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('addInventory')">取消</button>
+      <button class="btn btn-primary" onclick="showToast('入库成功，库存已更新','success');closeModal('addInventory')">确认入库</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-addHealthRecord">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">新建健康档案</div>
+      <button class="modal-close" onclick="closeModal('addHealthRecord')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group full">
+          <div class="form-label">关联客户</div>
+          <select class="form-select">
+            <option>张伟 - 138****6721</option>
+            <option>李娜 - 139****8823</option>
+            <option>王芳 - 137****4456</option>
+            <option>刘洋 - 136****9901</option>
+            <option>赵敏 - 158****2234</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <div class="form-label">记录类型</div>
+          <select class="form-select">
+            <option>首次建档</option>
+            <option>服务记录</option>
+            <option>回访记录</option>
+            <option>体检记录</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <div class="form-label">记录日期</div>
+          <input type="date" class="form-input" value="2024-05-17">
+        </div>
+        <div class="form-group full">
+          <div class="form-label">健康标签</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;"><input type="checkbox">肩颈不适</label>
+            <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;"><input type="checkbox">腰背酸痛</label>
+            <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;"><input type="checkbox">睡眠不佳</label>
+            <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;"><input type="checkbox">手脚冰凉</label>
+            <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;"><input type="checkbox">消化不良</label>
+            <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;"><input type="checkbox">压力过大</label>
+            <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;"><input type="checkbox">久坐办公</input></label>
+          </div>
+        </div>
+        <div class="form-group full">
+          <div class="form-label">详细描述</div>
+          <textarea class="form-textarea" placeholder="请详细描述客户的健康状况及服务需求"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('addHealthRecord')">取消</button>
+      <button class="btn btn-primary" onclick="showToast('健康档案创建成功','success');closeModal('addHealthRecord')">确认创建</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-addRoom">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">添加房间</div>
+      <button class="modal-close" onclick="closeModal('addRoom')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group full">
+          <div class="form-label">房间名称 *</div>
+          <input type="text" class="form-input" placeholder="如：云水阁 1号">
+        </div>
+        <div class="form-group">
+          <div class="form-label">房间类型</div>
+          <select class="form-select">
+            <option>标准单人间</option>
+            <option>VIP单人间</option>
+            <option>双人包间</option>
+            <option>VIP包间</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <div class="form-label">容纳人数</div>
+          <select class="form-select">
+            <option>1人</option>
+            <option>2人</option>
+            <option>3-4人</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <div class="form-label">房间设施</div>
+          <input type="text" class="form-input" placeholder="如：独立淋浴、浴缸、音箱">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('addRoom')">取消</button>
+      <button class="btn btn-primary" onclick="showToast('房间添加成功','success');closeModal('addRoom')">确认添加</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// Navigation
+const navItems = document.querySelectorAll('.nav-item');
+const pageSections = document.querySelectorAll('.page-section');
+const pageTitle = document.getElementById('pageTitle');
+
+const pageNames = {
+  dashboard: '工作台',
+  appointments: '预约管理',
+  schedule: '排班日历',
+  rooms: '房间状态',
+  services: '服务项目',
+  customers: '客户管理',
+  health: '健康档案',
+  inventory: '库存管理',
+  loyalty: '会员积分',
+  reports: '数据报表',
+  settings: '系统设置'
+};
+
+navItems.forEach(item => {
+  item.addEventListener('click', () => {
+    const page = item.dataset.page;
+    
+    navItems.forEach(n => n.classList.remove('active'));
+    item.classList.add('active');
+    
+    pageSections.forEach(s => s.classList.remove('active'));
+    document.getElementById(`page-${page}`).classList.add('active');
+    
+    pageTitle.textContent = pageNames[page] || '工作台';
+  });
+});
+
+// Tabs
+document.querySelectorAll('.tabs').forEach(tabGroup => {
+  tabGroup.addEventListener('click', (e) => {
+    if (e.target.classList.contains('tab')) {
+      tabGroup.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      e.target.classList.add('active');
+    }
+  });
+});
+
+// Modal
+function openModal(id) {
+  document.getElementById(`modal-${id}`).classList.add('show');
+}
+
+function closeModal(id) {
+  document.getElementById(`modal-${id}`).classList.remove('show');
+}
+
+// Close modal on backdrop click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      overlay.classList.remove('show');
+    }
+  });
+});
+
+// Toast
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  const icons = { success: '✓', error: '✕', info: 'ℹ' };
+  toast.innerHTML = `<span>${icons[type] || 'ℹ'}</span> ${message}`;
+  container.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(100%)';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+// Chart bar hover
+document.querySelectorAll('.chart-bar').forEach(bar => {
+  bar.addEventListener('mouseenter', () => {
+    const value = bar.dataset.value;
+    if (value) {
+      bar.title = `¥${Number(value).toLocaleString()}`;
+    }
+  });
+});
+
+// Calendar today highlight
+const today = new Date().getDate();
+document.querySelectorAll('.calendar-day:not(.header)').forEach(day => {
+  if (parseInt(day.textContent) === today) {
+    day.classList.add('today');
+  }
+});
+
+// Real-time clock
+function updateClock() {
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+  // Could display in topbar if needed
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+// Initialize - animate chart bars
+setTimeout(() => {
+  document.querySelectorAll('.chart-bar').forEach(bar => {
+    bar.style.transition = 'height 0.8s ease';
+  });
+}, 100);
+</script>
+</body>
+</html>

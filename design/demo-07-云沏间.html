@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>云沏间 - 茶舍智能管理系统</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0d1117;--bg2:#161b22;--bg3:#21262d;--border:#30363d;--text:#c9d1d9;--text2:#8b949e;--accent:#f0c040;--accent2:#d4a843;--green:#3fb950;--red:#f85149;--blue:#58a6ff;--purple:#a371f7;--cyan:#39c5cf}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
+/* 侧边栏 */
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:220px;background:var(--bg2);border-right:1px solid var(--border);z-index:100;display:flex;flex-direction:column;transition:transform .3s}
+.logo{padding:20px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
+.logo-icon{font-size:28px}
+.logo-text{font-size:18px;font-weight:700;color:var(--accent)}
+.logo-sub{font-size:11px;color:var(--text2)}
+.nav{flex:1;padding:12px 0;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:10px;padding:11px 16px;color:var(--text2);cursor:pointer;border-left:3px solid transparent;transition:.2s;font-size:14px}
+.nav-item:hover{background:var(--bg3);color:var(--text)}
+.nav-item.active{background:var(--bg3);border-left-color:var(--accent);color:var(--text)}
+.nav-item .icon{font-size:18px;width:24px;text-align:center}
+.nav-item .badge{background:var(--red);color:#fff;font-size:11px;padding:2px 6px;border-radius:10px;margin-left:auto}
+.nav-bottom{padding:12px 16px;border-top:1px solid var(--border)}
+.user-card{display:flex;align-items:center;gap:10px}
+.avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+.user-info{flex:1}
+.user-name{font-size:13px;font-weight:600}
+.user-role{font-size:11px;color:var(--text2)}
+
+/* 主内容 */
+.main{margin-left:220px;min-height:100vh}
+.header{height:56px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+.header-left{display:flex;align-items:center;gap:16px}
+.page-title{font-size:16px;font-weight:600}
+.header-time{font-size:13px;color:var(--text2)}
+.header-right{display:flex;align-items:center;gap:12px}
+.top-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:7px 14px;border-radius:6px;cursor:pointer;font-size:13px;transition:.2s}
+.top-btn:hover{background:var(--border)}
+.top-btn.primary{background:var(--accent);border-color:var(--accent);color:#000;font-weight:600}
+.top-btn.primary:hover{background:var(--accent2)}
+
+/* 内容区 */
+.content{padding:24px}
+.page{pane:display:none}
+.page.active{display:block}
+
+/* 统计卡片 */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.stat-card.green::before{background:var(--green)}
+.stat-card.yellow::before{background:var(--accent)}
+.stat-card.blue::before{background:var(--blue)}
+.stat-card.purple::before{background:var(--purple)}
+.stat-label{font-size:12px;color:var(--text2);margin-bottom:8px}
+.stat-value{font-size:28px;font-weight:700;margin-bottom:4px}
+.stat-trend{font-size:12px;display:flex;align-items:center;gap:4px}
+.stat-trend.up{color:var(--green)}
+.stat-trend.down{color:var(--red)}
+.stat-icon{position:absolute;right:16px;top:16px;font-size:32px;opacity:.15}
+
+/* 图表网格 */
+.chart-grid{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:24px}
+.chart-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px}
+.chart-title{font-size:14px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.chart-container{position:relative;height:220px}
+canvas{max-width:100%}
+
+/* 房间状态 */
+.room-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.room-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;cursor:pointer;transition:.2s;position:relative}
+.room-card:hover{border-color:var(--accent)}
+.room-card.occupied{border-color:var(--green)}
+.room-card.booked{border-color:var(--accent)}
+.room-card.vacant{border-color:var(--border)}
+.room-status{position:absolute;top:12px;right:12px;width:10px;height:10px;border-radius:50%}
+.room-status.occupied{background:var(--green);box-shadow:0 0 8px var(--green)}
+.room-status.booked{background:var(--accent);box-shadow:0 0 8px var(--accent)}
+.room-status.vacant{background:var(--text2)}
+.room-name{font-size:16px;font-weight:600;margin-bottom:4px}
+.room-type{font-size:12px;color:var(--text2);margin-bottom:12px}
+.room-info{font-size:13px;color:var(--text2);display:flex;justify-content:space-between}
+.room-time{font-size:11px;color:var(--text2);margin-top:8px}
+
+/* 表格 */
+.table-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.table-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.table-title{font-size:14px;font-weight:600}
+.table-tabs{display:flex;gap:4px}
+.table-tab{padding:6px 12px;font-size:12px;border-radius:6px;cursor:pointer;color:var(--text2);transition:.2s}
+.table-tab:hover{color:var(--text)}
+.table-tab.active{background:var(--bg3);color:var(--text)}
+table{width:100%;border-collapse:collapse}
+th,td{padding:12px 16px;text-align:left;font-size:13px;border-bottom:1px solid var(--border)}
+th{background:var(--bg3);font-weight:600;font-size:12px;color:var(--text2)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--bg3)}
+.status-tag{padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600}
+.status-tag.green{background:rgba(63,185,80,.15);color:var(--green)}
+.status-tag.yellow{background:rgba(240,192,64,.15);color:var(--accent)}
+.status-tag.red{background:rgba(248,81,73,.15);color:var(--red)}
+.status-tag.blue{background:rgba(88,166,255,.15);color:var(--blue)}
+.action-btn{padding:5px 10px;border-radius:5px;font-size:12px;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text);transition:.2s}
+.action-btn:hover{background:var(--border)}
+
+/* 表单弹窗 */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:12px;width:480px;max-height:90vh;overflow-y:auto}
+.modal-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-size:16px;font-weight:600}
+.modal-close{background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer}
+.modal-body{padding:24px}
+.form-group{margin-bottom:16px}
+.form-label{font-size:13px;color:var(--text2);margin-bottom:6px;display:block}
+.form-input{width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;outline:none;transition:.2s}
+.form-input:focus{border-color:var(--accent)}
+.form-select{width:100%;padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;outline:none;appearance:none;cursor:pointer}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+.btn{ padding:10px 20px;border-radius:6px;font-size:13px;cursor:pointer;border:none;font-weight:600;transition:.2s}
+.btn-primary{background:var(--accent);color:#000}
+.btn-primary:hover{background:var(--accent2)}
+.btn-secondary{background:var(--bg3);border:1px solid var(--border);color:var(--text)}
+.btn-secondary:hover{background:var(--border)}
+
+/* IoT控制面板 */
+.iot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+.iot-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center}
+.iot-icon{font-size:40px;margin-bottom:12px}
+.iot-name{font-size:14px;font-weight:600;margin-bottom:4px}
+.iot-status{font-size:12px;color:var(--text2);margin-bottom:12px}
+.iot-toggle{width:56px;height:28px;background:var(--bg);border:1px solid var(--border);border-radius:14px;position:relative;cursor:pointer;transition:.2s;display:inline-block}
+.iot-toggle.on{background:var(--green);border-color:var(--green)}
+.iot-toggle::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:.2s}
+.iot-toggle.on::after{left:31px}
+.iot-slider{margin-top:10px}
+.iot-slider input{width:100%;accent-color:var(--accent)}
+
+/* 库存网格 */
+.inventory-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.inventory-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px}
+.inv-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.inv-name{font-size:14px;font-weight:600}
+.inv-stock{font-size:22px;font-weight:700}
+.inv-unit{font-size:12px;color:var(--text2)}
+.inv-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.inv-price{color:var(--accent);font-weight:600}
+.inv-bar{height:6px;background:var(--bg);border-radius:3px;margin-top:10px;overflow:hidden}
+.inv-bar-fill{height:100%;background:var(--accent);border-radius:3px;transition:.3s}
+
+/* 会员卡片 */
+.member-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.member-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;position:relative}
+.member-level{position:absolute;top:12px;right:12px;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600}
+.member-level.gold{background:rgba(240,192,64,.2);color:var(--accent)}
+.member-level.silver{background:rgba(192,192,192,.2);color:#c0c0c0}
+.member-level.diamond{background:rgba(163,113,247,.2);color:var(--purple)}
+.member-avatar{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:12px}
+.member-name{font-size:15px;font-weight:600;margin-bottom:2px}
+.member-phone{font-size:12px;color:var(--text2)}
+.member-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.member-stat{background:var(--bg);padding:8px;border-radius:6px;text-align:center}
+.member-stat-label{font-size:10px;color:var(--text2)}
+.member-stat-value{font-size:14px;font-weight:700;margin-top:2px}
+
+/* 订单时间轴 */
+.timeline{position:relative;padding-left:30px}
+.timeline::before{content:'';position:absolute;left:10px;top:0;bottom:0;width:2px;background:var(--border)}
+.timeline-item{position:relative;padding-bottom:20px}
+.timeline-item::before{content:'';position:absolute;left:-24px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--accent);border:3px solid var(--bg2)}
+.timeline-time{font-size:11px;color:var(--text2);margin-bottom:4px}
+.timeline-content{background:var(--bg3);padding:12px;border-radius:8px;font-size:13px}
+
+/* 实时时钟 */
+.live-time{font-size:13px;color:var(--accent);font-weight:600;font-variant-numeric:tabular-nums}
+
+/* 小部件 */
+.widget-row{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.widget-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px}
+.mini-chart{height:80px}
+
+/* 通知 */
+.notif{position:fixed;top:20px;right:20px;background:var(--bg2);border:1px solid var(--accent);border-radius:8px;padding:14px 20px;display:none;align-items:center;gap:10px;z-index:300;font-size:13px;animation:slideIn .3s}
+.notif.show{display:flex}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* 智能锁 */
+.lock-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.lock-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;text-align:center}
+.lock-icon{font-size:36px;margin-bottom:10px}
+.lock-name{font-size:13px;font-weight:600;margin-bottom:4px}
+.lock-state{font-size:11px;padding:4px 10px;border-radius:4px;display:inline-block;margin-top:6px}
+.lock-state.locked{background:rgba(248,81,73,.15);color:var(--red)}
+.lock-state.unlocked{background:rgba(63,185,80,.15);color:var(--green)}
+.lock-btn{padding:6px 12px;border-radius:5px;font-size:11px;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--text);margin-top:8px;transition:.2s}
+.lock-btn:hover{background:var(--border)}
+
+/* 报表 */
+.report-filters{display:flex;gap:12px;margin-bottom:20px;align-items:center}
+.report-filter{font-size:13px;color:var(--text2);display:flex;align-items:center;gap:6px}
+select{padding:6px 10px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px}
+
+/* 工具提示 */
+.tooltip{position:relative}
+.tooltip:hover .tip{opacity:1;visibility:visible}
+.tip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid var(--border);padding:8px 12px;border-radius:6px;font-size:12px;white-space:nowrap;opacity:0;visibility:hidden;transition:.2s;z-index:50}
+
+/* 图表颜色 */
+.bar-teal{fill:var(--cyan)}
+.bar-gold{fill:var(--accent)}
+.line-green{stroke:var(--green)}
+.line-gold{stroke:var(--accent)}
+.area-green{fill:rgba(63,185,80,.1)}
+</style>
+</head>
+<body>
+
+<!-- 侧边栏 -->
+<aside class="sidebar">
+  <div class="logo">
+    <span class="logo-icon">🍵</span>
+    <div>
+      <div class="logo-text">云沏间</div>
+      <div class="logo-sub">智能茶舍管理系统</div>
+    </div>
+  </div>
+  <nav class="nav">
+    <div class="nav-item active" data-page="dashboard"><span class="icon">📊</span>数据概览</div>
+    <div class="nav-item" data-page="rooms"><span class="icon">🚪</span>包间管理<span class="badge">3</span></div>
+    <div class="nav-item" data-page="orders"><span class="icon">📋</span>订单管理</div>
+    <div class="nav-item" data-page="inventory"><span class="icon">📦</span>茶品库存</div>
+    <div class="nav-item" data-page="members"><span class="icon">👥</span>会员管理</div>
+    <div class="nav-item" data-page="iot"><span class="icon">💡</span>IoT控制</div>
+    <div class="nav-item" data-page="locks"><span class="icon">🔐</span>智能门锁</div>
+    <div class="nav-item" data-page="ambient"><span class="icon">🌿</span>环境调控</div>
+    <div class="nav-item" data-page="reports"><span class="icon">📈</span>营收报表</div>
+  </nav>
+  <div class="nav-bottom">
+    <div class="user-card">
+      <div class="avatar">李</div>
+      <div class="user-info">
+        <div class="user-name">李明轩</div>
+        <div class="user-role">茶舍管理员</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- 主内容 -->
+<main class="main">
+  <header class="header">
+    <div class="header-left">
+      <span class="page-title" id="pageTitle">数据概览</span>
+      <span class="live-time" id="liveTime">--:--:--</span>
+    </div>
+    <div class="header-right">
+      <span class="header-time" id="headerDate">2026年5月17日 周日</span>
+      <button class="top-btn" onclick="showModal('quickOrder')">⚡ 快速开单</button>
+      <button class="top-btn primary" onclick="showModal('newBooking')">+ 新预约</button>
+    </div>
+  </header>
+
+  <div class="content">
+    <!-- 数据概览 -->
+    <div class="page active" id="page-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card green">
+          <div class="stat-label">今日营收</div>
+          <div class="stat-value">¥3,842</div>
+          <div class="stat-trend up">↑ 18.2% 较昨日</div>
+          <div class="stat-icon">💰</div>
+        </div>
+        <div class="stat-card yellow">
+          <div class="stat-label">在座人数</div>
+          <div class="stat-value">24<span style="font-size:14px;color:var(--text2)"> 人</span></div>
+          <div class="stat-trend">当前占用 6/8 包间</div>
+          <div class="stat-icon">🧑</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-label">今日订单</div>
+          <div class="stat-value">38</div>
+          <div class="stat-trend up">↑ 12.5% 较昨日</div>
+          <div class="stat-icon">📝</div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-label">会员消费</div>
+          <div class="stat-value">¥2,160</div>
+          <div class="stat-trend">占比 56.2%</div>
+          <div class="stat-icon">👑</div>
+        </div>
+      </div>
+
+      <div class="chart-grid">
+        <div class="chart-card">
+          <div class="chart-title">近7日营收趋势 <span style="font-size:12px;color:var(--text2);font-weight:400">单位：元</span></div>
+          <div class="chart-container">
+            <canvas id="revenueChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">包间使用率</div>
+          <div class="chart-container">
+            <canvas id="occupancyChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="widget-row">
+        <div class="widget-card">
+          <div class="chart-title">热销茶品 TOP5</div>
+          <div style="margin-top:12px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:12px">
+              <span>正山小种</span><span style="color:var(--accent)">¥1,280</span>
+            </div>
+            <div style="height:6px;background:var(--bg);border-radius:3px;margin-bottom:12px">
+              <div style="width:85%;height:100%;background:var(--accent);border-radius:3px"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:12px">
+              <span>铁观音</span><span style="color:var(--accent)">¥980</span>
+            </div>
+            <div style="height:6px;background:var(--bg);border-radius:3px;margin-bottom:12px">
+              <div style="width:70%;height:100%;background:var(--cyan);border-radius:3px"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:12px">
+              <span>碧螺春</span><span style="color:var(--accent)">¥860</span>
+            </div>
+            <div style="height:6px;background:var(--bg);border-radius:3px;margin-bottom:12px">
+              <div style="width:58%;height:100%;background:var(--green);border-radius:3px"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-size:12px">
+              <span>龙井</span><span style="color:var(--accent)">¥720</span>
+            </div>
+            <div style="height:6px;background:var(--bg);border-radius:3px;margin-bottom:12px">
+              <div style="width:48%;height:100%;background:var(--purple);border-radius:3px"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:12px">
+              <span>普洱熟茶</span><span style="color:var(--accent)">¥540</span>
+            </div>
+            <div style="height:6px;background:var(--bg);border-radius:3px">
+              <div style="width:36%;height:100%;background:var(--blue);border-radius:3px"></div>
+            </div>
+          </div>
+        </div>
+        <div class="widget-card">
+          <div class="chart-title">实时环境</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px;text-align:center">
+            <div>
+              <div style="font-size:32px">🌡️</div>
+              <div style="font-size:24px;font-weight:700;margin-top:4px">24°C</div>
+              <div style="font-size:11px;color:var(--text2)">室内温度</div>
+            </div>
+            <div>
+              <div style="font-size:32px">💧</div>
+              <div style="font-size:24px;font-weight:700;margin-top:4px">58%</div>
+              <div style="font-size:11px;color:var(--text2)">相对湿度</div>
+            </div>
+            <div>
+              <div style="font-size:32px">👃</div>
+              <div style="font-size:24px;font-weight:700;margin-top:4px">优</div>
+              <div style="font-size:11px;color:var(--text2)">空气质量</div>
+            </div>
+            <div>
+              <div style="font-size:32px">🔊</div>
+              <div style="font-size:24px;font-weight:700;margin-top:4px">42dB</div>
+              <div style="font-size:11px;color:var(--text2)">环境噪音</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-card" style="margin-top:24px">
+        <div class="table-header">
+          <span class="table-title">📋 今日订单</span>
+          <div class="table-tabs">
+            <span class="table-tab active" onclick="filterOrders('all')">全部</span>
+            <span class="table-tab" onclick="filterOrders('active')">进行中</span>
+            <span class="table-tab" onclick="filterOrders('done')">已完成</span>
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr><th>订单号</th><th>包间</th><th>会员</th><th>消费</th><th>时长</th><th>状态</th><th>操作</th></tr>
+          </thead>
+          <tbody id="orderTable">
+            <tr><td>#2026051701</td><td>听雨阁</td><td>王建国</td><td>¥386</td><td>2h 15min</td><td><span class="status-tag green">进行中</span></td><td><button class="action-btn">详情</button></td></tr>
+            <tr><td>#2026051702</td><td>望山亭</td><td>张婉清</td><td>¥520</td><td>3h 40min</td><td><span class="status-tag green">进行中</span></td><td><button class="action-btn">详情</button></td></tr>
+            <tr><td>#2026051703</td><td>揽月轩</td><td>—</td><td>¥168</td><td>1h 30min</td><td><span class="status-tag green">进行中</span></td><td><button class="action-btn">详情</button></td></tr>
+            <tr><td>#2026051704</td><td>云深处</td><td>陈默</td><td>¥680</td><td>已结账</td><td><span class="status-tag yellow">待结账</span></td><td><button class="action-btn">结账</button></td></tr>
+            <tr><td>#2026051705</td><td>松风阁</td><td>李雨萱</td><td>¥432</td><td>已结账</td><td><span class="status-tag blue">已完成</span></td><td><button class="action-btn">查看</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 包间管理 -->
+    <div class="page" id="page-rooms">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+        <div style="font-size:14px;color:var(--text2)">共 8 间包间 · 6间占用中 · 2间空闲</div>
+        <button class="top-btn primary" onclick="showModal('newBooking')">+ 新预约</button>
+      </div>
+      <div class="room-grid" id="roomGrid">
+        <div class="room-card occupied" onclick="openRoomDetail('听雨阁')">
+          <div class="room-status occupied"></div>
+          <div style="font-size:28px;margin-bottom:8px">🏯</div>
+          <div class="room-name">听雨阁</div>
+          <div class="room-type">大包 · 可容6人</div>
+          <div class="room-info"><span>王建国</span><span style="color:var(--green)">¥386</span></div>
+          <div class="room-time">已计时 2:15:32</div>
+        </div>
+        <div class="room-card occupied" onclick="openRoomDetail('望山亭')">
+          <div class="room-status occupied"></div>
+          <div style="font-size:28px;margin-bottom:8px">⛰️</div>
+          <div class="room-name">望山亭</div>
+          <div class="room-type">中包 · 可容4人</div>
+          <div class="room-info"><span>张婉清</span><span style="color:var(--green)">¥520</span></div>
+          <div class="room-time">已计时 3:40:18</div>
+        </div>
+        <div class="room-card occupied" onclick="openRoomDetail('揽月轩')">
+          <div class="room-status occupied"></div>
+          <div style="font-size:28px;margin-bottom:8px">🌙</div>
+          <div class="room-name">揽月轩</div>
+          <div class="room-type">小包 · 可容2人</div>
+          <div class="room-info"><span>散客</span><span style="color:var(--green)">¥168</span></div>
+          <div class="room-time">已计时 1:30:45</div>
+        </div>
+        <div class="room-card booked" onclick="openRoomDetail('云深处')">
+          <div class="room-status booked"></div>
+          <div style="font-size:28px;margin-bottom:8px">☁️</div>
+          <div class="room-name">云深处</div>
+          <div class="room-type">大包 · 可容6人</div>
+          <div class="room-info"><span>陈默</span><span style="color:var(--accent)">预约18:00</span></div>
+          <div class="room-time">当前: 待结账 ¥680</div>
+        </div>
+        <div class="room-card occupied" onclick="openRoomDetail('松风阁')">
+          <div class="room-status occupied"></div>
+          <div style="font-size:28px;margin-bottom:8px">🌲</div>
+          <div class="room-name">松风阁</div>
+          <div class="room-type">中包 · 可容4人</div>
+          <div class="room-info"><span>李雨萱</span><span style="color:var(--blue)">¥432</span></div>
+          <div class="room-time">已完成 · 1:52:00</div>
+        </div>
+        <div class="room-card occupied" onclick="openRoomDetail('踏雪斋')">
+          <div class="room-status occupied"></div>
+          <div style="font-size:28px;margin-bottom:8px">❄️</div>
+          <div class="room-name">踏雪斋</div>
+          <div class="room-type">小包 · 可容2人</div>
+          <div class="room-info"><span>周芷若</span><span style="color:var(--green)">¥256</span></div>
+          <div class="room-time">已计时 1:05:22</div>
+        </div>
+        <div class="room-card vacant" onclick="openRoomDetail('幽篁里')">
+          <div class="room-status vacant"></div>
+          <div style="font-size:28px;margin-bottom:8px">🎋</div>
+          <div class="room-name">幽篁里</div>
+          <div class="room-type">大包 · 可容6人</div>
+          <div class="room-info"><span>—</span><span style="color:var(--text2)">空闲</span></div>
+          <div class="room-time">最低消费 ¥128/h</div>
+        </div>
+        <div class="room-card vacant" onclick="openRoomDetail('枕溪山房')">
+          <div class="room-status vacant"></div>
+          <div style="font-size:28px;margin-bottom:8px">🏔️</div>
+          <div class="room-name">枕溪山房</div>
+          <div class="room-type">中包 · 可容4人</div>
+          <div class="room-info"><span>—</span><span style="color:var(--text2)">空闲</span></div>
+          <div class="room-time">最低消费 ¥98/h</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 订单管理 -->
+    <div class="page" id="page-orders">
+      <div class="table-card">
+        <div class="table-header">
+          <span class="table-title">全部订单</span>
+          <div style="display:flex;gap:12px">
+            <input type="text" placeholder="搜索订单号/手机号" style="padding:7px 12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;width:200px">
+            <select><option>全部状态</option><option>进行中</option><option>待结账</option><option>已完成</option></select>
+            <select><option>全部包间</option><option>听雨阁</option><option>望山亭</option></select>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>订单号</th><th>时间</th><th>包间</th><th>会员</th><th>茶品</th><th>消费</th><th>时长</th><th>状态</th><th>操作</th></tr></thead>
+          <tbody>
+            <tr><td>#2026051701</td><td>10:32</td><td>听雨阁</td><td>王建国</td><td>正山小种×2</td><td>¥386</td><td>2h 15min</td><td><span class="status-tag green">进行中</span></td><td><button class="action-btn">详情</button><button class="action-btn">结账</button></td></tr>
+            <tr><td>#2026051702</td><td>09:15</td><td>望山亭</td><td>张婉清</td><td>铁观音×1, 碧螺春×1</td><td>¥520</td><td>3h 40min</td><td><span class="status-tag green">进行中</span></td><td><button class="action-btn">详情</button><button class="action-btn">结账</button></td></tr>
+            <tr><td>#2026051703</td><td>11:45</td><td>揽月轩</td><td>—</td><td>龙井×1</td><td>¥168</td><td>1h 30min</td><td><span class="status-tag green">进行中</span></td><td><button class="action-btn">详情</button><button class="action-btn">结账</button></td></tr>
+            <tr><td>#2026051704</td><td>08:20</td><td>云深处</td><td>陈默</td><td>正山小种×2, 普洱×1</td><td>¥680</td><td>4h 10min</td><td><span class="status-tag yellow">待结账</span></td><td><button class="action-btn">详情</button><button class="action-btn">结账</button></td></tr>
+            <tr><td>#2026051705</td><td>07:00</td><td>松风阁</td><td>李雨萱</td><td>铁观音×2</td><td>¥432</td><td>1h 52min</td><td><span class="status-tag blue">已完成</span></td><td><button class="action-btn">详情</button></td></tr>
+            <tr><td>#2026051706</td><td>06:30</td><td>踏雪斋</td><td>周芷若</td><td>碧螺春×1</td><td>¥256</td><td>1h 45min</td><td><span class="status-tag blue">已完成</span></td><td><button class="action-btn">详情</button></td></tr>
+            <tr><td>#2026051608</td><td>19:30</td><td>听雨阁</td><td>赵文博</td><td>正山小种×3</td><td>¥760</td><td>3h 20min</td><td><span class="status-tag blue">已完成</span></td><td><button class="action-btn">详情</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 茶品库存 -->
+    <div class="page" id="page-inventory">
+      <div class="stats-grid" style="grid-template-columns:repeat(5,1fr)">
+        <div class="stat-card yellow">
+          <div class="stat-label">茶品总数</div>
+          <div class="stat-value">18</div>
+          <div class="stat-trend">种</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">库存充足</div>
+          <div class="stat-value">12</div>
+          <div class="stat-trend">种</div>
+        </div>
+        <div class="stat-card yellow">
+          <div class="stat-label">需要补货</div>
+          <div class="stat-value">4</div>
+          <div class="stat-trend">种</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-label">库存紧张</div>
+          <div class="stat-value">2</div>
+          <div class="stat-trend">种</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-label">本月消耗</div>
+          <div class="stat-value">¥12,840</div>
+          <div class="stat-trend">茶叶成本</div>
+        </div>
+      </div>
+      <div class="inventory-grid">
+        <div class="inventory-card">
+          <div class="inv-header">
+            <div class="inv-name">正山小种</div>
+            <span class="status-tag green">充足</span>
+          </div>
+          <div><span class="inv-stock">28</span><span class="inv-unit"> 份 (约140杯)</span></div>
+          <div class="inv-bottom"><span class="inv-price">¥128/份</span><span style="font-size:11px;color:var(--text2)">成本¥68</span></div>
+          <div class="inv-bar"><div class="inv-bar-fill" style="width:78%"></div></div>
+        </div>
+        <div class="inventory-card">
+          <div class="inv-header">
+            <div class="inv-name">铁观音</div>
+            <span class="status-tag green">充足</span>
+          </div>
+          <div><span class="inv-stock">35</span><span class="inv-unit"> 份 (约175杯)</span></div>
+          <div class="inv-bottom"><span class="inv-price">¥98/份</span><span style="font-size:11px;color:var(--text2)">成本¥52</span></div>
+          <div class="inv-bar"><div class="inv-bar-fill" style="width:85%"></div></div>
+        </div>
+        <div class="inventory-card">
+          <div class="inv-header">
+            <div class="inv-name">碧螺春</div>
+            <span class="status-tag yellow">需补货</span>
+          </div>
+          <div><span class="inv-stock">8</span><span class="inv-unit"> 份 (约40杯)</span></div>
+          <div class="inv-bottom"><span class="inv-price">¥86/份</span><span style="font-size:11px;color:var(--text2)">成本¥45</span></div>
+          <div class="inv-bar"><div class="inv-bar-fill" style="width:28%"></div></div>
+        </div>
+        <div class="inventory-card">
+          <div class="inv-header">
+            <div class="inv-name">龙井</div>
+            <span class="status-tag yellow">需补货</span>
+          </div>
+          <div><span class="inv-stock">12</span><span class="inv-unit"> 份 (约60杯)</span></div>
+          <div class="inv-bottom"><span class="inv-price">¥108/份</span><span style="font-size:11px;color:var(--text2)">成本¥58</span></div>
+          <div class="inv-bar"><div class="inv-bar-fill" style="width:42%"></div></div>
+        </div>
+        <div class="inventory-card">
+          <div class="inv-header">
+            <div class="inv-name">普洱熟茶</div>
+            <span class="status-tag red">紧张</span>
+          </div>
+          <div><span class="inv-stock">3</span><span class="inv-unit"> 份 (约15杯)</span></div>
+          <div class="inv-bottom"><span class="inv-price">¥78/份</span><span style="font-size:11px;color:var(--text2)">成本¥40</span></div>
+          <div class="inv-bar"><div class="inv-bar-fill" style="width:12%"></div></div>
+        </div>
+        <div class="inventory-card">
+          <div class="inv-header">
+            <div class="inv-name">大红袍</div>
+            <span class="status-tag green">充足</span>
+          </div>
+          <div><span class="inv-stock">22</span><span class="inv-unit"> 份 (约110杯)</span></div>
+          <div class="inv-bottom"><span class="inv-price">¥118/份</span><span style="font-size:11px;color:var(--text2)">成本¥62</span></div>
+          <div class="inv-bar"><div class="inv-bar-fill" style="width:68%"></div></div>
+        </div>
+        <div class="inventory-card">
+          <div class="inv-header">
+            <div class="inv-name">白毫银针</div>
+            <span class="status-tag green">充足</span>
+          </div>
+          <div><span class="inv-stock">40</span><span class="inv-unit"> 份 (约200杯)</span></div>
+          <div class="inv-bottom"><span class="inv-price">¥68/份</span><span style="font-size:11px;color:var(--text2)">成本¥35</span></div>
+          <div class="inv-bar"><div class="inv-bar-fill" style="width:88%"></div></div>
+        </div>
+        <div class="inventory-card">
+          <div class="inv-header">
+            <div class="inv-name">茉莉花茶</div>
+            <span class="status-tag red">紧张</span>
+          </div>
+          <div><span class="inv-stock">5</span><span class="inv-unit"> 份 (约25杯)</span></div>
+          <div class="inv-bottom"><span class="inv-price">¥58/份</span><span style="font-size:11px;color:var(--text2)">成本¥30</span></div>
+          <div class="inv-bar"><div class="inv-bar-fill" style="width:18%"></div></div>
+        </div>
+      </div>
+      <div style="margin-top:24px" class="table-card">
+        <div class="table-header">
+          <span class="table-title">📦 入库记录</span>
+          <button class="top-btn" onclick="showModal('addStock')">+ 入库</button>
+        </div>
+        <table>
+          <thead><tr><th>时间</th><th>茶品</th><th>数量</th><th>供应商</th><th>金额</th><th>经办人</th></tr></thead>
+          <tbody>
+            <tr><td>05-15 09:30</td><td>正山小种</td><td>+20份</td><td>武夷山福荣茶厂</td><td>¥1,360</td><td>李明轩</td></tr>
+            <tr><td>05-14 14:22</td><td>铁观音</td><td>+30份</td><td>安溪铁观音集团</td><td>¥1,560</td><td>李明轩</td></tr>
+            <tr><td>05-12 10:05</td><td>碧螺春</td><td>+15份</td><td>苏州东山茶厂</td><td>¥675</td><td>王晓燕</td></tr>
+            <tr><td>05-10 16:40</td><td>龙井</td><td>+25份</td><td>杭州龙井茶业</td><td>¥1,450</td><td>李明轩</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 会员管理 -->
+    <div class="page" id="page-members">
+      <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
+        <div class="stat-card purple">
+          <div class="stat-label">会员总数</div>
+          <div class="stat-value">156</div>
+          <div class="stat-trend">活跃会员 128</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">本月新增</div>
+          <div class="stat-value">12</div>
+          <div class="stat-trend">↑ 新注册</div>
+        </div>
+        <div class="stat-card yellow">
+          <div class="stat-label">会员储值</div>
+          <div class="stat-value">¥48,600</div>
+          <div class="stat-trend">总余额</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-label">本月会员消费</div>
+          <div class="stat-value">¥21,840</div>
+          <div class="stat-trend">占比 56.2%</div>
+        </div>
+      </div>
+      <div class="member-grid">
+        <div class="member-card">
+          <div class="member-level gold">金卡会员</div>
+          <div class="member-avatar">👨</div>
+          <div class="member-name">王建国</div>
+          <div class="member-phone">138****6721</div>
+          <div class="member-stats">
+            <div class="member-stat"><div class="member-stat-label">储值余额</div><div class="member-stat-value">¥3,280</div></div>
+            <div class="member-stat"><div class="member-stat-label">累计消费</div><div class="member-stat-value">¥12,680</div></div>
+            <div class="member-stat"><div class="member-stat-label">到店次数</div><div class="member-stat-value">38次</div></div>
+            <div class="member-stat"><div class="member-stat-label">会员积分</div><div class="member-stat-value">1,268</div></div>
+          </div>
+        </div>
+        <div class="member-card">
+          <div class="member-level diamond">钻石会员</div>
+          <div class="member-avatar">👩</div>
+          <div class="member-name">张婉清</div>
+          <div class="member-phone">139****8832</div>
+          <div class="member-stats">
+            <div class="member-stat"><div class="member-stat-label">储值余额</div><div class="member-stat-value">¥8,560</div></div>
+            <div class="member-stat"><div class="member-stat-label">累计消费</div><div class="member-stat-value">¥28,400</div></div>
+            <div class="member-stat"><div class="member-stat-label">到店次数</div><div class="member-stat-value">72次</div></div>
+            <div class="member-stat"><div class="member-stat-label">会员积分</div><div class="member-stat-value">2,840</div></div>
+          </div>
+        </div>
+        <div class="member-card">
+          <div class="member-level silver">银卡会员</div>
+          <div class="member-avatar">👨</div>
+          <div class="member-name">陈默</div>
+          <div class="member-phone">136****2256</div>
+          <div class="member-stats">
+            <div class="member-stat"><div class="member-stat-label">储值余额</div><div class="member-stat-value">¥1,420</div></div>
+            <div class="member-stat"><div class="member-stat-label">累计消费</div><div class="member-stat-value">¥5,680</div></div>
+            <div class="member-stat"><div class="member-stat-label">到店次数</div><div class="member-stat-value">18次</div></div>
+            <div class="member-stat"><div class="member-stat-label">会员积分</div><div class="member-stat-value">568</div></div>
+          </div>
+        </div>
+        <div class="member-card">
+          <div class="member-level gold">金卡会员</div>
+          <div class="member-avatar">👩</div>
+          <div class="member-name">李雨萱</div>
+          <div class="member-phone">137****7790</div>
+          <div class="member-stats">
+            <div class="member-stat"><div class="member-stat-label">储值余额</div><div class="member-stat-value">¥2,180</div></div>
+            <div class="member-stat"><div class="member-stat-label">累计消费</div><div class="member-stat-value">¥8,920</div></div>
+            <div class="member-stat"><div class="member-stat-label">到店次数</div><div class="member-stat-value">25次</div></div>
+            <div class="member-stat"><div class="member-stat-label">会员积分</div><div class="member-stat-value">892</div></div>
+          </div>
+        </div>
+        <div class="member-card">
+          <div class="member-level silver">银卡会员</div>
+          <div class="member-avatar">👨</div>
+          <div class="member-name">赵文博</div>
+          <div class="member-phone">135****4421</div>
+          <div class="member-stats">
+            <div class="member-stat"><div class="member-stat-label">储值余额</div><div class="member-stat-value">¥980</div></div>
+            <div class="member-stat"><div class="member-stat-label">累计消费</div><div class="member-stat-value">¥3,840</div></div>
+            <div class="member-stat"><div class="member-stat-label">到店次数</div><div class="member-stat-value">12次</div></div>
+            <div class="member-stat"><div class="member-stat-label">会员积分</div><div class="member-stat-value">384</div></div>
+          </div>
+        </div>
+        <div class="member-card">
+          <div class="member-level diamond">钻石会员</div>
+          <div class="member-avatar">👩</div>
+          <div class="member-name">周芷若</div>
+          <div class="member-phone">158****6678</div>
+          <div class="member-stats">
+            <div class="member-stat"><div class="member-stat-label">储值余额</div><div class="member-stat-value">¥6,320</div></div>
+            <div class="member-stat"><div class="member-stat-label">累计消费</div><div class="member-stat-value">¥18,600</div></div>
+            <div class="member-stat"><div class="member-stat-label">到店次数</div><div class="member-stat-value">45次</div></div>
+            <div class="member-stat"><div class="member-stat-label">会员积分</div><div class="member-stat-value">1,860</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- IoT控制 -->
+    <div class="page" id="page-iot">
+      <div class="iot-grid">
+        <div class="iot-card">
+          <div class="iot-icon">💡</div>
+          <div class="iot-name">大厅灯光</div>
+          <div class="iot-status">当前: 明亮</div>
+          <div class="iot-toggle on" onclick="toggleIot(this,'大厅灯光')"></div>
+          <div class="iot-slider">
+            <input type="range" min="0" max="100" value="80" oninput="changeIotBrightness(this,'大厅灯光')">
+          </div>
+        </div>
+        <div class="iot-card">
+          <div class="iot-icon">🌡️</div>
+          <div class="iot-name">中央空调</div>
+          <div class="iot-status">当前: 24°C 制冷</div>
+          <div class="iot-toggle on" onclick="toggleIot(this,'中央空调')"></div>
+          <div class="iot-slider">
+            <input type="range" min="16" max="30" value="24">
+          </div>
+        </div>
+        <div class="iot-card">
+          <div class="iot-icon">💨</div>
+          <div class="iot-name">新风系统</div>
+          <div class="iot-status">当前: 运行中</div>
+          <div class="iot-toggle on" onclick="toggleIot(this,'新风系统')"></div>
+        </div>
+        <div class="iot-card">
+          <div class="iot-icon">🎵</div>
+          <div class="iot-name">背景音乐</div>
+          <div class="iot-status">当前: 古典轻音乐</div>
+          <div class="iot-toggle on" onclick="toggleIot(this,'背景音乐')"></div>
+        </div>
+        <div class="iot-card">
+          <div class="iot-icon">🪟</div>
+          <div class="iot-name">窗帘电机 A区</div>
+          <div class="iot-status">当前: 半开</div>
+          <div class="iot-toggle" onclick="toggleIot(this,'窗帘电机 A区')"></div>
+          <div class="iot-slider">
+            <input type="range" min="0" max="100" value="50">
+          </div>
+        </div>
+        <div class="iot-card">
+          <div class="iot-icon">☕</div>
+          <div class="iot-name">自动泡茶机</div>
+          <div class="iot-status">当前: 待机</div>
+          <div class="iot-toggle on" onclick="toggleIot(this,'自动泡茶机')"></div>
+        </div>
+      </div>
+      <div class="table-card" style="margin-top:24px">
+        <div class="table-header">
+          <span class="table-title">📊 设备状态监控</span>
+          <span style="font-size:12px;color:var(--text2)">最后更新: <span class="live-time">--:--:--</span></span>
+        </div>
+        <table>
+          <thead><tr><th>设备名称</th><th>设备编号</th><th>在线状态</th><th>当前功率</th><th>今日用电</th><th>最后通讯</th></tr></thead>
+          <tbody>
+            <tr><td>大厅灯光主控</td><td>LT-001</td><td><span class="status-tag green">在线</span></td><td>320W</td><td>4.2kWh</td><td>刚刚</td></tr>
+            <tr><td>中央空调主机</td><td>AC-001</td><td><span class="status-tag green">在线</span></td><td>1.8kW</td><td>28.6kWh</td><td>刚刚</td></tr>
+            <tr><td>新风系统主机</td><td>FA-001</td><td><span class="status-tag green">在线</span></td><td>150W</td><td>2.8kWh</td><td>刚刚</td></tr>
+            <tr><td>背景音乐功放</td><td>MU-001</td><td><span class="status-tag green">在线</span></td><td>45W</td><td>0.6kWh</td><td>刚刚</td></tr>
+            <tr><td>A区窗帘控制盒</td><td>CT-001A</td><td><span class="status-tag yellow">离线</span></td><td>—</td><td>—</td><td>2小时前</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 智能门锁 -->
+    <div class="page" id="page-locks">
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-card green">
+          <div class="stat-label">已开门锁</div>
+          <div class="stat-value">4</div>
+          <div class="stat-trend">实时开门数</div>
+        </div>
+        <div class="stat-card yellow">
+          <div class="stat-label">今日开门次数</div>
+          <div class="stat-value">28</div>
+          <div class="stat-trend">总开门次数</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-label">门锁电量预警</div>
+          <div class="stat-value">1</div>
+          <div class="stat-trend">需更换电池</div>
+        </div>
+      </div>
+      <div class="lock-grid">
+        <div class="lock-card">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-name">听雨阁</div>
+          <div class="lock-state locked">已上锁</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:4px">电量 85%</div>
+          <button class="lock-btn" onclick="toggleLock(this,'听雨阁')">远程开锁</button>
+        </div>
+        <div class="lock-card">
+          <div class="lock-icon">🔓</div>
+          <div class="lock-name">望山亭</div>
+          <div class="lock-state unlocked">已开锁</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:4px">电量 92%</div>
+          <button class="lock-btn" onclick="toggleLock(this,'望山亭')">远程上锁</button>
+        </div>
+        <div class="lock-card">
+          <div class="lock-icon">🔓</div>
+          <div class="lock-name">揽月轩</div>
+          <div class="lock-state unlocked">已开锁</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:4px">电量 78%</div>
+          <button class="lock-btn" onclick="toggleLock(this,'揽月轩')">远程上锁</button>
+        </div>
+        <div class="lock-card">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-name">云深处</div>
+          <div class="lock-state locked">已上锁</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:4px">电量 15% ⚠️</div>
+          <button class="lock-btn" onclick="toggleLock(this,'云深处')">远程开锁</button>
+        </div>
+        <div class="lock-card">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-name">松风阁</div>
+          <div class="lock-state locked">已上锁</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:4px">电量 68%</div>
+          <button class="lock-btn" onclick="toggleLock(this,'松风阁')">远程开锁</button>
+        </div>
+        <div class="lock-card">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-name">踏雪斋</div>
+          <div class="lock-state locked">已上锁</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:4px">电量 81%</div>
+          <button class="lock-btn" onclick="toggleLock(this,'踏雪斋')">远程开锁</button>
+        </div>
+        <div class="lock-card">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-name">幽篁里</div>
+          <div class="lock-state locked">已上锁</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:4px">电量 55%</div>
+          <button class="lock-btn" onclick="toggleLock(this,'幽篁里')">远程开锁</button>
+        </div>
+        <div class="lock-card">
+          <div class="lock-icon">🔒</div>
+          <div class="lock-name">枕溪山房</div>
+          <div class="lock-state locked">已上锁</div>
+          <div style="font-size:11px;color:var(--text2);margin-top:4px">电量 73%</div>
+          <button class="lock-btn" onclick="toggleLock(this,'枕溪山房')">远程开锁</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 环境调控 -->
+    <div class="page" id="page-ambient">
+      <div class="widget-row" style="margin-bottom:24px">
+        <div class="widget-card">
+          <div class="chart-title">🌡️ 温度监控</div>
+          <div style="display:flex;justify-content:space-around;margin-top:16px">
+            <div style="text-align:center">
+              <div style="font-size:36px">🏯</div>
+              <div style="font-size:22px;font-weight:700;margin-top:4px">24°C</div>
+              <div style="font-size:11px;color:var(--text2)">大堂</div>
+            </div>
+            <div style="text-align:center">
+              <div style="font-size:36px">🏯</div>
+              <div style="font-size:22px;font-weight:700;margin-top:4px">23°C</div>
+              <div style="font-size:11px;color:var(--text2)">A区</div>
+            </div>
+            <div style="text-align:center">
+              <div style="font-size:36px">🏯</div>
+              <div style="font-size:22px;font-weight:700;margin-top:4px">25°C</div>
+              <div style="font-size:11px;color:var(--text2)">B区</div>
+            </div>
+          </div>
+        </div>
+        <div class="widget-card">
+          <div class="chart-title">💧 湿度监控</div>
+          <div style="display:flex;justify-content:space-around;margin-top:16px">
+            <div style="text-align:center">
+              <div style="font-size:36px">💧</div>
+              <div style="font-size:22px;font-weight:700;margin-top:4px">58%</div>
+              <div style="font-size:11px;color:var(--text2)">大堂</div>
+            </div>
+            <div style="text-align:center">
+              <div style="font-size:36px">💧</div>
+              <div style="font-size:22px;font-weight:700;margin-top:4px">62%</div>
+              <div style="font-size:11px;color:var(--text2)">A区</div>
+            </div>
+            <div style="text-align:center">
+              <div style="font-size:36px">💧</div>
+              <div style="font-size:22px;font-weight:700;margin-top:4px">55%</div>
+              <div style="font-size:11px;color:var(--text2)">B区</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="chart-grid">
+        <div class="chart-card">
+          <div class="chart-title">24小时温度曲线</div>
+          <div class="chart-container"><canvas id="tempChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">区域能耗占比</div>
+          <div class="chart-container"><canvas id="energyChart"></canvas></div>
+        </div>
+      </div>
+      <div class="table-card" style="margin-top:24px">
+        <div class="table-header">
+          <span class="table-title">🌿 环境调控策略</span>
+          <button class="top-btn" onclick="showModal('ambientPreset')">+ 新建策略</button>
+        </div>
+        <table>
+          <thead><tr><th>策略名称</th><th>触发条件</th><th>执行动作</th><th>状态</th><th>操作</th></tr></thead>
+          <tbody>
+            <tr><td>午间降温</td><td>11:00-14:00 温度>26°C</td><td>空调调至22°C</td><td><span class="status-tag green">已启用</span></td><td><button class="action-btn">编辑</button></td></tr>
+            <tr><td>夜间节能</td><td>22:00-次日07:00</td><td>关闭灯光至30%,空调28°C</td><td><span class="status-tag green">已启用</span></td><td><button class="action-btn">编辑</button></td></tr>
+            <tr><td>高峰通风</td><td>周末 18:00-20:00</td><td>新风系统全速运行</td><td><span class="status-tag yellow">待触发</span></td><td><button class="action-btn">编辑</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 营收报表 -->
+    <div class="page" id="page-reports">
+      <div class="report-filters">
+        <span class="report-filter">时间范围</span>
+        <select id="reportPeriod"><option>今日</option><option>本周</option><option>本月</option><option>本季度</option><option>本年</option></select>
+        <span class="report-filter">包间</span>
+        <select><option>全部包间</option><option>听雨阁</option><option>望山亭</option></select>
+        <button class="top-btn" onclick="refreshReport()">🔄 刷新</button>
+        <button class="top-btn" onclick="exportReport()">📥 导出报表</button>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card green">
+          <div class="stat-label">总收入</div>
+          <div class="stat-value">¥38,420</div>
+          <div class="stat-trend up">↑ 15.3% 环比</div>
+        </div>
+        <div class="stat-card yellow">
+          <div class="stat-label">茶品收入</div>
+          <div class="stat-value">¥28,650</div>
+          <div class="stat-trend">占比 74.6%</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-label">包间收入</div>
+          <div class="stat-value">¥9,770</div>
+          <div class="stat-trend">占比 25.4%</div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-label">净利润</div>
+          <div class="stat-value">¥12,680</div>
+          <div class="stat-trend">利润率 33.0%</div>
+        </div>
+      </div>
+      <div class="chart-grid">
+        <div class="chart-card">
+          <div class="chart-title">营收趋势</div>
+          <div class="chart-container"><canvas id="reportChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">收入构成</div>
+          <div class="chart-container"><canvas id="incomeChart"></canvas></div>
+        </div>
+      </div>
+      <div class="table-card" style="margin-top:24px">
+        <div class="table-header">
+          <span class="table-title">📊 员工业绩排行</span>
+        </div>
+        <table>
+          <thead><tr><th>排名</th><th>员工</th><th>服务单数</th><th>服务金额</th><th>好评率</th><th>绩效评分</th></tr></thead>
+          <tbody>
+            <tr><td>🥇</td><td>李明轩</td><td>156</td><td>¥38,420</td><td>98.2%</td><td><span style="color:var(--accent)">★★★★★</span></td></tr>
+            <tr><td>🥈</td><td>王晓燕</td><td>132</td><td>¥32,580</td><td>96.5%</td><td><span style="color:var(--accent)">★★★★★</span></td></tr>
+            <tr><td>🥉</td><td>张伟</td><td>118</td><td>¥28,940</td><td>95.8%</td><td><span style="color:var(--accent)">★★★★☆</span></td></tr>
+            <tr><td>4</td><td>刘芳</td><td>105</td><td>¥25,820</td><td>94.2%</td><td><span style="color:var(--accent)">★★★★☆</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- 弹窗 -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()" id="modalContent">
+    <div class="modal-header">
+      <span class="modal-title" id="modalTitle">新预约</span>
+      <button class="modal-close" onclick="hideModal()">×</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- 通知 -->
+<div class="notif" id="notif">
+  <span>✓</span>
+  <span id="notifText"></span>
+</div>
+
+<script>
+// 页面导航
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+    const page = item.dataset.page;
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    document.getElementById('pageTitle').textContent = item.textContent.trim();
+  });
+});
+
+// 时钟
+function updateClock() {
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('zh-CN', {hour12:false});
+  const dateStr = now.toLocaleDateString('zh-CN', {year:'numeric',month:'long',day:'numeric',weekday:'long'});
+  document.getElementById('liveTime').textContent = timeStr;
+  document.getElementById('headerDate').textContent = dateStr;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// 弹窗
+const modalTemplates = {
+  newBooking: `
+    <div class="form-group"><label class="form-label">会员手机号</label><input type="text" class="form-input" placeholder="输入手机号" id="bookingPhone"><div id="memberInfo" style="font-size:12px;color:var(--accent);margin-top:4px;display:none">会员: <span id="memberName"></span> (余额:<span id="memberBalance"></span>)</div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">选择包间</label><select class="form-select" id="bookingRoom"><option>听雨阁</option><option>望山亭</option><option>揽月轩</option><option>云深处</option><option>松风阁</option><option>踏雪斋</option><option>幽篁里</option><option>枕溪山房</option></select></div><div class="form-group"><label class="form-label">预约时间</label><input type="datetime-local" class="form-input" id="bookingTime"></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">预计时长</label><select class="form-select"><option>1小时</option><option>2小时</option><option>3小时</option><option>4小时</option><option>5小时+</option></select></div><div class="form-group"><label class="form-label">预计人数</label><select class="form-select"><option>1-2人</option><option>3-4人</option><option>5-6人</option></select></div></div>
+    <div class="form-group"><label class="form-label">备注</label><input type="text" class="form-input" placeholder="特殊需求"></div>
+    <div class="form-actions"><button class="btn btn-secondary" onclick="hideModal()">取消</button><button class="btn btn-primary" onclick="confirmBooking()">确认预约</button></div>
+  `,
+  quickOrder: `
+    <div class="form-row"><div class="form-group"><label class="form-label">包间</label><select class="form-select"><option>听雨阁</option><option>望山亭</option><option>揽月轩</option><option>云深处</option></select></div><div class="form-group"><label class="form-label">茶品</label><select class="form-select"><option>正山小种 ¥128</option><option>铁观音 ¥98</option><option>碧螺春 ¥86</option><option>龙井 ¥108</option><option>普洱熟茶 ¥78</option></select></div></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">数量</label><input type="number" class="form-input" value="1" min="1"></div><div class="form-group"><label class="form-label">加水次数</label><select class="form-select"><option>1次</option><option>2次</option><option>无限续水</option></select></div></div>
+    <div class="form-group"><label class="form-label">备注</label><input type="text" class="form-input" placeholder="口味偏好"></div>
+    <div class="form-actions"><button class="btn btn-secondary" onclick="hideModal()">取消</button><button class="btn btn-primary" onclick="confirmQuickOrder()">确认开单</button></div>
+  `,
+  addStock: `
+    <div class="form-group"><label class="form-label">茶品</label><select class="form-select"><option>正山小种</option><option>铁观音</option><option>碧螺春</option><option>龙井</option><option>普洱熟茶</option></select></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">入库数量</label><input type="number" class="form-input" value="10" min="1"></div><div class="form-group"><label class="form-label">单价成本</label><input type="number" class="form-input" placeholder="¥"></div></div>
+    <div class="form-group"><label class="form-label">供应商</label><input type="text" class="form-input" placeholder="供应商名称"></div>
+    <div class="form-group"><label class="form-label">批次号</label><input type="text" class="form-input" placeholder="自动生成"></div>
+    <div class="form-actions"><button class="btn btn-secondary" onclick="hideModal()">取消</button><button class="btn btn-primary" onclick="confirmStock()">确认入库</button></div>
+  `,
+  ambientPreset: `
+    <div class="form-group"><label class="form-label">策略名称</label><input type="text" class="form-input" placeholder="策略名称"></div>
+    <div class="form-row"><div class="form-group"><label class="form-label">开始时间</label><input type="time" class="form-input"></div><div class="form-group"><label class="form-label">结束时间</label><input type="time" class="form-input"></div></div>
+    <div class="form-group"><label class="form-label">触发条件</label><select class="form-select"><option>定时触发</option><option>温度>26°C</option><option>温度<18°C</option><option>湿度>70%</option></select></div>
+    <div class="form-group"><label class="form-label">执行动作</label><textarea class="form-input" rows="2" placeholder="空调调至22°C,灯光调至50%"></textarea></div>
+    <div class="form-actions"><button class="btn btn-secondary" onclick="hideModal()">取消</button><button class="btn btn-primary" onclick="saveAmbient()">保存策略</button></div>
+  `
+};
+
+function showModal(type) {
+  const overlay = document.getElementById('modalOverlay');
+  const title = document.getElementById('modalTitle');
+  const body = document.getElementById('modalBody');
+  const titles = {newBooking:'新预约',quickOrder:'快速开单',addStock:'茶品入库',ambientPreset:'新建调控策略'};
+  title.textContent = titles[type] || '提示';
+  body.innerHTML = modalTemplates[type] || '<p>功能开发中</p>';
+  overlay.classList.add('show');
+}
+function hideModal() { document.getElementById('modalOverlay').classList.remove('show'); }
+function closeModal(e) { if(e.target.id==='modalOverlay') hideModal(); }
+
+function confirmBooking() { notify('预约创建成功'); hideModal(); }
+function confirmQuickOrder() { notify('开单成功，已开始计时'); hideModal(); }
+function confirmStock() { notify('入库成功，库存已更新'); hideModal(); }
+function saveAmbient() { notify('策略保存成功'); hideModal(); }
+
+function notify(msg) {
+  const n = document.getElementById('notif');
+  document.getElementById('notifText').textContent = msg;
+  n.classList.add('show');
+  setTimeout(() => n.classList.remove('show'), 3000);
+}
+
+// IoT
+function toggleIot(el, name) {
+  el.classList.toggle('on');
+  const status = el.classList.contains('on') ? '开启' : '关闭';
+  notify(`${name}已${status}`);
+}
+function changeIotBrightness(el, name) { notify(`${name}亮度: ${el.value}%`); }
+
+// 门锁
+function toggleLock(btn, name) {
+  const card = btn.closest('.lock-card');
+  const icon = card.querySelector('.lock-icon');
+  const state = card.querySelector('.lock-state');
+  if (state.textContent === '已上锁') {
+    icon.textContent = '🔓'; state.textContent = '已开锁'; state.className = 'lock-state unlocked';
+    btn.textContent = '远程上锁'; notify(`${name}已开锁`);
+  } else {
+    icon.textContent = '🔒'; state.textContent = '已上锁'; state.className = 'lock-state locked';
+    btn.textContent = '远程开锁'; notify(`${name}已上锁`);
+  }
+}
+
+// 订单筛选
+function filterOrders(type) {
+  document.querySelectorAll('.table-tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  notify(`已筛选: ${type === 'all'?'全部':type === 'active'?'进行中':'已完成'}`);
+}
+
+// 报表
+function refreshReport() { notify('报表已刷新'); }
+function exportReport() { notify('报表导出中...'); }
+
+function openRoomDetail(name) { notify(`正在打开 ${name} 详情`); }
+
+// 会员查询
+document.addEventListener('input', e => {
+  if(e.target.id === 'bookingPhone' && e.target.value.length === 11) {
+    document.getElementById('memberInfo').style.display = 'block';
+    document.getElementById('memberName').textContent = '王建国';
+    document.getElementById('memberBalance').textContent = '¥3,280';
+  }
+});
+
+// 图表绘制
+function drawCharts() {
+  // 营收趋势图
+  const rc = document.getElementById('revenueChart');
+  if(rc) {
+    const ctx = rc.getContext('2d');
+    rc.width = rc.parentElement.offsetWidth;
+    rc.height = rc.parentElement.offsetHeight;
+    const days = ['05-11','05-12','05-13','05-14','05-15','05-16','05-17'];
+    const data = [2800,3200,2600,3500,3100,3650,3842];
+    const max = Math.max(...data);
+    const w = rc.width, h = rc.height;
+    ctx.clearRect(0,0,w,h);
+    // 网格线
+    ctx.strokeStyle='#21262d';ctx.lineWidth=1;
+    for(let i=0;i<5;i++){
+      const y = 30 + (h-60)/4*i;
+      ctx.beginPath();ctx.moveTo(40,y);ctx.lineTo(w-20,y);ctx.stroke();
+      ctx.fillStyle='#8b949e';ctx.font='11px';ctx.fillText(Math.round(max-max*i/4),5,y+4);
+    }
+    // 柱状图
+    const bw = (w-60)/days.length;
+    data.forEach((v,i)=>{
+      const bh = (v/max)*(h-60);
+      const gradient = ctx.createLinearGradient(0,h-30-bh,h-30);
+      gradient.addColorStop(0,'#f0c040');gradient.addColorStop(1,'#d4a843');
+      ctx.fillStyle=gradient;
+      ctx.fillRect(45+i*bw+2,h-30-bh,bw-4,bh);
+    });
+    // 标签
+    ctx.fillStyle='#8b949e';ctx.font='11px';ctx.textAlign='center';
+    days.forEach((d,i)=>ctx.fillText(d,45+i*bw+bw/2,h-8));
+    // 折线
+    ctx.strokeStyle='#f0c040';ctx.lineWidth=2;ctx.beginPath();
+    data.forEach((v,i)=>{
+      const x = 45+i*bw+bw/2, y = h-30-bh;
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+    // 点
+    data.forEach((v,i)=>{
+      const x = 45+i*bw+bw/2, y = h-30-(v/max)*(h-60);
+      ctx.fillStyle='#f0c040';ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fill();
+    });
+  }
+
+  // 使用率饼图
+  const oc = document.getElementById('occupancyChart');
+  if(oc) {
+    const ctx = oc.getContext('2d');
+    oc.width = oc.parentElement.offsetWidth;
+    oc.height = oc.parentElement.offsetHeight;
+    const cx = oc.width/2, cy = oc.height/2, r = Math.min(cx,cy)-20;
+    const data2 = [6,2]; // 占用,空闲
+    const colors = ['#3fb950','#30363d'];
+    let start = 0;
+    data2.forEach((v,i)=>{
+      const angle = (v/8)*Math.PI*2;
+      ctx.fillStyle=colors[i];
+      ctx.beginPath();
+      ctx.moveTo(cx,cy);
+      ctx.arc(cx,cy,r,start,start+angle);
+      ctx.closePath();
+      ctx.fill();
+      start += angle;
+    });
+    // 中心文字
+    ctx.fillStyle='#c9d1d9';ctx.font='28px';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('75%',cx,cy-8);
+    ctx.font='12px';ctx.fillText('使用率',cx,cy+16);
+    // 图例
+    ctx.font='11px';
+    ctx.fillStyle='#3fb950';ctx.fillText('占用 6',cx+r+20,cy-10);
+    ctx.fillStyle='#8b949e';ctx.fillText('空闲 2',cx+r+20,cy+10);
+  }
+
+  // 温度曲线
+  const tc = document.getElementById('tempChart');
+  if(tc) {
+    const ctx = tc.getContext('2d');
+    tc.width = tc.parentElement.offsetWidth;
+    tc.height = tc.parentElement.offsetHeight;
+    const hours = Array.from({length:24},(_,i)=>i+':00');
+    const temps = [22,21,21,20,20,21,22,23,24,25,26,26,25,25,24,24,25,26,27,26,25,24,23,22];
+    const w = tc.width, h = tc.height;
+    ctx.clearRect(0,0,w,h);
+    ctx.strokeStyle='#21262d';ctx.lineWidth=1;
+    for(let i=0;i<4;i++){
+      const y = 30 + (h-60)/3*i;
+      ctx.beginPath();ctx.moveTo(40,y);ctx.lineTo(w-20,y);ctx.stroke();
+      ctx.fillStyle='#8b949e';ctx.font='11px';ctx.fillText(28-i*2+'°C',5,y+4);
+    }
+    ctx.strokeStyle='#39c5cf';ctx.lineWidth=2;ctx.beginPath();
+    temps.forEach((t,i)=>{
+      const x = 40+i*(w-60)/23, y = 30+(28-t)/8*(h-60);
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+    ctx.fillStyle='#39c5cf';
+    temps.forEach((t,i)=>{
+      const x = 40+i*(w-60)/23, y = 30+(28-t)/8*(h-60);
+      ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fill();
+    });
+  }
+
+  // 能耗图
+  const ec = document.getElementById('energyChart');
+  if(ec) {
+    const ctx = ec.getContext('2d');
+    ec.width = ec.parentElement.offsetWidth;
+    ec.height = ec.parentElement.offsetHeight;
+    const cx = ec.width/2, cy = ec.height/2, r = Math.min(cx,cy)-20;
+    const data3 = [45,30,15,10]; // 空调,灯光,新风,其他
+    const colors3 = ['#58a6ff','#f0c040','#3fb950','#a371f7'];
+    let start = 0;
+    data3.forEach((v,i)=>{
+      const angle = (v/100)*Math.PI*2;
+      ctx.fillStyle=colors3[i];
+      ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,start,start+angle);ctx.closePath();ctx.fill();
+      start += angle;
+    });
+    ctx.fillStyle='#c9d1d9';ctx.font='28px';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('32.6',cx,cy-8);ctx.font='12px';ctx.fillText('kWh',cx,cy+16);
+    // 图例
+    const labels=['空调','灯光','新风','其他'];
+    labels.forEach((l,i)=>{
+      ctx.fillStyle=colors3[i];
+      ctx.fillRect(ec.width-80,20+i*18,10,10);
+      ctx.fillStyle='#c9d1d9';ctx.font='11px';ctx.fillText(l+' '+data3[i]+'%',ec.width-65,28+i*18);
+    });
+  }
+
+  // 营收报表图
+  const rcc = document.getElementById('reportChart');
+  if(rcc) {
+    const ctx = rcc.getContext('2d');
+    rcc.width = rcc.parentElement.offsetWidth;
+    rcc.height = rcc.parentElement.offsetHeight;
+    const months = ['1月','2月','3月','4月','5月'];
+    const income = [28000,32000,29000,36000,38420];
+    const cost = [18600,21400,19400,24000,25680];
+    const w = rcc.width, h = rcc.height;
+    ctx.clearRect(0,0,w,h);
+    const max = Math.max(...income);
+    ctx.strokeStyle='#21262d';ctx.lineWidth=1;
+    for(let i=0;i<5;i++){
+      const y = 30+(h-60)/4*i;
+      ctx.beginPath();ctx.moveTo(50,y);ctx.lineTo(w-20,y);ctx.stroke();
+      ctx.fillStyle='#8b949e';ctx.font='11px';ctx.fillText(Math.round(max-max*i/4),5,y+4);
+    }
+    const bw = (w-70)/months.length;
+    income.forEach((v,i)=>{
+      const bh = (v/max)*(h-60);
+      ctx.fillStyle='#3fb950';
+      ctx.fillRect(50+i*bw+2,h-bh,bw/2-2,bh);
+    });
+    cost.forEach((v,i)=>{
+      const bh = (v/max)*(h-60);
+      ctx.fillStyle='#f85149';
+      ctx.fillRect(50+i*bw+bw/2+2,h-bh,bw/2-2,bh);
+    });
+    ctx.fillStyle='#8b949e';ctx.font='11px';ctx.textAlign='center';
+    months.forEach((m,i)=>ctx.fillText(m,50+i*bw+bw/2,h-8));
+    // 图例
+    ctx.fillStyle='#3fb950';ctx.fillRect(w-100,10,12,12);
+    ctx.fillStyle='#c9d1d9';ctx.font='11px';ctx.fillText('收入',w-84,19);
+    ctx.fillStyle='#f85149';ctx.fillRect(w-100,26,12,12);
+    ctx.fillStyle='#c9d1d9';ctx.fillText('成本',w-84,35);
+  }
+
+  // 收入构成饼图
+  const ic = document.getElementById('incomeChart');
+  if(ic) {
+    const ctx = ic.getContext('2d');
+    ic.width = ic.parentElement.offsetWidth;
+    ic.height = ic.parentElement.offsetHeight;
+    const cx = ic.width/2, cy = ic.height/2, r = Math.min(cx,cy)-20;
+    const data4 = [74.6,25.4];
+    const colors4 = ['#f0c040','#58a6ff'];
+    let start = 0;
+    data4.forEach((v,i)=>{
+      const angle = (v/100)*Math.PI*2;
+      ctx.fillStyle=colors4[i];
+      ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,start,start+angle);ctx.closePath();ctx.fill();
+      start += angle;
+    });
+    ctx.fillStyle='#c9d1d9';ctx.font='28px';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('¥38k',cx,cy-8);ctx.font='12px';ctx.fillText('本月收入',cx,cy+16);
+    ctx.fillStyle='#f0c040';ctx.fillRect(ic.width-80,20,10,10);
+    ctx.fillStyle='#c9d1d9';ctx.font='11px';ctx.fillText('茶品 74.6%',ic.width-66,28);
+    ctx.fillStyle='#58a6ff';ctx.fillRect(ic.width-80,38,10,10);
+    ctx.fillStyle='#c9d1d9';ctx.fillText('包间 25.4%',ic.width-66,46);
+  }
+}
+
+// 初始化
+window.addEventListener('load', () => {
+  drawCharts();
+  // 动态设置datetime-local默认值
+  const bt = document.getElementById('bookingTime');
+  if(bt) {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    bt.value = now.toISOString().slice(0,16);
+  }
+});
+window.addEventListener('resize', drawCharts);
+</script>
+</body>
+</html>

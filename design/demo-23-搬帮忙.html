@@ -1,0 +1,2691 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搬帮忙 - 搬家物流平台</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #111827;
+            --bg-card: #1a2332;
+            --bg-card-hover: #22303f;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --purple: #8b5cf6;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border: #2d3a4f;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .logo i {
+            color: var(--accent);
+            font-size: 28px;
+        }
+
+        .logo span {
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-section {
+            padding: 16px 12px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .nav-section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            padding: 8px 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            background: var(--bg-card);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            min-height: 100vh;
+        }
+
+        .top-bar {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .top-bar-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--bg-card);
+            border-radius: 8px;
+            padding: 8px 16px;
+            gap: 8px;
+            width: 300px;
+        }
+
+        .search-box input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-primary);
+            flex: 1;
+            font-size: 14px;
+        }
+
+        .search-box input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .search-box i {
+            color: var(--text-secondary);
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: var(--bg-card);
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .icon-btn:hover {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+        }
+
+        .icon-btn .badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: var(--danger);
+            color: white;
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        /* Content Area */
+        .content-area {
+            padding: 32px;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .stat-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
+        .stat-icon.green { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .stat-icon.yellow { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .stat-icon.red { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+        .stat-icon.purple { background: rgba(139, 92, 246, 0.15); color: var(--purple); }
+
+        .stat-trend {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .stat-trend.up {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+
+        .stat-trend.down {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-body {
+            padding: 24px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--bg-secondary);
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+        }
+
+        tr:hover td {
+            background: var(--bg-card-hover);
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-badge.pending { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+        .status-badge.in-progress { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
+        .status-badge.completed { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .status-badge.cancelled { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+        .status-badge.confirmed { background: rgba(139, 92, 246, 0.15); color: var(--purple); }
+
+        .rating-stars {
+            color: var(--warning);
+        }
+
+        /* Grid layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        /* Map placeholder */
+        .map-container {
+            background: var(--bg-card);
+            border-radius: 12px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+        }
+
+        .map-content {
+            text-align: center;
+            z-index: 1;
+        }
+
+        .map-content i {
+            font-size: 48px;
+            color: var(--accent);
+            margin-bottom: 16px;
+        }
+
+        .map-route {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-top: 20px;
+        }
+
+        .route-point {
+            text-align: center;
+        }
+
+        .route-point i {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .route-point.start i { color: var(--success); }
+        .route-point.end i { color: var(--danger); }
+
+        .route-line {
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, var(--success), var(--accent), var(--danger));
+            position: relative;
+        }
+
+        .route-line::before {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: var(--accent);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow: hidden;
+            transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+
+        .modal-overlay.show .modal {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+
+        .modal-body {
+            padding: 24px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            background: var(--bg-card);
+            padding: 4px;
+            border-radius: 10px;
+            margin-bottom: 24px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
+        }
+
+        .tab.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* Progress bar */
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-card);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--purple));
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        /* Checklist */
+        .checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .checklist-item:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .checklist-item.checked {
+            opacity: 0.6;
+        }
+
+        .checklist-item.checked .checklist-text {
+            text-decoration: line-through;
+        }
+
+        .check-box {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .checklist-item.checked .check-box {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .check-box i {
+            font-size: 12px;
+            color: white;
+            opacity: 0;
+        }
+
+        .checklist-item.checked .check-box i {
+            opacity: 1;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 24px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -24px;
+            top: 4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--accent);
+            border: 2px solid var(--bg-card);
+        }
+
+        .timeline-item.completed::before {
+            background: var(--success);
+        }
+
+        .timeline-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .timeline-content {
+            font-size: 14px;
+        }
+
+        /* Customer card */
+        .customer-card {
+            display: flex;
+            gap: 16px;
+            padding: 16px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .customer-card:hover {
+            border-color: var(--accent);
+        }
+
+        .customer-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .customer-info {
+            flex: 1;
+        }
+
+        .customer-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .customer-detail {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 2px;
+        }
+
+        /* Vehicle card */
+        .vehicle-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .vehicle-card:hover {
+            border-color: var(--accent);
+        }
+
+        .vehicle-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .vehicle-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            background: rgba(59, 130, 246, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: var(--accent);
+        }
+
+        .vehicle-info h4 {
+            font-size: 16px;
+            margin-bottom: 2px;
+        }
+
+        .vehicle-info span {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .vehicle-stats {
+            display: flex;
+            gap: 24px;
+        }
+
+        .vehicle-stat {
+            text-align: center;
+        }
+
+        .vehicle-stat-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .vehicle-stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* Payment item */
+        .payment-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: var(--bg-card);
+            border-radius: 10px;
+            margin-bottom: 12px;
+        }
+
+        .payment-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .payment-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .payment-icon.wechat { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .payment-icon.alipay { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
+        .payment-icon.card { background: rgba(139, 92, 246, 0.15); color: var(--purple); }
+
+        .payment-details h4 {
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .payment-details span {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .payment-amount {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--success);
+        }
+
+        /* Quote card */
+        .quote-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            margin-bottom: 16px;
+        }
+
+        .quote-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .quote-id {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .quote-route {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .quote-price {
+            text-align: right;
+        }
+
+        .quote-price-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .quote-price-unit {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .quote-details {
+            display: flex;
+            gap: 24px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .quote-detail {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .quote-detail strong {
+            color: var(--text-primary);
+        }
+
+        /* Insurance card */
+        .insurance-card {
+            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .insurance-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .insurance-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--purple), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+
+        .insurance-title h3 {
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+
+        .insurance-title span {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .insurance-features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .insurance-feature {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .insurance-feature i {
+            color: var(--success);
+        }
+
+        /* Driver card */
+        .driver-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+        }
+
+        .driver-card:hover {
+            border-color: var(--accent);
+        }
+
+        .driver-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .driver-avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--success));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .driver-name {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .driver-phone {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .driver-stats {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .driver-stat {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+        }
+
+        .driver-stat-value {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .driver-stat-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .driver-status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .status-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toggle {
+            width: 44px;
+            height: 24px;
+            background: var(--bg-card-hover);
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .toggle.active {
+            background: var(--success);
+        }
+
+        .toggle::before {
+            content: '';
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background: white;
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+            transition: all 0.2s;
+        }
+
+        .toggle.active::before {
+            left: 23px;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            color: var(--border);
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-box-open"></i>
+                <span>搬帮忙</span>
+            </div>
+        </div>
+        
+        <div class="nav-section">
+            <div class="nav-section-title">主菜单</div>
+            <div class="nav-item active" data-section="dashboard">
+                <i class="fas fa-home"></i>
+                <span>工作台</span>
+            </div>
+            <div class="nav-item" data-section="orders">
+                <i class="fas fa-clipboard-list"></i>
+                <span>订单管理</span>
+                <span class="nav-badge">8</span>
+            </div>
+            <div class="nav-item" data-section="scheduling">
+                <i class="fas fa-calendar-alt"></i>
+                <span>司机调度</span>
+            </div>
+            <div class="nav-item" data-section="tracking">
+                <i class="fas fa-map-marked-alt"></i>
+                <span>路线追踪</span>
+            </div>
+            <div class="nav-item" data-section="packing">
+                <i class="fas fa-boxes"></i>
+                <span>打包清单</span>
+            </div>
+            <div class="nav-item" data-section="customers">
+                <i class="fas fa-users"></i>
+                <span>客户管理</span>
+            </div>
+            <div class="nav-item" data-section="insurance">
+                <i class="fas fa-shield-alt"></i>
+                <span>保险服务</span>
+            </div>
+            <div class="nav-item" data-section="payments">
+                <i class="fas fa-wallet"></i>
+                <span>财务支付</span>
+            </div>
+            <div class="nav-item" data-section="ratings">
+                <i class="fas fa-star"></i>
+                <span>司机评分</span>
+            </div>
+            <div class="nav-item" data-section="vehicles">
+                <i class="fas fa-truck"></i>
+                <span>车辆管理</span>
+            </div>
+            <div class="nav-item" data-section="quotes">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <span>报价管理</span>
+            </div>
+        </div>
+        
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar">张</div>
+                <div class="user-details">
+                    <div class="user-name">张经理</div>
+                    <div class="user-role">调度主管</div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="top-bar">
+            <h1 class="page-title" id="pageTitle">工作台</h1>
+            <div class="top-bar-actions">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="搜索订单、客户、司机...">
+                </div>
+                <button class="icon-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge">3</span>
+                </button>
+                <button class="icon-btn">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="content-area">
+            <!-- Dashboard Section -->
+            <section class="section active" id="dashboard">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon blue">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            <span class="stat-trend up">
+                                <i class="fas fa-arrow-up"></i> 12%
+                            </span>
+                        </div>
+                        <div class="stat-value">156</div>
+                        <div class="stat-label">本月订单</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon green">
+                                <i class="fas fa-truck"></i>
+                            </div>
+                            <span class="stat-trend up">
+                                <i class="fas fa-arrow-up"></i> 8%
+                            </span>
+                        </div>
+                        <div class="stat-value">¥128,450</div>
+                        <div class="stat-label">本月收入</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon yellow">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <span class="stat-trend down">
+                                <i class="fas fa-arrow-down"></i> 3%
+                            </span>
+                        </div>
+                        <div class="stat-value">89</div>
+                        <div class="stat-label">活跃客户</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-icon purple">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span class="stat-trend up">
+                                <i class="fas fa-arrow-up"></i> 5%
+                            </span>
+                        </div>
+                        <div class="stat-value">4.8</div>
+                        <div class="stat-label">平均评分</div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title"><i class="fas fa-clock"></i> 待处理任务</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="timeline">
+                                <div class="timeline-item">
+                                    <div class="timeline-time">10:30 - 李明</div>
+                                    <div class="timeline-content">朝阳区订单待派车 <strong>订单 #BD2024061</strong></div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-time">11:00 - 王芳</div>
+                                    <div class="timeline-content">海淀区订单待确认打包 <strong>订单 #BD2024062</strong></div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-time">14:00 - 张伟</div>
+                                    <div class="timeline-content">西城区订单待取件 <strong>订单 #BD2024063</strong></div>
+                                </div>
+                                <div class="timeline-item">
+                                    <div class="timeline-time">15:30 - 刘洋</div>
+                                    <div class="timeline-content">东城区订单客户要求改期 <strong>订单 #BD2024064</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title"><i class="fas fa-route"></i> 今日运输进度</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="map-container" style="height: 200px; margin-bottom: 20px;">
+                                <div class="map-overlay"></div>
+                                <div class="map-content">
+                                    <i class="fas fa-map-marked-alt"></i>
+                                    <div class="map-route">
+                                        <div class="route-point start">
+                                            <i class="fas fa-circle"></i>
+                                            <div>朝阳区</div>
+                                        </div>
+                                        <div class="route-line"></div>
+                                        <div class="route-point end">
+                                            <i class="fas fa-flag-checkered"></i>
+                                            <div>海淀区</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="font-size: 14px; color: var(--text-secondary);">当前进度</div>
+                                    <div style="font-size: 20px; font-weight: 600;">65%</div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-size: 14px; color: var(--text-secondary);">预计到达</div>
+                                    <div style="font-size: 20px; font-weight: 600;">14:30</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Orders Section -->
+            <section class="section" id="orders">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title"><i class="fas fa-list"></i> 订单列表</span>
+                        <div style="display: flex; gap: 12px;">
+                            <button class="btn btn-secondary btn-sm"><i class="fas fa-filter"></i> 筛选</button>
+                            <button class="btn btn-primary btn-sm" onclick="openModal('orderModal')"><i class="fas fa-plus"></i> 新建订单</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>订单号</th>
+                                        <th>客户姓名</th>
+                                        <th>出发地</th>
+                                        <th>目的地</th>
+                                        <th>预约时间</th>
+                                        <th>金额</th>
+                                        <th>状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>#BD2024061</td>
+                                        <td>李明</td>
+                                        <td>朝阳区建国路88号</td>
+                                        <td>海淀区中关村大街1号</td>
+                                        <td>2024-06-15 10:00</td>
+                                        <td>¥1,280</td>
+                                        <td><span class="status-badge in-progress">进行中</span></td>
+                                        <td>
+                                            <button class="btn btn-secondary btn-sm">详情</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>#BD2024062</td>
+                                        <td>王芳</td>
+                                        <td>海淀区知春路28号</td>
+                                        <td>朝阳区望京SOHO</td>
+                                        <td>2024-06-15 14:00</td>
+                                        <td>¥980</td>
+                                        <td><span class="status-badge confirmed">已确认</span></td>
+                                        <td>
+                                            <button class="btn btn-secondary btn-sm">详情</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>#BD2024063</td>
+                                        <td>张伟</td>
+                                        <td>西城区金融街8号</td>
+                                        <td>东城区王府井大街</td>
+                                        <td>2024-06-14 09:00</td>
+                                        <td>¥1,580</td>
+                                        <td><span class="status-badge completed">已完成</span></td>
+                                        <td>
+                                            <button class="btn btn-secondary btn-sm">详情</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>#BD2024064</td>
+                                        <td>刘洋</td>
+                                        <td>朝阳区国贸中心</td>
+                                        <td>丰台区总部基地</td>
+                                        <td>2024-06-16 11:00</td>
+                                        <td>¥2,180</td>
+                                        <td><span class="status-badge pending">待处理</span></td>
+                                        <td>
+                                            <button class="btn btn-secondary btn-sm">详情</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>#BD2024065</td>
+                                        <td>陈静</td>
+                                        <td>海淀区清华科技园</td>
+                                        <td>石景山区万达广场</td>
+                                        <td>2024-06-14 15:30</td>
+                                        <td>¥1,080</td>
+                                        <td><span class="status-badge cancelled">已取消</span></td>
+                                        <td>
+                                            <button class="btn btn-secondary btn-sm">详情</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Scheduling Section -->
+            <section class="section" id="scheduling">
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title"><i class="fas fa-calendar-check"></i> 今日排班</span>
+                            <button class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> 添加排班</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>司机</th>
+                                            <th>车辆</th>
+                                            <th>订单</th>
+                                            <th>时段</th>
+                                            <th>状态</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div class="driver-avatar" style="width: 32px; height: 32px; font-size: 12px;">赵</div>
+                                                    赵师傅
+                                                </div>
+                                            </td>
+                                            <td>京A·12345</td>
+                                            <td>#BD2024061</td>
+                                            <td>08:00-12:00</td>
+                                            <td><span class="status-badge in-progress">执行中</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div class="driver-avatar" style="width: 32px; height: 32px; font-size: 12px;">钱</div>
+                                                    钱师傅
+                                                </div>
+                                            </td>
+                                            <td>京B·67890</td>
+                                            <td>#BD2024062</td>
+                                            <td>13:00-17:00</td>
+                                            <td><span class="status-badge confirmed">待执行</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div class="driver-avatar" style="width: 32px; height: 32px; font-size: 12px;">孙</div>
+                                                    孙师傅
+                                                </div>
+                                            </td>
+                                            <td>京C·11111</td>
+                                            <td>#BD2024063</td>
+                                            <td>08:00-12:00</td>
+                                            <td><span class="status-badge completed">已完成</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                                    <div class="driver-avatar" style="width: 32px; height: 32px; font-size: 12px;">李</div>
+                                                    李师傅
+                                                </div>
+                                            </td>
+                                            <td>京D·22222</td>
+                                            <td>待分配</td>
+                                            <td>14:00-18:00</td>
+                                            <td><span class="status-badge pending">空闲</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title"><i class="fas fa-truck-loading"></i> 可用车辆</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="driver-stats" style="margin-bottom: 20px;">
+                                <div class="driver-stat">
+                                    <div class="driver-stat-value" style="color: var(--success);">12</div>
+                                    <div class="driver-stat-label">可用</div>
+                                </div>
+                                <div class="driver-stat">
+                                    <div class="driver-stat-value" style="color: var(--accent);">8</div>
+                                    <div class="driver-stat-label">执行中</div>
+                                </div>
+                                <div class="driver-stat">
+                                    <div class="driver-stat-value" style="color: var(--danger);">3</div>
+                                    <div class="driver-stat-label">维修中</div>
+                                </div>
+                            </div>
+                            <div class="checklist">
+                                <div class="checklist-item">
+                                    <div class="check-box"><i class="fas fa-check"></i></div>
+                                    <div class="checklist-text">
+                                        <strong>赵师傅</strong> - 京A·12345 (金杯) - 就绪
+                                    </div>
+                                </div>
+                                <div class="checklist-item">
+                                    <div class="check-box"><i class="fas fa-check"></i></div>
+                                    <div class="checklist-text">
+                                        <strong>钱师傅</strong> - 京B·67890 (厢式货车) - 就绪
+                                    </div>
+                                </div>
+                                <div class="checklist-item">
+                                    <div class="check-box"><i class="fas fa-check"></i></div>
+                                    <div class="checklist-text">
+                                        <strong>孙师傅</strong> - 京C·11111 (平板车) - 就绪
+                                    </div>
+                                </div>
+                                <div class="checklist-item">
+                                    <div class="check-box"><i class="fas fa-check"></i></div>
+                                    <div class="checklist-text">
+                                        <strong>李师傅</strong> - 京D·22222 (金杯) - 就绪
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tracking Section -->
+            <section class="section" id="tracking">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title"><i class="fas fa-map-marked-alt"></i> 实时路线追踪</span>
+                        <div style="display: flex; gap: 12px;">
+                            <select class="form-select" style="width: auto;">
+                                <option>全部车辆</option>
+                                <option>京A·12345</option>
+                                <option>京B·67890</option>
+                                <option>京C·11111</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="map-container" style="height: 400px;">
+                            <div class="map-overlay"></div>
+                            <div class="map-content">
+                                <i class="fas fa-map-marked-alt" style="font-size: 64px;"></i>
+                                <h3 style="margin: 16px 0 8px;">订单 #BD2024061 运输中</h3>
+                                <p style="color: var(--text-secondary); margin-bottom: 24px;">预计 14:30 到达目的地</p>
+                                <div class="map-route" style="justify-content: center; gap: 40px;">
+                                    <div class="route-point start">
+                                        <i class="fas fa-map-marker-alt" style="font-size: 32px;"></i>
+                                        <div style="font-weight: 600;">朝阳区</div>
+                                        <div style="font-size: 12px; color: var(--text-secondary);">建国路88号</div>
+                                    </div>
+                                    <div class="route-line" style="width: 200px;"></div>
+                                    <div class="route-point" style="position: relative;">
+                                        <div style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%); background: var(--accent); color: white; padding: 4px 12px; border-radius: 20px; font-size: 11px;">
+                                            <i class="fas fa-truck"></i> 运输中
+                                        </div>
+                                        <i class="fas fa-map-marker-alt" style="font-size: 32px; color: var(--accent);"></i>
+                                    </div>
+                                    <div class="route-line" style="width: 200px;"></div>
+                                    <div class="route-point end">
+                                        <i class="fas fa-flag-checkered" style="font-size: 32px;"></i>
+                                        <div style="font-weight: 600;">海淀区</div>
+                                        <div style="font-size: 12px; color: var(--text-secondary);">中关村大街1号</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid-3" style="margin-top: 24px;">
+                            <div style="background: var(--bg-card); padding: 16px; border-radius: 10px; text-align: center;">
+                                <div style="font-size: 12px; color: var(--text-secondary);">当前速度</div>
+                                <div style="font-size: 24px; font-weight: 600;">32 km/h</div>
+                            </div>
+                            <div style="background: var(--bg-card); padding: 16px; border-radius: 10px; text-align: center;">
+                                <div style="font-size: 12px; color: var(--text-secondary);">剩余距离</div>
+                                <div style="font-size: 24px; font-weight: 600;">8.5 km</div>
+                            </div>
+                            <div style="background: var(--bg-card); padding: 16px; border-radius: 10px; text-align: center;">
+                                <div style="font-size: 12px; color: var(--text-secondary);">已完成</div>
+                                <div style="font-size: 24px; font-weight: 600;">65%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Packing Section -->
+            <section class="section" id="packing">
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title"><i class="fas fa-boxes"></i> 打包清单</span>
+                            <button class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> 添加物品</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="checklist">
+                                <div class="checklist-item checked">
+                                    <div class="check-box"><i class="fas fa-check"></i></div>
+                                    <div>
+                                        <div class="checklist-text">客厅 - 沙发 (1件)</div>
+                                        <div style="font-size: 11px; color: var(--text-secondary);">已打包</div>
+                                    </div>
+                                </div>
+                                <div class="checklist-item checked">
+                                    <div class="check-box"><i class="fas fa-check"></i></div>
+                                    <div>
+                                        <div class="checklist-text">客厅 - 茶几 (1件)</div>
+                                        <div style="font-size: 11px; color: var(--text-secondary);">已打包</div>
+                                    </div>
+                                </div>
+                                <div class="checklist-item">
+                                    <div class="check-box"><i class="fas fa-check"></i></div>
+                                    <div>
+                                        <div class="checklist-text">卧室 - 床架 (1件)</div>
+                                        <div style="font-size: 11px; color: var(--warning);">待打包</div>
+                                    </div>
+                                </div>
+                                <div class="checklist-item">
+                                    <div class="check-box"><i class="fas fa-check"></i></div>
+                                    <div>
+                                        <div class="checklist-text">卧室 - 床垫 (1件)</div>
+                                        <div style="font-size: 11px; color: var(--warning);">待打包</div>
+                                    </div>
+                                </div>
+                                <div class="checklist-item">
+                                    <div class="check-box"><i class="fas fa-check"></i></div>
+                                    <div>
+                                        <div class="checklist-text">厨房 - 冰箱 (1件)</div>
+                                        <div style="font-size: 11px; color: var(--warning);">待打包</div>
+                                    </div>
+                                </div>
+                                <div class="checklist-item">
+                                    <div class="check-box"><i class="fas fa-check"></i></div>
+                                    <div>
+                                        <div class="checklist-text">书房 - 书柜 (2件)</div>
+                                        <div style="font-size: 11px; color: var(--warning);">待打包</div>
+                                    </div>
+                                </div>
+                                <div class="checklist-item">
+                                    <div class="check-box"><i class="fas fa-check"></i></div>
+                                    <div>
+                                        <div class="checklist-text">易碎品箱 (5件)</div>
+                                        <div style="font-size: 11px; color: var(--danger);">特殊处理</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 24px; padding: 16px; background: var(--bg-card-hover); border-radius: 10px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                                    <span style="color: var(--text-secondary);">打包进度</span>
+                                    <span style="font-weight: 600;">2/7 件已打包</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 28%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title"><i class="fas fa-warehouse"></i> 库存材料</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>材料</th>
+                                            <th>库存</th>
+                                            <th>状态</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>纸箱 (大)</td>
+                                            <td>128 个</td>
+                                            <td><span class="status-badge completed">充足</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>纸箱 (中)</td>
+                                            <td>86 个</td>
+                                            <td><span class="status-badge completed">充足</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>气泡膜</td>
+                                            <td>15 卷</td>
+                                            <td><span class="status-badge in-progress">良好</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>封箱胶带</td>
+                                            <td>32 卷</td>
+                                            <td><span class="status-badge completed">充足</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>毛毯</td>
+                                            <td>8 条</td>
+                                            <td><span class="status-badge pending">不足</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Customers Section -->
+            <section class="section" id="customers">
+                <div class="grid-2">
+                    <div class="card" style="flex: 1.5;">
+                        <div class="card-header">
+                            <span class="card-title"><i class="fas fa-users"></i> 客户列表</span>
+                            <button class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> 添加客户</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>客户</th>
+                                            <th>联系方式</th>
+                                            <th>订单数</th>
+                                            <th>累计消费</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 10px;">
+                                                    <div class="customer-avatar" style="width: 36px; height: 36px; font-size: 14px;">李</div>
+                                                    李明
+                                                </div>
+                                            </td>
+                                            <td>138-xxxx-1234</td>
+                                            <td>5</td>
+                                            <td>¥8,280</td>
+                                            <td>
+                                                <button class="btn btn-secondary btn-sm">查看</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 10px;">
+                                                    <div class="customer-avatar" style="width: 36px; height: 36px; font-size: 14px; background: linear-gradient(135deg, var(--success), var(--accent));">王</div>
+                                                    王芳
+                                                </div>
+                                            </td>
+                                            <td>139-xxxx-5678</td>
+                                            <td>3</td>
+                                            <td>¥4,560</td>
+                                            <td>
+                                                <button class="btn btn-secondary btn-sm">查看</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 10px;">
+                                                    <div class="customer-avatar" style="width: 36px; height: 36px; font-size: 14px; background: linear-gradient(135deg, var(--warning), var(--danger));">张</div>
+                                                    张伟
+                                                </div>
+                                            </td>
+                                            <td>136-xxxx-9012</td>
+                                            <td>8</td>
+                                            <td>¥15,680</td>
+                                            <td>
+                                                <button class="btn btn-secondary btn-sm">查看</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div style="display: flex; align-items: center; gap: 10px;">
+                                                    <div class="customer-avatar" style="width: 36px; height: 36px; font-size: 14px; background: linear-gradient(135deg, var(--purple), var(--danger));">刘</div>
+                                                    刘洋
+                                                </div>
+                                            </td>
+                                            <td>135-xxxx-3456</td>
+                                            <td>2</td>
+                                            <td>¥3,280</td>
+                                            <td>
+                                                <button class="btn btn-secondary btn-sm">查看</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title"><i class="fas fa-user-plus"></i> 新客户详情</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="customer-card" style="flex-direction: column; background: var(--bg-card-hover);">
+                                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+                                    <div class="customer-avatar" style="width: 64px; height: 64px; font-size: 28px;">陈</div>
+                                    <div>
+                                        <div class="customer-name">陈静</div>
+                                        <div class="customer-detail">138-xxxx-7890</div>
+                                        <div class="customer-detail">chenjing@email.com</div>
+                                    </div>
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                    <div style="background: var(--bg-secondary); padding: 12px; border-radius: 8px; text-align: center;">
+                                        <div style="font-size: 18px; font-weight: 600; color: var(--accent);">2</div>
+                                        <div style="font-size: 11px; color: var(--text-secondary);">总订单</div>
+                                    </div>
+                                    <div style="background: var(--bg-secondary); padding: 12px; border-radius: 8px; text-align: center;">
+                                        <div style="font-size: 18px; font-weight: 600; color: var(--success);">¥3,560</div>
+                                        <div style="font-size: 11px; color: var(--text-secondary);">累计消费</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="margin-top: 16px;">
+                                <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px;">最近订单</div>
+                                <div style="display: flex; justify-content: space-between; padding: 12px; background: var(--bg-card-hover); border-radius: 8px;">
+                                    <div>
+                                        <div style="font-size: 14px;">#BD2024065</div>
+                                        <div style="font-size: 11px; color: var(--text-secondary);">海淀区 → 石景山区</div>
+                                    </div>
+                                    <span class="status-badge cancelled">已取消</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Insurance Section -->
+            <section class="section" id="insurance">
+                <div class="grid-2">
+                    <div>
+                        <div class="insurance-card" style="margin-bottom: 24px;">
+                            <div class="insurance-header">
+                                <div class="insurance-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <div class="insurance-title">
+                                    <h3>基础保障险</h3>
+                                    <span>适合普通家具搬运</span>
+                                </div>
+                            </div>
+                            <div style="font-size: 32px; font-weight: 700; margin-bottom: 16px;">
+                                ¥68 <span style="font-size: 14px; font-weight: 400; color: var(--text-secondary);">/ 次</span>
+                            </div>
+                            <div class="insurance-features">
+                                <div class="insurance-feature"><i class="fas fa-check"></i> 最高赔付 ¥5,000</div>
+                                <div class="insurance-feature"><i class="fas fa-check"></i> 物品损坏赔付</div>
+                                <div class="insurance-feature"><i class="fas fa-check"></i> 基础责任险</div>
+                                <div class="insurance-feature"><i class="fas fa-check"></i> 24小时响应</div>
+                            </div>
+                            <button class="btn btn-primary" style="width: 100%;">选择此方案</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="insurance-card" style="margin-bottom: 24px; border-color: var(--accent);">
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+                                <span style="background: var(--accent); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">推荐</span>
+                            </div>
+                            <div class="insurance-header">
+                                <div class="insurance-icon" style="background: linear-gradient(135deg, var(--accent), var(--purple));">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <div class="insurance-title">
+                                    <h3>尊享保障险</h3>
+                                    <span>适合贵重物品搬运</span>
+                                </div>
+                            </div>
+                            <div style="font-size: 32px; font-weight: 700; margin-bottom: 16px;">
+                                ¥168 <span style="font-size: 14px; font-weight: 400; color: var(--text-secondary);">/ 次</span>
+                            </div>
+                            <div class="insurance-features">
+                                <div class="insurance-feature"><i class="fas fa-check"></i> 最高赔付 ¥20,000</div>
+                                <div class="insurance-feature"><i class="fas fa-check"></i> 全额损坏赔付</div>
+                                <div class="insurance-feature"><i class="fas fa-check"></i> 延期赔付</div>
+                                <div class="insurance-feature"><i class="fas fa-check"></i> 专属客服</div>
+                                <div class="insurance-feature"><i class="fas fa-check"></i> 上门理赔</div>
+                                <div class="insurance-feature"><i class="fas fa-check"></i> 心理安抚服务</div>
+                            </div>
+                            <button class="btn btn-primary" style="width: 100%;">选择此方案</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title"><i class="fas fa-file-alt"></i> 保险理赔记录</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>订单号</th>
+                                        <th>客户</th>
+                                        <th>保险类型</th>
+                                        <th>理赔金额</th>
+                                        <th>状态</th>
+                                        <th>申请时间</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>#BD2024058</td>
+                                        <td>周杰</td>
+                                        <td>尊享保障险</td>
+                                        <td>¥1,280</td>
+                                        <td><span class="status-badge completed">已赔付</span></td>
+                                        <td>2024-06-10</td>
+                                    </tr>
+                                    <tr>
+                                        <td>#BD2024051</td>
+                                        <td>吴婷</td>
+                                        <td>基础保障险</td>
+                                        <td>¥680</td>
+                                        <td><span class="status-badge completed">已赔付</span></td>
+                                        <td>2024-06-05</td>
+                                    </tr>
+                                    <tr>
+                                        <td>#BD2024048</td>
+                                        <td>郑强</td>
+                                        <td>尊享保障险</td>
+                                        <td>¥3,500</td>
+                                        <td><span class="status-badge in-progress">审核中</span></td>
+                                        <td>2024-06-12</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Payments Section -->
+            <section class="section" id="payments">
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title"><i class="fas fa-wallet"></i> 收款记录</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="payment-item">
+                                <div class="payment-info">
+                                    <div class="payment-icon wechat">
+                                        <i class="fab fa-weixin"></i>
+                                    </div>
+                                    <div class="payment-details">
+                                        <h4>微信支付</h4>
+                                        <span>订单 #BD2024063</span>
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div class="payment-amount">+¥1,580</div>
+                                    <span style="font-size: 11px; color: var(--text-secondary);">已完成</span>
+                                </div>
+                            </div>
+                            <div class="payment-item">
+                                <div class="payment-info">
+                                    <div class="payment-icon alipay">
+                                        <i class="fab fa-alipay"></i>
+                                    </div>
+                                    <div class="payment-details">
+                                        <h4>支付宝</h4>
+                                        <span>订单 #BD2024061</span>
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div class="payment-amount">+¥1,280</div>
+                                    <span style="font-size: 11px; color: var(--text-secondary);">已完成</span>
+                                </div>
+                            </div>
+                            <div class="payment-item">
+                                <div class="payment-info">
+                                    <div class="payment-icon card">
+                                        <i class="fas fa-credit-card"></i>
+                                    </div>
+                                    <div class="payment-details">
+                                        <h4>银行卡</h4>
+                                        <span>订单 #BD2024062</span>
+                                    </div>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div class="payment-amount">+¥980</div>
+                                    <span style="font-size: 11px; color: var(--warning);">待支付</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <span class="card-title"><i class="fas fa-chart-pie"></i> 收入统计</span>
+                        </div>
+                        <div class="card-body">
+                            <div style="display: flex; justify-content: space-around; margin-bottom: 24px;">
+                                <div style="text-align: center;">
+                                    <div style="font-size: 28px; font-weight: 700; color: var(--success);">¥128,450</div>
+                                    <div style="font-size: 12px; color: var(--text-secondary);">本月收入</div>
+                                </div>
+                                <div style="text-align: center;">
+                                    <div style="font-size: 28px; font-weight: 700; color: var(--accent);">89</div>
+                                    <div style="font-size: 12px; color: var(--text-secondary);">完成订单</div>
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 16px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span style="font-size: 13px;">微信支付</span>
+                                    <span style="font-size: 13px; font-weight: 600;">45%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 45%; background: var(--success);"></div>
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 16px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span style="font-size: 13px;">支付宝</span>
+                                    <span style="font-size: 13px; font-weight: 600;">35%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 35%;"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span style="font-size: 13px;">银行卡</span>
+                                    <span style="font-size: 13px; font-weight: 600;">20%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 20%; background: var(--purple);"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Ratings Section -->
+            <section class="section" id="ratings">
+                <div class="grid-3">
+                    <div class="driver-card">
+                        <div class="driver-header">
+                            <div class="driver-avatar">赵</div>
+                            <div>
+                                <div class="driver-name">赵师傅</div>
+                                <div class="driver-phone">138-xxxx-1111</div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 16px;">
+                            <div class="rating-stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span style="margin-left: 8px; font-weight: 600;">4.9</span>
+                        </div>
+                        <div style="display: flex; gap: 16px; margin-bottom: 16px;">
+                            <div style="font-size: 13px;"><strong>256</strong> 单</div>
+                            <div style="font-size: 13px;"><strong>准时率</strong> 98%</div>
+                        </div>
+                        <div class="driver-status">
+                            <div class="status-toggle">
+                                <span style="font-size: 13px;">接单中</span>
+                                <div class="toggle active"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="driver-card">
+                        <div class="driver-header">
+                            <div class="driver-avatar" style="background: linear-gradient(135deg, var(--success), var(--accent));">钱</div>
+                            <div>
+                                <div class="driver-name">钱师傅</div>
+                                <div class="driver-phone">139-xxxx-2222</div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 16px;">
+                            <div class="rating-stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="far fa-star"></i>
+                            </div>
+                            <span style="margin-left: 8px; font-weight: 600;">4.6</span>
+                        </div>
+                        <div style="display: flex; gap: 16px; margin-bottom: 16px;">
+                            <div style="font-size: 13px;"><strong>189</strong> 单</div>
+                            <div style="font-size: 13px;"><strong>准时率</strong> 95%</div>
+                        </div>
+                        <div class="driver-status">
+                            <div class="status-toggle">
+                                <span style="font-size: 13px;">接单中</span>
+                                <div class="toggle active"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="driver-card">
+                        <div class="driver-header">
+                            <div class="driver-avatar" style="background: linear-gradient(135deg, var(--warning), var(--danger));">孙</div>
+                            <div>
+                                <div class="driver-name">孙师傅</div>
+                                <div class="driver-phone">137-xxxx-3333</div>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 16px;">
+                            <div class="rating-stars">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <span style="margin-left: 8px; font-weight: 600;">5.0</span>
+                        </div>
+                        <div style="display: flex; gap: 16px; margin-bottom: 16px;">
+                            <div style="font-size: 13px;"><strong>312</strong> 单</div>
+                            <div style="font-size: 13px;"><strong>准时率</strong> 99%</div>
+                        </div>
+                        <div class="driver-status">
+                            <div class="status-toggle">
+                                <span style="font-size: 13px;">休息中</span>
+                                <div class="toggle"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 24px;">
+                    <div class="card-header">
+                        <span class="card-title"><i class="fas fa-comment-alt"></i> 最新评价</span>
+                    </div>
+                    <div class="card-body">
+                        <div style="display: flex; gap: 16px; padding: 16px; background: var(--bg-card-hover); border-radius: 10px; margin-bottom: 12px;">
+                            <div class="customer-avatar" style="width: 44px; height: 44px; font-size: 16px; flex-shrink: 0;">李</div>
+                            <div style="flex: 1;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <strong>李明</strong>
+                                    <div class="rating-stars" style="font-size: 12px;">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                </div>
+                                <p style="font-size: 14px; color: var(--text-secondary);">赵师傅非常专业，搬运过程小心谨慎，准时到达，服务态度很好！强烈推荐！</p>
+                                <div style="font-size: 11px; color: var(--text-secondary); margin-top: 8px;">2024-06-14 16:30</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 16px; padding: 16px; background: var(--bg-card-hover); border-radius: 10px;">
+                            <div class="customer-avatar" style="width: 44px; height: 44px; font-size: 16px; flex-shrink: 0; background: linear-gradient(135deg, var(--success), var(--accent));">王</div>
+                            <div style="flex: 1;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <strong>王芳</strong>
+                                    <div class="rating-stars" style="font-size: 12px;">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star-half-alt"></i>
+                                    </div>
+                                </div>
+                                <p style="font-size: 14px; color: var(--text-secondary);">钱师傅干活很利索，家具没有一点损坏，就是迟到了一会儿，希望改进。</p>
+                                <div style="font-size: 11px; color: var(--text-secondary); margin-top: 8px;">2024-06-13 11:20</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Vehicles Section -->
+            <section class="section" id="vehicles">
+                <div class="grid-3">
+                    <div class="vehicle-card">
+                        <div class="vehicle-header">
+                            <div class="vehicle-icon">
+                                <i class="fas fa-truck"></i>
+                            </div>
+                            <div class="vehicle-info">
+                                <h4>金杯阁瑞斯</h4>
+                                <span>京A·12345</span>
+                            </div>
+                        </div>
+                        <div class="vehicle-stats">
+                            <div class="vehicle-stat">
+                                <div class="vehicle-stat-value">8</div>
+                                <div class="vehicle-stat-label">载货量(m³)</div>
+                            </div>
+                            <div class="vehicle-stat">
+                                <div class="vehicle-stat-value">45,280</div>
+                                <div class="vehicle-stat-label">总里程(km)</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 16px; display: flex; justify-content: space-between; align-items: center;">
+                            <span class="status-badge in-progress">执行中</span>
+                            <button class="btn btn-secondary btn-sm">详情</button>
+                        </div>
+                    </div>
+
+                    <div class="vehicle-card">
+                        <div class="vehicle-header">
+                            <div class="vehicle-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--success);">
+                                <i class="fas fa-truck-moving"></i>
+                            </div>
+                            <div class="vehicle-info">
+                                <h4>厢式货车</h4>
+                                <span>京B·67890</span>
+                            </div>
+                        </div>
+                        <div class="vehicle-stats">
+                            <div class="vehicle-stat">
+                                <div class="vehicle-stat-value">15</div>
+                                <div class="vehicle-stat-label">载货量(m³)</div>
+                            </div>
+                            <div class="vehicle-stat">
+                                <div class="vehicle-stat-value">62,150</div>
+                                <div class="vehicle-stat-label">总里程(km)</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 16px; display: flex; justify-content: space-between; align-items: center;">
+                            <span class="status-badge confirmed">空闲</span>
+                            <button class="btn btn-secondary btn-sm">详情</button>
+                        </div>
+                    </div>
+
+                    <div class="vehicle-card">
+                        <div class="vehicle-header">
+                            <div class="vehicle-icon" style="background: rgba(139, 92, 246, 0.15); color: var(--purple);">
+                                <i class="fas fa-trailer"></i>
+                            </div>
+                            <div class="vehicle-info">
+                                <h4>平板车</h4>
+                                <span>京C·11111</span>
+                            </div>
+                        </div>
+                        <div class="vehicle-stats">
+                            <div class="vehicle-stat">
+                                <div class="vehicle-stat-value">20</div>
+                                <div class="vehicle-stat-label">载货量(m³)</div>
+                            </div>
+                            <div class="vehicle-stat">
+                                <div class="vehicle-stat-value">38,900</div>
+                                <div class="vehicle-stat-label">总里程(km)</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 16px; display: flex; justify-content: space-between; align-items: center;">
+                            <span class="status-badge completed">维护中</span>
+                            <button class="btn btn-secondary btn-sm">详情</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 24px;">
+                    <div class="card-header">
+                        <span class="card-title"><i class="fas fa-wrench"></i> 维保计划</span>
+                        <button class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> 添加维保</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>车牌号</th>
+                                        <th>维保类型</th>
+                                        <th>下次维保</th>
+                                        <th>剩余里程</th>
+                                        <th>状态</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>京C·11111</td>
+                                        <td>定期保养</td>
+                                        <td>2024-06-20</td>
+                                        <td>500 km</td>
+                                        <td><span class="status-badge in-progress">即将到期</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>京A·12345</td>
+                                        <td>年检</td>
+                                        <td>2024-07-15</td>
+                                        <td>3,200 km</td>
+                                        <td><span class="status-badge confirmed">正常</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>京D·22222</td>
+                                        <td>轮胎更换</td>
+                                        <td>2024-08-01</td>
+                                        <td>5,800 km</td>
+                                        <td><span class="status-badge completed">正常</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quotes Section -->
+            <section class="section" id="quotes">
+                <div style="margin-bottom: 24px;">
+                    <button class="btn btn-primary" onclick="openModal('quoteModal')">
+                        <i class="fas fa-plus"></i> 新建报价
+                    </button>
+                </div>
+
+                <div class="quote-card">
+                    <div class="quote-header">
+                        <div>
+                            <div class="quote-id">报价单 #QT2024061</div>
+                            <div class="quote-route">朝阳区 → 海淀区</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">客户: 李明 | 2024-06-15 10:00</div>
+                        </div>
+                        <div class="quote-price">
+                            <div class="quote-price-value">¥1,280</div>
+                            <div class="quote-price-unit">已报价</div>
+                        </div>
+                    </div>
+                    <div class="quote-details">
+                        <div class="quote-detail"><strong>车型:</strong> 金杯阁瑞斯</div>
+                        <div class="quote-detail"><strong>距离:</strong> 18 km</div>
+                        <div class="quote-detail"><strong>楼层:</strong> 3楼 → 5楼</div>
+                        <div class="quote-detail"><strong>保险:</strong> 尊享保障险</div>
+                    </div>
+                </div>
+
+                <div class="quote-card">
+                    <div class="quote-header">
+                        <div>
+                            <div class="quote-id">报价单 #QT2024062</div>
+                            <div class="quote-route">海淀区 → 丰台区</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">客户: 刘洋 | 2024-06-16 14:00</div>
+                        </div>
+                        <div class="quote-price">
+                            <div class="quote-price-value">¥2,180</div>
+                            <div class="quote-price-unit">待确认</div>
+                        </div>
+                    </div>
+                    <div class="quote-details">
+                        <div class="quote-detail"><strong>车型:</strong> 厢式货车</div>
+                        <div class="quote-detail"><strong>距离:</strong> 25 km</div>
+                        <div class="quote-detail"><strong>楼层:</strong> 1楼 → 2楼</div>
+                        <div class="quote-detail"><strong>保险:</strong> 基础保障险</div>
+                    </div>
+                </div>
+
+                <div class="quote-card">
+                    <div class="quote-header">
+                        <div>
+                            <div class="quote-id">报价单 #QT2024063</div>
+                            <div class="quote-route">西城区 → 东城区</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">客户: 陈静 | 2024-06-17 09:00</div>
+                        </div>
+                        <div class="quote-price">
+                            <div class="quote-price-value" style="color: var(--warning);">¥待定</div>
+                            <div class="quote-price-unit">勘察中</div>
+                        </div>
+                    </div>
+                    <div class="quote-details">
+                        <div class="quote-detail"><strong>车型:</strong> 待定</div>
+                        <div class="quote-detail"><strong>距离:</strong> 待测量</div>
+                        <div class="quote-detail"><strong>楼层:</strong> 待确认</div>
+                        <div class="quote-detail"><strong>保险:</strong> 待选择</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Order Modal -->
+    <div class="modal-overlay" id="orderModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">新建订单</h3>
+                <button class="modal-close" onclick="closeModal('orderModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">客户姓名</label>
+                    <input type="text" class="form-input" placeholder="请输入客户姓名">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">联系电话</label>
+                    <input type="tel" class="form-input" placeholder="请输入联系电话">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">出发地址</label>
+                    <input type="text" class="form-input" placeholder="请输入出发地址">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">目的地址</label>
+                    <input type="text" class="form-input" placeholder="请输入目的地址">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">预约时间</label>
+                    <input type="datetime-local" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">备注</label>
+                    <textarea class="form-textarea" placeholder="请输入备注信息"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('orderModal')">取消</button>
+                <button class="btn btn-primary">确认创建</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quote Modal -->
+    <div class="modal-overlay" id="quoteModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">新建报价</h3>
+                <button class="modal-close" onclick="closeModal('quoteModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">客户姓名</label>
+                    <input type="text" class="form-input" placeholder="请输入客户姓名">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">出发地</label>
+                    <input type="text" class="form-input" placeholder="请输入出发地">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">目的地</label>
+                    <input type="text" class="form-input" placeholder="请输入目的地">
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">预估距离 (km)</label>
+                        <input type="number" class="form-input" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">预估金额</label>
+                        <input type="number" class="form-input" placeholder="¥0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">车型</label>
+                    <select class="form-select">
+                        <option>金杯阁瑞斯</option>
+                        <option>厢式货车</option>
+                        <option>平板车</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">备注</label>
+                    <textarea class="form-textarea" placeholder="请输入备注信息"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('quoteModal')">取消</button>
+                <button class="btn btn-primary">确认报价</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // Update active nav item
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+                
+                // Show corresponding section
+                const sectionId = this.dataset.section;
+                document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+                document.getElementById(sectionId).classList.add('active');
+                
+                // Update page title
+                const titles = {
+                    dashboard: '工作台',
+                    orders: '订单管理',
+                    scheduling: '司机调度',
+                    tracking: '路线追踪',
+                    packing: '打包清单',
+                    customers: '客户管理',
+                    insurance: '保险服务',
+                    payments: '财务支付',
+                    ratings: '司机评分',
+                    vehicles: '车辆管理',
+                    quotes: '报价管理'
+                };
+                document.getElementById('pageTitle').textContent = titles[sectionId] || '工作台';
+            });
+        });
+
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('show');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('show');
+        }
+
+        // Close modal on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('show');
+                }
+            });
+        });
+
+        // Checklist interactions
+        document.querySelectorAll('.checklist-item').forEach(item => {
+            item.addEventListener('click', function() {
+                this.classList.toggle('checked');
+            });
+        });
+
+        // Toggle interactions
+        document.querySelectorAll('.toggle').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                this.classList.toggle('active');
+                const label = this.previousElementSibling;
+                label.textContent = this.classList.contains('active') ? '接单中' : '休息中';
+            });
+        });
+
+        // Initialize with some animation
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.stat-card, .card, .driver-card, .vehicle-card, .quote-card').forEach((el, index) => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    el.style.transition = 'all 0.3s ease';
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
+        });
+
+        // Search functionality
+        document.querySelector('.search-box input').addEventListener('keyup', function(e) {
+            if (e.key === 'Enter') {
+                const searchTerm = this.value.toLowerCase();
+                console.log('Searching for:', searchTerm);
+                // Implement search logic here
+            }
+        });
+    </script>
+</body>
+</html>

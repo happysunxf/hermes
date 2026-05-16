@@ -1,0 +1,2757 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>齿科护航 - 口腔诊所管理系统</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0f1923;
+  --sidebar: #0d1117;
+  --card: #161b22;
+  --card-hover: #1c2128;
+  --border: #30363d;
+  --text: #e6edf3;
+  --text-muted: #8b949e;
+  --accent: #00c9a7;
+  --accent-dim: rgba(0,201,167,0.15);
+  --blue: #58a6ff;
+  --blue-dim: rgba(88,166,255,0.15);
+  --yellow: #f0c674;
+  --red: #f85149;
+  --red-dim: rgba(248,81,73,0.15);
+  --orange: #ff7b72;
+  --purple: #d2a8ff;
+  --font: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; overflow: hidden; }
+.app { display: flex; height: 100vh; }
+
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  background: var(--sidebar);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+.logo {
+  padding: 20px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.logo-icon {
+  width: 36px; height: 36px;
+  background: var(--accent);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.logo-text { font-size: 16px; font-weight: 700; color: var(--text); }
+.logo-sub { font-size: 10px; color: var(--text-muted); }
+
+.nav { flex: 1; padding: 12px 8px; overflow-y: auto; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 13px;
+  transition: all 0.15s;
+  margin-bottom: 2px;
+}
+.nav-item:hover { background: var(--card); color: var(--text); }
+.nav-item.active { background: var(--accent-dim); color: var(--accent); }
+.nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+.nav-item .badge {
+  margin-left: auto;
+  background: var(--red);
+  color: white;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 10px;
+}
+
+.sidebar-footer { padding: 12px 8px; border-top: 1px solid var(--border); }
+.user-card {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px;
+  background: var(--card);
+  border-radius: 8px;
+}
+.avatar {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, var(--accent), #00997a);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600;
+}
+.user-info { flex: 1; }
+.user-name { font-size: 12px; font-weight: 500; }
+.user-role { font-size: 10px; color: var(--text-muted); }
+
+/* Main */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.topbar {
+  height: 56px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px;
+  background: var(--sidebar);
+}
+.topbar-title { font-size: 16px; font-weight: 600; }
+.topbar-actions { display: flex; align-items: center; gap: 12px; }
+.topbar-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.topbar-btn:hover { border-color: var(--accent); color: var(--accent); }
+.topbar-btn.primary { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 600; }
+.topbar-btn.primary:hover { background: #00e5bb; }
+
+.content { flex: 1; overflow-y: auto; padding: 24px; }
+
+/* Stats */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.2s;
+}
+.stat-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.stat-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.stat-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.stat-icon.teal { background: var(--accent-dim); color: var(--accent); }
+.stat-icon.blue { background: var(--blue-dim); color: var(--blue); }
+.stat-icon.yellow { background: rgba(240,198,116,0.15); color: var(--yellow); }
+.stat-icon.red { background: var(--red-dim); color: var(--red); }
+.stat-trend { font-size: 11px; padding: 2px 8px; border-radius: 10px; }
+.stat-trend.up { background: var(--accent-dim); color: var(--accent); }
+.stat-trend.down { background: var(--red-dim); color: var(--red); }
+.stat-value { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+.stat-label { font-size: 12px; color: var(--text-muted); }
+
+/* Grid layout */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid-3 { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+
+/* Cards */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.card-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.card-body { padding: 16px 20px; }
+
+/* Tables */
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 10px 12px; font-size: 12px; border-bottom: 1px solid var(--border); }
+th { color: var(--text-muted); font-weight: 500; font-size: 11px; }
+tr:hover td { background: var(--card-hover); }
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+.tag-teal { background: var(--accent-dim); color: var(--accent); }
+.tag-blue { background: var(--blue-dim); color: var(--blue); }
+.tag-yellow { background: rgba(240,198,116,0.15); color: var(--yellow); }
+.tag-red { background: var(--red-dim); color: var(--red); }
+.tag-purple { background: rgba(210,168,255,0.15); color: var(--purple); }
+
+/* Buttons */
+.btn {
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 11px;
+  font-family: var(--font);
+  transition: all 0.15s;
+}
+.btn-sm { padding: 4px 8px; font-size: 10px; }
+.btn-primary { background: var(--accent); color: #000; font-weight: 600; }
+.btn-primary:hover { background: #00e5bb; }
+.btn-secondary { background: var(--card-hover); color: var(--text); border: 1px solid var(--border); }
+.btn-secondary:hover { border-color: var(--accent); }
+.btn-danger { background: var(--red-dim); color: var(--red); }
+.btn-danger:hover { background: rgba(248,81,73,0.3); }
+
+/* Modal */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: none; align-items: center; justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+.modal-overlay.show { display: flex; }
+.modal {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  width: 600px;
+  max-height: 85vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+.modal.large { width: 800px; }
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-title { font-size: 16px; font-weight: 600; }
+.modal-close {
+  width: 28px; height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: var(--card-hover);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-close:hover { color: var(--text); }
+.modal-body { padding: 24px; max-height: 60vh; overflow-y: auto; }
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  display: flex; justify-content: flex-end; gap: 10px;
+}
+
+/* Form */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-group { margin-bottom: 16px; }
+.form-group.full { grid-column: 1 / -1; }
+.form-label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  padding: 9px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 13px;
+  font-family: var(--font);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+.form-textarea { resize: vertical; min-height: 80px; }
+.form-select { cursor: pointer; }
+.form-row { display: flex; gap: 12px; }
+.form-row .form-group { flex: 1; }
+
+/* Calendar */
+.calendar-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.calendar-day-name { text-align: center; font-size: 10px; color: var(--text-muted); padding: 6px 0; }
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+}
+.calendar-day:hover { background: var(--card-hover); }
+.calendar-day.today { background: var(--accent); color: #000; font-weight: 600; }
+.calendar-day.has-event::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.calendar-day.has-event.blue::after { background: var(--blue); }
+.calendar-day.has-event.yellow::after { background: var(--yellow); }
+.calendar-day.has-event.red::after { background: var(--red); }
+.calendar-day.other-month { color: var(--text-muted); opacity: 0.4; }
+
+/* Tabs */
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+.tab {
+  padding: 8px 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+}
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* Timeline */
+.timeline { position: relative; padding-left: 24px; }
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 7px; top: 0; bottom: 0;
+  width: 1px;
+  background: var(--border);
+}
+.timeline-item { position: relative; margin-bottom: 20px; }
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -20px; top: 4px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--bg);
+}
+.timeline-item.blue::before { background: var(--blue); }
+.timeline-item.yellow::before { background: var(--yellow); }
+.timeline-item.red::before { background: var(--red); }
+.timeline-date { font-size: 10px; color: var(--text-muted); margin-bottom: 4px; }
+.timeline-content { font-size: 12px; }
+.timeline-title { font-weight: 500; margin-bottom: 2px; }
+.timeline-desc { color: var(--text-muted); }
+
+/* Progress bar */
+.progress-bar { height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 3px; background: var(--accent); transition: width 0.3s; }
+
+/* Patient avatar */
+.patient-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* Badge dot */
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.dot-green { background: var(--accent); }
+.dot-yellow { background: var(--yellow); }
+.dot-red { background: var(--red); }
+.dot-blue { background: var(--blue); }
+
+/* Search */
+.search-box {
+  display: flex; align-items: center;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0 12px;
+  gap: 8px;
+}
+.search-box input {
+  background: none; border: none; outline: none;
+  color: var(--text); font-size: 12px;
+  padding: 8px 0;
+  width: 180px;
+  font-family: var(--font);
+}
+.search-box input::placeholder { color: var(--text-muted); }
+
+/* Page sections */
+.page-section { display: none; }
+.page-section.active { display: block; }
+
+/* Schedule grid */
+.schedule-grid {
+  display: grid;
+  gap: 8px;
+}
+.schedule-row {
+  display: grid;
+  grid-template-columns: 80px repeat(5, 1fr);
+  gap: 8px;
+  align-items: center;
+}
+.schedule-time {
+  font-size: 11px;
+  color: var(--text-muted);
+  text-align: right;
+  padding-right: 12px;
+}
+.schedule-cell {
+  background: var(--card-hover);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 11px;
+  min-height: 48px;
+  border: 1px solid transparent;
+  transition: all 0.15s;
+  cursor: pointer;
+}
+.schedule-cell:hover { border-color: var(--accent); }
+.schedule-cell .dentist { font-weight: 500; margin-bottom: 2px; }
+.schedule-cell .patient { color: var(--text-muted); }
+.schedule-cell.lunch { background: rgba(240,198,116,0.08); border: 1px dashed rgba(240,198,116,0.3); color: var(--text-muted); text-align: center; }
+
+/* Inventory */
+.inventory-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.inventory-item:last-child { border-bottom: none; }
+.inv-icon {
+  width: 40px; height: 40px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  margin-right: 12px;
+}
+.inv-info { flex: 1; }
+.inv-name { font-size: 13px; font-weight: 500; }
+.inv-stock { font-size: 11px; color: var(--text-muted); }
+.inv-stock.low { color: var(--red); }
+
+/* Billing list */
+.billing-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.billing-item:last-child { border-bottom: none; }
+.billing-icon {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+.billing-info { flex: 1; }
+.billing-title { font-size: 13px; font-weight: 500; }
+.billing-meta { font-size: 11px; color: var(--text-muted); }
+.billing-amount { font-size: 14px; font-weight: 600; color: var(--accent); }
+
+/* X-ray gallery */
+.xray-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.xray-item {
+  background: var(--card-hover);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid var(--border);
+}
+.xray-item:hover { border-color: var(--accent); transform: scale(1.02); }
+.xray-preview {
+  height: 120px;
+  background: #1a2332;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px;
+  color: var(--text-muted);
+  position: relative;
+}
+.xray-type {
+  position: absolute; top: 8px; left: 8px;
+  font-size: 9px; background: var(--card);
+  padding: 2px 6px; border-radius: 4px;
+  color: var(--accent);
+}
+.xray-info { padding: 10px; }
+.xray-name { font-size: 12px; font-weight: 500; }
+.xray-date { font-size: 10px; color: var(--text-muted); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* Animations */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.fade-in { animation: fadeIn 0.3s ease; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+.pulse { animation: pulse 2s infinite; }
+
+/* Notification */
+.notif {
+  position: fixed;
+  top: 20px; right: 20px;
+  background: var(--card);
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  padding: 14px 18px;
+  display: none;
+  align-items: center; gap: 10px;
+  font-size: 13px;
+  z-index: 2000;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+.notif.show { display: flex; }
+
+/* Toast */
+.toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 2000; display: flex; flex-direction: column; gap: 8px; }
+.toast {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 12px;
+  display: flex; align-items: center; gap: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  animation: fadeIn 0.3s ease;
+}
+.toast.success { border-color: var(--accent); }
+.toast.error { border-color: var(--red); }
+
+/* Chart placeholder bars */
+.bar-chart { display: flex; align-items: flex-end; gap: 8px; height: 100px; padding: 10px 0; }
+.bar-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.bar-fill { width: 100%; border-radius: 4px 4px 0 0; transition: height 0.5s ease; }
+.bar-label { font-size: 10px; color: var(--text-muted); margin-top: 4px; }
+
+/* Filter row */
+.filter-row { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+.filter-row .search-box { flex: 1; min-width: 200px; }
+
+/* Scrollable panel */
+.panel-scroll { max-height: 400px; overflow-y: auto; }
+
+/* Follow-up list */
+.follow-item {
+  display: flex; gap: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  background: var(--card-hover);
+  transition: all 0.15s;
+  cursor: pointer;
+}
+.follow-item:hover { background: var(--card); border: 1px solid var(--border); }
+.follow-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 600;
+  flex-shrink: 0;
+}
+.follow-info { flex: 1; }
+.follow-name { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+.follow-reason { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+.follow-meta { font-size: 10px; color: var(--text-muted); display: flex; gap: 12px; }
+.follow-status {
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+.follow-status.urgent { background: var(--red-dim); color: var(--red); }
+.follow-status.normal { background: var(--accent-dim); color: var(--accent); }
+.follow-status.overdue { background: rgba(240,198,116,0.15); color: var(--yellow); }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">🦷</div>
+      <div>
+        <div class="logo-text">齿科护航</div>
+        <div class="logo-sub">DentalCare Pro</div>
+      </div>
+    </div>
+    <div class="nav">
+      <div class="nav-item active" onclick="showSection('dashboard')">
+        <span class="icon">📊</span> 工作台
+      </div>
+      <div class="nav-item" onclick="showSection('appointments')">
+        <span class="icon">📅</span> 预约管理
+        <span class="badge">3</span>
+      </div>
+      <div class="nav-item" onclick="showSection('patients')">
+        <span class="icon">👥</span> 患者档案
+      </div>
+      <div class="nav-item" onclick="showSection('schedule')">
+        <span class="icon">🗓️</span> 医生排班
+      </div>
+      <div class="nav-item" onclick="showSection('treatment')">
+        <span class="icon">💊</span> 治疗计划
+      </div>
+      <div class="nav-item" onclick="showSection('billing')">
+        <span class="icon">💰</span> 账单管理
+      </div>
+      <div class="nav-item" onclick="showSection('inventory')">
+        <span class="icon">📦</span> 物资库存
+      </div>
+      <div class="nav-item" onclick="showSection('xray')">
+        <span class="icon">🩻</span> X光影像
+      </div>
+      <div class="nav-item" onclick="showSection('followup')">
+        <span class="icon">🔔</span> 随访提醒
+        <span class="badge">5</span>
+      </div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div class="avatar">陈</div>
+        <div class="user-info">
+          <div class="user-name">陈思远 医生</div>
+          <div class="user-role">主任医师 · 修复科</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbarTitle">工作台</div>
+      <div class="topbar-actions">
+        <button class="topbar-btn" onclick="showModal('searchModal')">🔍 搜索患者</button>
+        <button class="topbar-btn primary" onclick="showModal('bookingModal')">+ 新建预约</button>
+      </div>
+    </div>
+    <div class="content">
+
+      <!-- Dashboard -->
+      <div id="section-dashboard" class="page-section active">
+        <div class="stats-grid">
+          <div class="stat-card fade-in">
+            <div class="stat-header">
+              <div class="stat-icon teal">📅</div>
+              <span class="stat-trend up">↑ 12%</span>
+            </div>
+            <div class="stat-value">24</div>
+            <div class="stat-label">今日预约</div>
+          </div>
+          <div class="stat-card fade-in" style="animation-delay:0.1s">
+            <div class="stat-header">
+              <div class="stat-icon blue">👥</div>
+              <span class="stat-trend up">↑ 8%</span>
+            </div>
+            <div class="stat-value">1,847</div>
+            <div class="stat-label">患者总数</div>
+          </div>
+          <div class="stat-card fade-in" style="animation-delay:0.2s">
+            <div class="stat-header">
+              <div class="stat-icon yellow">💰</div>
+              <span class="stat-trend up">↑ 15%</span>
+            </div>
+            <div class="stat-value">¥68,420</div>
+            <div class="stat-label">本月收入</div>
+          </div>
+          <div class="stat-card fade-in" style="animation-delay:0.3s">
+            <div class="stat-header">
+              <div class="stat-icon red">🔔</div>
+              <span class="stat-trend down">↓ 3%</span>
+            </div>
+            <div class="stat-value">5</div>
+            <div class="stat-label">待随访</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card fade-in" style="animation-delay:0.2s">
+            <div class="card-header">
+              <div class="card-title">📅 今日预约</div>
+              <button class="btn btn-sm btn-secondary" onclick="showSection('appointments')">查看全部</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>时间</th><th>患者</th><th>医生</th><th>项目</th><th>状态</th></tr></thead>
+                <tbody>
+                  <tr onclick="showModal('patientDetailModal')">
+                    <td>08:30</td><td><span class="dot dot-green"></span> 王建国</td><td>陈思远</td><td>种植牙手术</td><td><span class="tag tag-teal">已确认</span></td>
+                  </tr>
+                  <tr onclick="showModal('patientDetailModal')">
+                    <td>09:30</td><td><span class="dot dot-green"></span> 李梅</td><td>王丽华</td><td>正畸复诊</td><td><span class="tag tag-teal">已确认</span></td>
+                  </tr>
+                  <tr onclick="showModal('patientDetailModal')">
+                    <td>10:30</td><td><span class="dot dot-yellow"></span> 张伟</td><td>陈思远</td><td>根管治疗</td><td><span class="tag tag-yellow">待到诊</span></td>
+                  </tr>
+                  <tr onclick="showModal('patientDetailModal')">
+                    <td>11:30</td><td><span class="dot dot-red"></span> 刘芳</td><td>赵敏</td><td>补牙</td><td><span class="tag tag-red">取消</span></td>
+                  </tr>
+                  <tr onclick="showModal('patientDetailModal')">
+                    <td>14:00</td><td><span class="dot dot-green"></span> 周杰</td><td>陈思远</td><td>拔智齿</td><td><span class="tag tag-teal">已确认</span></td>
+                  </tr>
+                  <tr onclick="showModal('patientDetailModal')">
+                    <td>15:30</td><td><span class="dot dot-yellow"></span> 吴婷</td><td>王丽华</td><td>牙周检查</td><td><span class="tag tag-yellow">待到诊</span></td>
+                  </tr>
+                  <tr onclick="showModal('patientDetailModal')">
+                    <td>16:30</td><td><span class="dot dot-green"></span> 郑浩</td><td>赵敏</td><td>牙冠修复</td><td><span class="tag tag-blue">已完成</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card fade-in" style="animation-delay:0.3s">
+            <div class="card-header">
+              <div class="card-title">📋 待处理事项</div>
+            </div>
+            <div class="card-body">
+              <div class="timeline">
+                <div class="timeline-item red">
+                  <div class="timeline-date">10分钟后</div>
+                  <div class="timeline-content">
+                    <div class="timeline-title">王建国 - 种植牙手术</div>
+                    <div class="timeline-desc">3号诊室 · 陈思远医生主刀</div>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-date">今日 14:00</div>
+                  <div class="timeline-content">
+                    <div class="timeline-title">周杰 - 拔智齿</div>
+                    <div class="timeline-desc">1号诊室 · 需麻醉准备</div>
+                  </div>
+                </div>
+                <div class="timeline-item yellow">
+                  <div class="timeline-date">今日 16:00</div>
+                  <div class="timeline-content">
+                    <div class="timeline-title">吴婷 - 牙周检查复诊</div>
+                    <div class="timeline-desc">2号诊室 · 上次治疗已完成</div>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-date">明日 09:00</div>
+                  <div class="timeline-content">
+                    <div class="timeline-title">孙悦 - 牙齿美白</div>
+                    <div class="timeline-desc">4号诊室 · 首次预约</div>
+                  </div>
+                </div>
+                <div class="timeline-item blue">
+                  <div class="timeline-date">明日 11:30</div>
+                  <div class="timeline-content">
+                    <div class="timeline-title">李明 - 正畸复诊</div>
+                    <div class="timeline-desc">5号诊室 · 调整牙套</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:20px">
+          <div class="card fade-in" style="animation-delay:0.4s">
+            <div class="card-header">
+              <div class="card-title">💰 本周收入趋势</div>
+            </div>
+            <div class="card-body">
+              <div class="bar-chart" id="revenueChart">
+                <div class="bar-item">
+                  <div class="bar-fill" style="height:45%;background:var(--accent)"></div>
+                  <div class="bar-label">一</div>
+                </div>
+                <div class="bar-item">
+                  <div class="bar-fill" style="height:60%;background:var(--accent)"></div>
+                  <div class="bar-label">二</div>
+                </div>
+                <div class="bar-item">
+                  <div class="bar-fill" style="height:80%;background:var(--accent)"></div>
+                  <div class="bar-label">三</div>
+                </div>
+                <div class="bar-item">
+                  <div class="bar-fill" style="height:55%;background:var(--accent)"></div>
+                  <div class="bar-label">四</div>
+                </div>
+                <div class="bar-item">
+                  <div class="bar-fill" style="height:90%;background:var(--accent)"></div>
+                  <div class="bar-label">五</div>
+                </div>
+                <div class="bar-item">
+                  <div class="bar-fill" style="height:70%;background:var(--blue)"></div>
+                  <div class="bar-label">六</div>
+                </div>
+                <div class="bar-item">
+                  <div class="bar-fill" style="height:30%;background:var(--blue)"></div>
+                  <div class="bar-label">日</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card fade-in" style="animation-delay:0.5s">
+            <div class="card-header">
+              <div class="card-title">📦 库存预警</div>
+            </div>
+            <div class="card-body">
+              <div class="inventory-item">
+                <div class="inv-icon" style="background:var(--red-dim)">🦷</div>
+                <div class="inv-info">
+                  <div class="inv-name">种植体耗材包</div>
+                  <div class="inv-stock low">库存 12 件 · 低于阈值 20</div>
+                </div>
+                <button class="btn btn-sm btn-danger">采购</button>
+              </div>
+              <div class="inventory-item">
+                <div class="inv-icon" style="background:var(--yellow)">💉</div>
+                <div class="inv-info">
+                  <div class="inv-name">麻醉注射液</div>
+                  <div class="inv-stock">库存 45 支 · 正常</div>
+                </div>
+                <button class="btn btn-sm btn-secondary">补充</button>
+              </div>
+              <div class="inventory-item">
+                <div class="inv-icon" style="background:var(--blue-dim)">🧴</div>
+                <div class="inv-info">
+                  <div class="inv-name">消毒漱口水</div>
+                  <div class="inv-stock">库存 120 瓶 · 充足</div>
+                </div>
+                <button class="btn btn-sm btn-secondary">查看</button>
+              </div>
+              <div class="inventory-item">
+                <div class="inv-icon" style="background:var(--accent-dim)">🪥</div>
+                <div class="inv-info">
+                  <div class="inv-name">一次性牙科探针</div>
+                  <div class="inv-stock low">库存 35 支 · 低于阈值 50</div>
+                </div>
+                <button class="btn btn-sm btn-danger">采购</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Appointments -->
+      <div id="section-appointments" class="page-section">
+        <div class="filter-row">
+          <div class="search-box">
+            <span>🔍</span>
+            <input type="text" placeholder="搜索患者姓名或电话...">
+          </div>
+          <select class="form-select" style="width:auto">
+            <option>全部状态</option>
+            <option>已确认</option>
+            <option>待到诊</option>
+            <option>已完成</option>
+            <option>已取消</option>
+          </select>
+          <select class="form-select" style="width:auto">
+            <option>全部医生</option>
+            <option>陈思远</option>
+            <option>王丽华</option>
+            <option>赵敏</option>
+          </select>
+          <button class="topbar-btn primary" onclick="showModal('bookingModal')">+ 新建预约</button>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">📅 预约列表</div>
+            <div style="font-size:11px;color:var(--text-muted)">共 156 条记录</div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>预约号</th><th>患者</th><th>电话</th><th>预约时间</th><th>医生</th><th>项目</th><th>诊室</th><th>状态</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>A2024051701</td>
+                  <td><span class="dot dot-green"></span> 王建国</td>
+                  <td>138****1234</td>
+                  <td>今天 08:30</td>
+                  <td>陈思远</td>
+                  <td>种植牙手术</td>
+                  <td>3号诊室</td>
+                  <td><span class="tag tag-teal">已确认</span></td>
+                  <td><button class="btn btn-sm btn-secondary" onclick="showModal('patientDetailModal')">详情</button></td>
+                </tr>
+                <tr>
+                  <td>A2024051702</td>
+                  <td><span class="dot dot-green"></span> 李梅</td>
+                  <td>139****5678</td>
+                  <td>今天 09:30</td>
+                  <td>王丽华</td>
+                  <td>正畸复诊</td>
+                  <td>2号诊室</td>
+                  <td><span class="tag tag-teal">已确认</span></td>
+                  <td><button class="btn btn-sm btn-secondary" onclick="showModal('patientDetailModal')">详情</button></td>
+                </tr>
+                <tr>
+                  <td>A2024051703</td>
+                  <td><span class="dot dot-yellow"></span> 张伟</td>
+                  <td>136****9012</td>
+                  <td>今天 10:30</td>
+                  <td>陈思远</td>
+                  <td>根管治疗</td>
+                  <td>1号诊室</td>
+                  <td><span class="tag tag-yellow">待到诊</span></td>
+                  <td><button class="btn btn-sm btn-secondary" onclick="showModal('patientDetailModal')">详情</button></td>
+                </tr>
+                <tr>
+                  <td>A2024051704</td>
+                  <td><span class="dot dot-red"></span> 刘芳</td>
+                  <td>135****3456</td>
+                  <td>今天 11:30</td>
+                  <td>赵敏</td>
+                  <td>补牙</td>
+                  <td>4号诊室</td>
+                  <td><span class="tag tag-red">取消</span></td>
+                  <td><button class="btn btn-sm btn-secondary" onclick="showModal('patientDetailModal')">详情</button></td>
+                </tr>
+                <tr>
+                  <td>A2024051705</td>
+                  <td><span class="dot dot-green"></span> 周杰</td>
+                  <td>158****7890</td>
+                  <td>今天 14:00</td>
+                  <td>陈思远</td>
+                  <td>拔智齿</td>
+                  <td>3号诊室</td>
+                  <td><span class="tag tag-teal">已确认</span></td>
+                  <td><button class="btn btn-sm btn-secondary" onclick="showModal('patientDetailModal')">详情</button></td>
+                </tr>
+                <tr>
+                  <td>A2024051706</td>
+                  <td><span class="dot dot-yellow"></span> 吴婷</td>
+                  <td>137****2345</td>
+                  <td>今天 15:30</td>
+                  <td>王丽华</td>
+                  <td>牙周检查</td>
+                  <td>2号诊室</td>
+                  <td><span class="tag tag-yellow">待到诊</span></td>
+                  <td><button class="btn btn-sm btn-secondary" onclick="showModal('patientDetailModal')">详情</button></td>
+                </tr>
+                <tr>
+                  <td>A2024051707</td>
+                  <td><span class="dot dot-blue"></span> 郑浩</td>
+                  <td>159****6789</td>
+                  <td>今天 16:30</td>
+                  <td>赵敏</td>
+                  <td>牙冠修复</td>
+                  <td>5号诊室</td>
+                  <td><span class="tag tag-blue">已完成</span></td>
+                  <td><button class="btn btn-sm btn-secondary" onclick="showModal('patientDetailModal')">详情</button></td>
+                </tr>
+                <tr>
+                  <td>A2024051801</td>
+                  <td><span class="dot dot-green"></span> 孙悦</td>
+                  <td>133****4567</td>
+                  <td>明天 09:00</td>
+                  <td>陈思远</td>
+                  <td>牙齿美白</td>
+                  <td>4号诊室</td>
+                  <td><span class="tag tag-teal">已确认</span></td>
+                  <td><button class="btn btn-sm btn-secondary" onclick="showModal('patientDetailModal')">详情</button></td>
+                </tr>
+                <tr>
+                  <td>A2024051802</td>
+                  <td><span class="dot dot-green"></span> 李明</td>
+                  <td>132****8901</td>
+                  <td>明天 11:30</td>
+                  <td>王丽华</td>
+                  <td>正畸复诊</td>
+                  <td>2号诊室</td>
+                  <td><span class="tag tag-teal">已确认</span></td>
+                  <td><button class="btn btn-sm btn-secondary" onclick="showModal('patientDetailModal')">详情</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Patients -->
+      <div id="section-patients" class="page-section">
+        <div class="filter-row">
+          <div class="search-box">
+            <span>🔍</span>
+            <input type="text" placeholder="搜索患者姓名、身份证或电话...">
+          </div>
+          <select class="form-select" style="width:auto">
+            <option>全部患者</option>
+            <option>VIP患者</option>
+            <option>普通患者</option>
+          </select>
+          <button class="topbar-btn primary" onclick="showModal('newPatientModal')">+ 新建档案</button>
+        </div>
+
+        <div class="grid-3">
+          <div class="card" style="grid-column:span 2">
+            <div class="card-header">
+              <div class="card-title">👥 患者列表</div>
+              <div style="font-size:11px;color:var(--text-muted)">共 1,847 位患者</div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>患者</th><th>性别</th><th>年龄</th><th>电话</th><th>过敏史</th><th>最近就诊</th><th>标签</th><th>操作</th></tr></thead>
+                <tbody>
+                  <tr onclick="showModal('patientDetailModal')" style="cursor:pointer">
+                    <td>
+                      <div style="display:flex;align-items:center;gap:8px">
+                        <div class="patient-avatar" style="background:linear-gradient(135deg,#00c9a7,#008066)">王</div>
+                        <div>
+                          <div style="font-weight:500">王建国</div>
+                          <div style="font-size:10px;color:var(--text-muted)">320106****1234</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>男</td>
+                    <td>52</td>
+                    <td>138****1234</td>
+                    <td><span class="tag tag-red">青霉素</span></td>
+                    <td>2024-05-10</td>
+                    <td><span class="tag tag-teal">VIP</span></td>
+                    <td><button class="btn btn-sm btn-secondary">详情</button></td>
+                  </tr>
+                  <tr onclick="showModal('patientDetailModal')" style="cursor:pointer">
+                    <td>
+                      <div style="display:flex;align-items:center;gap:8px">
+                        <div class="patient-avatar" style="background:linear-gradient(135deg,#58a6ff,#1f6feb)">李</div>
+                        <div>
+                          <div style="font-weight:500">李梅</div>
+                          <div style="font-size:10px;color:var(--text-muted)">310101****5678</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>女</td>
+                    <td>34</td>
+                    <td>139****5678</td>
+                    <td>无</td>
+                    <td>2024-05-12</td>
+                    <td><span class="tag tag-blue">正畸</span></td>
+                    <td><button class="btn btn-sm btn-secondary">详情</button></td>
+                  </tr>
+                  <tr onclick="showModal('patientDetailModal')" style="cursor:pointer">
+                    <td>
+                      <div style="display:flex;align-items:center;gap:8px">
+                        <div class="patient-avatar" style="background:linear-gradient(135deg,#f0c674,#d4a017)">张</div>
+                        <div>
+                          <div style="font-weight:500">张伟</div>
+                          <div style="font-size:10px;color:var(--text-muted)">320105****9012</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>男</td>
+                    <td>45</td>
+                    <td>136****9012</td>
+                    <td>无</td>
+                    <td>2024-05-08</td>
+                    <td><span class="tag tag-yellow">根管</span></td>
+                    <td><button class="btn btn-sm btn-secondary">详情</button></td>
+                  </tr>
+                  <tr onclick="showModal('patientDetailModal')" style="cursor:pointer">
+                    <td>
+                      <div style="display:flex;align-items:center;gap:8px">
+                        <div class="patient-avatar" style="background:linear-gradient(135deg,#ff7b72,#c93c37)">刘</div>
+                        <div>
+                          <div style="font-weight:500">刘芳</div>
+                          <div style="font-size:10px;color:var(--text-muted)">310104****3456</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>女</td>
+                    <td>28</td>
+                    <td>135****3456</td>
+                    <td>碘伏</td>
+                    <td>2024-04-20</td>
+                    <td><span class="tag tag-purple">种植</span></td>
+                    <td><button class="btn btn-sm btn-secondary">详情</button></td>
+                  </tr>
+                  <tr onclick="showModal('patientDetailModal')" style="cursor:pointer">
+                    <td>
+                      <div style="display:flex;align-items:center;gap:8px">
+                        <div class="patient-avatar" style="background:linear-gradient(135deg,#d2a8ff,#8b5cf6)">周</div>
+                        <div>
+                          <div style="font-weight:500">周杰</div>
+                          <div style="font-size:10px;color:var(--text-muted)">320107****7890</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>男</td>
+                    <td>38</td>
+                    <td>158****7890</td>
+                    <td>无</td>
+                    <td>2024-05-14</td>
+                    <td><span class="tag tag-red">拔牙</span></td>
+                    <td><button class="btn btn-sm btn-secondary">详情</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📊 患者统计</div>
+            </div>
+            <div class="card-body">
+              <div style="margin-bottom:20px">
+                <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px">
+                  <span>男性患者</span><span style="color:var(--blue)">892 (48.3%)</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width:48.3%;background:var(--blue)"></div>
+                </div>
+              </div>
+              <div style="margin-bottom:20px">
+                <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px">
+                  <span>女性患者</span><span style="color:var(--accent)">955 (51.7%)</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width:51.7%"></div>
+                </div>
+              </div>
+              <div style="margin-bottom:20px">
+                <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px">
+                  <span>VIP患者</span><span style="color:var(--yellow)">156 (8.4%)</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width:8.4%;background:var(--yellow)"></div>
+                </div>
+              </div>
+              <div style="margin-bottom:20px">
+                <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px">
+                  <span>本月新增</span><span style="color:var(--purple)">42</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width:35%;background:var(--purple)"></div>
+                </div>
+              </div>
+              <div style="font-size:11px;color:var(--text-muted);line-height:1.6">
+                <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+                  <div>平均年龄：38.5岁</div>
+                  <div>复诊率：76.3%</div>
+                  <div>转介绍率：23.8%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Schedule -->
+      <div id="section-schedule" class="page-section">
+        <div class="filter-row">
+          <button class="topbar-btn" onclick="changeWeek(-1)">← 上周</button>
+          <span id="weekLabel" style="font-size:13px;padding:7px 16px;background:var(--card);border-radius:6px">2024年5月13日 - 5月19日</span>
+          <button class="topbar-btn" onclick="changeWeek(1)">下周 →</button>
+          <select class="form-select" style="width:auto">
+            <option>全部医生</option>
+            <option>陈思远</option>
+            <option>王丽华</option>
+            <option>赵敏</option>
+          </select>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">🗓️ 本周排班表</div>
+          </div>
+          <div class="card-body">
+            <div class="schedule-grid" style="overflow-x:auto">
+              <div class="schedule-row" style="margin-bottom:8px">
+                <div style="font-size:10px;color:var(--text-muted);padding-left:12px">时间</div>
+                <div style="font-size:12px;font-weight:600;text-align:center">周一 5/13</div>
+                <div style="font-size:12px;font-weight:600;text-align:center">周二 5/14</div>
+                <div style="font-size:12px;font-weight:600;text-align:center">周三 5/15</div>
+                <div style="font-size:12px;font-weight:600;text-align:center">周四 5/16</div>
+                <div style="font-size:12px;font-weight:600;text-align:center">周五 5/17</div>
+              </div>
+              <div class="schedule-row">
+                <div class="schedule-time">08:00</div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--accent)">陈思远</div>
+                  <div class="patient">王建国 · 种植</div>
+                </div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--blue)">王丽华</div>
+                  <div class="patient">李梅 · 正畸</div>
+                </div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--accent)">陈思远</div>
+                  <div class="patient">赵强 · 修复</div>
+                </div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--orange)">赵敏</div>
+                  <div class="patient">林芳 · 补牙</div>
+                </div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--accent)">陈思远</div>
+                  <div class="patient">钱伟 · 根管</div>
+                </div>
+              </div>
+              <div class="schedule-row">
+                <div class="schedule-time">09:00</div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--accent)">陈思远</div>
+                  <div class="patient">孙悦 · 美白</div>
+                </div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--blue)">王丽华</div>
+                  <div class="patient">周杰 · 复诊</div>
+                </div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--orange)">赵敏</div>
+                  <div class="patient">吴婷 · 检查</div>
+                </div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--blue)">王丽华</div>
+                  <div class="patient">郑浩 · 修复</div>
+                </div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--blue)">王丽华</div>
+                  <div class="patient">王芳 · 正畸</div>
+                </div>
+              </div>
+              <div class="schedule-row">
+                <div class="schedule-time">10:00</div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--blue)">王丽华</div>
+                  <div class="patient">李明 · 复诊</div>
+                </div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--accent)">陈思远</div>
+                  <div class="patient">杨静 · 种植</div>
+                </div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--blue)">王丽华</div>
+                  <div class="patient">刘婷 · 正畸</div>
+                </div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--accent)">陈思远</div>
+                  <div class="patient">黄磊 · 拔牙</div>
+                </div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--orange)">赵敏</div>
+                  <div class="patient">徐鹏 · 治疗</div>
+                </div>
+              </div>
+              <div class="schedule-row">
+                <div class="schedule-time">11:00</div>
+                <div class="schedule-cell"></div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--orange)">赵敏</div>
+                  <div class="patient">马超 · 补牙</div>
+                </div>
+                <div class="schedule-cell"></div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--blue)">王丽华</div>
+                  <div class="patient">朱琳 · 美白</div>
+                </div>
+                <div class="schedule-cell"></div>
+              </div>
+              <div class="schedule-row">
+                <div class="schedule-time">12:00</div>
+                <div class="schedule-cell lunch" colspan="5">午间休息</div>
+              </div>
+              <div class="schedule-row">
+                <div class="schedule-time">14:00</div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--orange)">赵敏</div>
+                  <div class="patient">胡军 · 根管</div>
+                </div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--accent)">陈思远</div>
+                  <div class="patient">林梅 · 种植</div>
+                </div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--orange)">赵敏</div>
+                  <div class="patient">何刚 · 修复</div>
+                </div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--accent)">陈思远</div>
+                  <div class="patient">许晴 · 检查</div>
+                </div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--accent)">陈思远</div>
+                  <div class="patient">梁伟 · 手术</div>
+                </div>
+              </div>
+              <div class="schedule-row">
+                <div class="schedule-time">15:00</div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--accent)">陈思远</div>
+                  <div class="patient">高建 · 种植</div>
+                </div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--blue)">王丽华</div>
+                  <div class="patient">程丽 · 正畸</div>
+                </div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--blue)">王丽华</div>
+                  <div class="patient">吴磊 · 复诊</div>
+                </div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--orange)">赵敏</div>
+                  <div class="patient">曹娟 · 补牙</div>
+                </div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--blue)">王丽华</div>
+                  <div class="patient">丁芳 · 美白</div>
+                </div>
+              </div>
+              <div class="schedule-row">
+                <div class="schedule-time">16:00</div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--orange)">赵敏</div>
+                  <div class="patient">田静 · 检查</div>
+                </div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--accent)">陈思远</div>
+                  <div class="patient">唐杰 · 修复</div>
+                </div>
+                <div class="schedule-cell"></div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--blue)">王丽华</div>
+                  <div class="patient">蒋伟 · 正畸</div>
+                </div>
+                <div class="schedule-cell"></div>
+              </div>
+              <div class="schedule-row">
+                <div class="schedule-time">17:00</div>
+                <div class="schedule-cell"></div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--orange)">赵敏</div>
+                  <div class="patient">沈鹏 · 根管</div>
+                </div>
+                <div class="schedule-cell"></div>
+                <div class="schedule-cell">
+                  <div class="dentist" style="color:var(--accent)">陈思远</div>
+                  <div class="patient">姜婷 · 复诊</div>
+                </div>
+                <div class="schedule-cell"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Treatment Plans -->
+      <div id="section-treatment" class="page-section">
+        <div class="filter-row">
+          <div class="search-box">
+            <span>🔍</span>
+            <input type="text" placeholder="搜索患者或治疗方案...">
+          </div>
+          <select class="form-select" style="width:auto">
+            <option>全部状态</option>
+            <option>进行中</option>
+            <option>已完成</option>
+            <option>待开始</option>
+          </select>
+          <button class="topbar-btn primary" onclick="showModal('treatmentPlanModal')">+ 新建计划</button>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">💊 治疗计划列表</div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>患者</th><th>方案名称</th><th>医生</th><th>开始日期</th><th>阶段</th><th>状态</th><th>操作</th></tr></thead>
+                <tbody>
+                  <tr>
+                    <td>王建国</td>
+                    <td>种植牙修复方案</td>
+                    <td>陈思远</td>
+                    <td>2024-05-10</td>
+                    <td>2/4</td>
+                    <td><span class="tag tag-yellow">进行中</span></td>
+                    <td><button class="btn btn-sm btn-secondary">查看</button></td>
+                  </tr>
+                  <tr>
+                    <td>李梅</td>
+                    <td>正畸矫正方案</td>
+                    <td>王丽华</td>
+                    <td>2024-03-15</td>
+                    <td>8/18</td>
+                    <td><span class="tag tag-yellow">进行中</span></td>
+                    <td><button class="btn btn-sm btn-secondary">查看</button></td>
+                  </tr>
+                  <tr>
+                    <td>刘芳</td>
+                    <td>种植牙手术方案</td>
+                    <td>陈思远</td>
+                    <td>2024-04-20</td>
+                    <td>3/3</td>
+                    <td><span class="tag tag-blue">已完成</span></td>
+                    <td><button class="btn btn-sm btn-secondary">查看</button></td>
+                  </tr>
+                  <tr>
+                    <td>张伟</td>
+                    <td>根管治疗方案</td>
+                    <td>陈思远</td>
+                    <td>2024-05-08</td>
+                    <td>1/2</td>
+                    <td><span class="tag tag-yellow">进行中</span></td>
+                    <td><button class="btn btn-sm btn-secondary">查看</button></td>
+                  </tr>
+                  <tr>
+                    <td>周杰</td>
+                    <td>智齿拔除方案</td>
+                    <td>赵敏</td>
+                    <td>2024-05-14</td>
+                    <td>1/1</td>
+                    <td><span class="tag tag-teal">待执行</span></td>
+                    <td><button class="btn btn-sm btn-secondary">查看</button></td>
+                  </tr>
+                  <tr>
+                    <td>郑浩</td>
+                    <td>牙冠修复方案</td>
+                    <td>赵敏</td>
+                    <td>2024-05-13</td>
+                    <td>2/2</td>
+                    <td><span class="tag tag-blue">已完成</span></td>
+                    <td><button class="btn btn-sm btn-secondary">查看</button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📋 方案详情 - 王建国种植牙修复</div>
+            </div>
+            <div class="card-body">
+              <div style="margin-bottom:16px">
+                <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+                  <span style="font-size:12px;color:var(--text-muted)">总体进度</span>
+                  <span style="font-size:12px;color:var(--accent)">50%</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width:50%"></div>
+                </div>
+              </div>
+              <div class="timeline">
+                <div class="timeline-item">
+                  <div class="timeline-date">2024-05-10 · 已完成</div>
+                  <div class="timeline-content">
+                    <div class="timeline-title">第一阶段：术前检查与评估</div>
+                    <div class="timeline-desc">CBCT扫描、骨量评估、方案制定</div>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-date">2024-05-15 · 进行中</div>
+                  <div class="timeline-content">
+                    <div class="timeline-title">第二阶段：种植体植入手术</div>
+                    <div class="timeline-desc">牙槽骨切开、种植体植入、缝合</div>
+                  </div>
+                </div>
+                <div class="timeline-item" style="opacity:0.4">
+                  <div class="timeline-date">预计 2024-06-10</div>
+                  <div class="timeline-content">
+                    <div class="timeline-title">第三阶段：骨结合期</div>
+                    <div class="timeline-desc">等待种植体与骨组织结合</div>
+                  </div>
+                </div>
+                <div class="timeline-item" style="opacity:0.4">
+                  <div class="timeline-date">预计 2024-08-15</div>
+                  <div class="timeline-content">
+                    <div class="timeline-title">第四阶段：牙冠修复</div>
+                    <div class="timeline-desc">取模、制作牙冠、安装调试</div>
+                  </div>
+                </div>
+              </div>
+              <div style="margin-top:16px;padding:12px;background:var(--bg);border-radius:8px;font-size:12px">
+                <div style="color:var(--text-muted);margin-bottom:4px">医嘱</div>
+                <div>术后24小时避免剧烈运动，7天内流食为主，按时服用抗生素，如出现异常出血或肿胀立即联系诊所。</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Billing -->
+      <div id="section-billing" class="page-section">
+        <div class="filter-row">
+          <div class="search-box">
+            <span>🔍</span>
+            <input type="text" placeholder="搜索患者或单号...">
+          </div>
+          <select class="form-select" style="width:auto">
+            <option>全部类型</option>
+            <option>检查费</option>
+            <option>治疗费</option>
+            <option>药品费</option>
+            <option>手术费</option>
+          </select>
+          <select class="form-select" style="width:auto">
+            <option>全部状态</option>
+            <option>已支付</option>
+            <option>待支付</option>
+            <option>已退费</option>
+          </select>
+          <button class="topbar-btn primary" onclick="showModal('billingModal')">+ 新建账单</button>
+        </div>
+
+        <div class="stats-grid" style="margin-bottom:20px">
+          <div class="stat-card fade-in">
+            <div class="stat-header">
+              <div class="stat-icon teal">💵</div>
+            </div>
+            <div class="stat-value">¥126,840</div>
+            <div class="stat-label">本月收入</div>
+          </div>
+          <div class="stat-card fade-in" style="animation-delay:0.1s">
+            <div class="stat-header">
+              <div class="stat-icon blue">📋</div>
+            </div>
+            <div class="stat-value">¥24,500</div>
+            <div class="stat-label">待收款</div>
+          </div>
+          <div class="stat-card fade-in" style="animation-delay:0.2s">
+            <div class="stat-header">
+              <div class="stat-icon yellow">💳</div>
+            </div>
+            <div class="stat-value">¥89,320</div>
+            <div class="stat-label">已收款</div>
+          </div>
+          <div class="stat-card fade-in" style="animation-delay:0.3s">
+            <div class="stat-header">
+              <div class="stat-icon red">↩️</div>
+            </div>
+            <div class="stat-value">¥3,200</div>
+            <div class="stat-label">已退费</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">💰 账单列表</div>
+            <div style="font-size:11px;color:var(--text-muted)">共 89 条记录</div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>单号</th><th>患者</th><th>日期</th><th>类型</th><th>金额</th><th>支付方式</th><th>状态</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td>B2024051701</td>
+                  <td>王建国</td>
+                  <td>2024-05-17</td>
+                  <td><span class="tag tag-red">手术费</span></td>
+                  <td style="color:var(--accent);font-weight:600">¥18,500</td>
+                  <td>支付宝</td>
+                  <td><span class="tag tag-teal">已支付</span></td>
+                  <td><button class="btn btn-sm btn-secondary">详情</button></td>
+                </tr>
+                <tr>
+                  <td>B2024051702</td>
+                  <td>李梅</td>
+                  <td>2024-05-17</td>
+                  <td><span class="tag tag-blue">治疗费</span></td>
+                  <td style="color:var(--accent);font-weight:600">¥2,400</td>
+                  <td>微信支付</td>
+                  <td><span class="tag tag-teal">已支付</span></td>
+                  <td><button class="btn btn-sm btn-secondary">详情</button></td>
+                </tr>
+                <tr>
+                  <td>B2024051703</td>
+                  <td>张伟</td>
+                  <td>2024-05-17</td>
+                  <td><span class="tag tag-blue">治疗费</span></td>
+                  <td style="color:var(--yellow);font-weight:600">¥3,800</td>
+                  <td>待支付</td>
+                  <td><span class="tag tag-yellow">待支付</span></td>
+                  <td><button class="btn btn-sm btn-primary">收款</button></td>
+                </tr>
+                <tr>
+                  <td>B2024051704</td>
+                  <td>刘芳</td>
+                  <td>2024-05-17</td>
+                  <td><span class="tag tag-red">手术费</span></td>
+                  <td style="color:var(--accent);font-weight:600">¥12,000</td>
+                  <td>银行卡</td>
+                  <td><span class="tag tag-teal">已支付</span></td>
+                  <td><button class="btn btn-sm btn-secondary">详情</button></td>
+                </tr>
+                <tr>
+                  <td>B2024051601</td>
+                  <td>周杰</td>
+                  <td>2024-05-16</td>
+                  <td><span class="tag tag-yellow">检查费</span></td>
+                  <td style="color:var(--accent);font-weight:600">¥200</td>
+                  <td>微信支付</td>
+                  <td><span class="tag tag-teal">已支付</span></td>
+                  <td><button class="btn btn-sm btn-secondary">详情</button></td>
+                </tr>
+                <tr>
+                  <td>B2024051602</td>
+                  <td>吴婷</td>
+                  <td>2024-05-16</td>
+                  <td><span class="tag tag-yellow">检查费</span></td>
+                  <td style="color:var(--accent);font-weight:600">¥150</td>
+                  <td>现金</td>
+                  <td><span class="tag tag-teal">已支付</span></td>
+                  <td><button class="btn btn-sm btn-secondary">详情</button></td>
+                </tr>
+                <tr>
+                  <td>B2024051603</td>
+                  <td>郑浩</td>
+                  <td>2024-05-16</td>
+                  <td><span class="tag tag-purple">药品费</span></td>
+                  <td style="color:var(--accent);font-weight:600">¥580</td>
+                  <td>医保卡</td>
+                  <td><span class="tag tag-teal">已支付</span></td>
+                  <td><button class="btn btn-sm btn-secondary">详情</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inventory -->
+      <div id="section-inventory" class="page-section">
+        <div class="filter-row">
+          <div class="search-box">
+            <span>🔍</span>
+            <input type="text" placeholder="搜索物资名称...">
+          </div>
+          <select class="form-select" style="width:auto">
+            <option>全部分类</option>
+            <option>耗材类</option>
+            <option>药品类</option>
+            <option>器械类</option>
+            <option>其他</option>
+          </select>
+          <button class="topbar-btn primary" onclick="showModal('inventoryModal')">+ 物资入库</button>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📦 物资库存列表</div>
+            </div>
+            <div class="card-body">
+              <div class="inventory-item">
+                <div class="inv-icon" style="background:var(--red-dim)">🦷</div>
+                <div class="inv-info">
+                  <div class="inv-name">种植体耗材包 (Straumann)</div>
+                  <div class="inv-stock low">库存 12 件 · 低于阈值 20</div>
+                  <div class="progress-bar" style="margin-top:6px;width:200px">
+                    <div class="progress-fill" style="width:30%;background:var(--red)"></div>
+                  </div>
+                </div>
+                <button class="btn btn-sm btn-danger">采购</button>
+              </div>
+              <div class="inventory-item">
+                <div class="inv-icon" style="background:var(--accent-dim)">🪥</div>
+                <div class="inv-info">
+                  <div class="inv-name">一次性牙科探针</div>
+                  <div class="inv-stock low">库存 35 支 · 低于阈值 50</div>
+                  <div class="progress-bar" style="margin-top:6px;width:200px">
+                    <div class="progress-fill" style="width:40%;background:var(--yellow)"></div>
+                  </div>
+                </div>
+                <button class="btn btn-sm btn-danger">采购</button>
+              </div>
+              <div class="inventory-item">
+                <div class="inv-icon" style="background:var(--blue-dim)">💉</div>
+                <div class="inv-info">
+                  <div class="inv-name">麻醉注射液 (甲哌卡因)</div>
+                  <div class="inv-stock">库存 45 支 · 正常</div>
+                  <div class="progress-bar" style="margin-top:6px;width:200px">
+                    <div class="progress-fill" style="width:70%;background:var(--blue)"></div>
+                  </div>
+                </div>
+                <button class="btn btn-sm btn-secondary">补充</button>
+              </div>
+              <div class="inventory-item">
+                <div class="inv-icon" style="background:rgba(240,198,116,0.15)">🧴</div>
+                <div class="inv-info">
+                  <div class="inv-name">消毒漱口水 (葡萄糖酸氯己定)</div>
+                  <div class="inv-stock">库存 120 瓶 · 充足</div>
+                  <div class="progress-bar" style="margin-top:6px;width:200px">
+                    <div class="progress-fill" style="width:85%;background:var(--accent)"></div>
+                  </div>
+                </div>
+                <button class="btn btn-sm btn-secondary">查看</button>
+              </div>
+              <div class="inventory-item">
+                <div class="inv-icon" style="background:var(--purple)">🔧</div>
+                <div class="inv-info">
+                  <div class="inv-name">高速手机钻头 (金钢砂)</div>
+                  <div class="inv-stock">库存 28 支 · 正常</div>
+                  <div class="progress-bar" style="margin-top:6px;width:200px">
+                    <div class="progress-fill" style="width:60%;background:var(--purple)"></div>
+                  </div>
+                </div>
+                <button class="btn btn-sm btn-secondary">查看</button>
+              </div>
+              <div class="inventory-item">
+                <div class="inv-icon" style="background:var(--accent-dim)">🧵</div>
+                <div class="inv-info">
+                  <div class="inv-name">口腔科缝合线 (薇乔 4-0)</div>
+                  <div class="inv-stock">库存 65 包 · 充足</div>
+                  <div class="progress-bar" style="margin-top:6px;width:200px">
+                    <div class="progress-fill" style="width:90%;background:var(--accent)"></div>
+                  </div>
+                </div>
+                <button class="btn btn-sm btn-secondary">查看</button>
+              </div>
+              <div class="inventory-item">
+                <div class="inv-icon" style="background:var(--blue-dim)">💊</div>
+                <div class="inv-info">
+                  <div class="inv-name">布洛芬缓释胶囊</div>
+                  <div class="inv-stock">库存 200 盒 · 充足</div>
+                  <div class="progress-bar" style="margin-top:6px;width:200px">
+                    <div class="progress-fill" style="width:95%;background:var(--accent)"></div>
+                  </div>
+                </div>
+                <button class="btn btn-sm btn-secondary">查看</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📥 最近入库记录</div>
+            </div>
+            <div class="card-body">
+              <div class="timeline">
+                <div class="timeline-item">
+                  <div class="timeline-date">2024-05-15</div>
+                  <div class="timeline-content">
+                    <div class="timeline-title">麻醉注射液 ×50 支</div>
+                    <div class="timeline-desc">供应商：华东医药 · 金额 ¥1,500</div>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-date">2024-05-12</div>
+                  <div class="timeline-content">
+                    <div class="timeline-title">消毒漱口水 ×24 瓶</div>
+                    <div class="timeline-desc">供应商：3M中国 · 金额 ¥960</div>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <div class="timeline-date">2024-05-10</div>
+                  <div class="timeline-content">
+                    <div class="timeline-title">高速手机钻头 ×10 支</div>
+                    <div class="timeline-desc">供应商：Kavo · 金额 ¥2,800</div>
+                  </div>
+                </div>
+                <div class="timeline-item yellow">
+                  <div class="timeline-date">2024-05-08</div>
+                  <div class="timeline-content">
+                    <div class="timeline-title">种植体耗材包 ×5 件</div>
+                    <div class="timeline-desc">供应商：Straumann · 金额 ¥12,500</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- X-ray -->
+      <div id="section-xray" class="page-section">
+        <div class="filter-row">
+          <div class="search-box">
+            <span>🔍</span>
+            <input type="text" placeholder="搜索患者或检查项目...">
+          </div>
+          <select class="form-select" style="width:auto">
+            <option>全部类型</option>
+            <option>全景片</option>
+            <option>CBCT</option>
+            <option>根尖片</option>
+            <option>咬合片</option>
+          </select>
+          <button class="topbar-btn primary" onclick="showModal('xrayUploadModal')">+ 上传影像</button>
+        </div>
+
+        <div class="grid-3">
+          <div class="card" style="grid-column:span 2">
+            <div class="card-header">
+              <div class="card-title">🩻 X光影像库</div>
+              <div style="font-size:11px;color:var(--text-muted)">共 423 张影像</div>
+            </div>
+            <div class="card-body">
+              <div class="xray-gallery">
+                <div class="xray-item" onclick="showModal('xrayViewerModal')">
+                  <div class="xray-preview">🦷<span class="xray-type">全景片</span></div>
+                  <div class="xray-info">
+                    <div class="xray-name">王建国 · 种植评估</div>
+                    <div class="xray-date">2024-05-10 · 陈思远</div>
+                  </div>
+                </div>
+                <div class="xray-item" onclick="showModal('xrayViewerModal')">
+                  <div class="xray-preview">🦷<span class="xray-type">CBCT</span></div>
+                  <div class="xray-info">
+                    <div class="xray-name">李梅 · 正畸分析</div>
+                    <div class="xray-date">2024-05-12 · 王丽华</div>
+                  </div>
+                </div>
+                <div class="xray-item" onclick="showModal('xrayViewerModal')">
+                  <div class="xray-preview">🦷<span class="xray-type">根尖片</span></div>
+                  <div class="xray-info">
+                    <div class="xray-name">张伟 · 根管治疗</div>
+                    <div class="xray-date">2024-05-08 · 陈思远</div>
+                  </div>
+                </div>
+                <div class="xray-item" onclick="showModal('xrayViewerModal')">
+                  <div class="xray-preview">🦷<span class="xray-type">全景片</span></div>
+                  <div class="xray-info">
+                    <div class="xray-name">刘芳 · 种植计划</div>
+                    <div class="xray-date">2024-04-20 · 陈思远</div>
+                  </div>
+                </div>
+                <div class="xray-item" onclick="showModal('xrayViewerModal')">
+                  <div class="xray-preview">🦷<span class="xray-type">CBCT</span></div>
+                  <div class="xray-info">
+                    <div class="xray-name">周杰 · 智齿评估</div>
+                    <div class="xray-date">2024-05-14 · 赵敏</div>
+                  </div>
+                </div>
+                <div class="xray-item" onclick="showModal('xrayViewerModal')">
+                  <div class="xray-preview">🦷<span class="xray-type">咬合片</span></div>
+                  <div class="xray-info">
+                    <div class="xray-name">郑浩 · 修复评估</div>
+                    <div class="xray-date">2024-05-13 · 赵敏</div>
+                  </div>
+                </div>
+                <div class="xray-item" onclick="showModal('xrayViewerModal')">
+                  <div class="xray-preview">🦷<span class="xray-type">全景片</span></div>
+                  <div class="xray-info">
+                    <div class="xray-name">孙悦 · 美白评估</div>
+                    <div class="xray-date">2024-05-16 · 陈思远</div>
+                  </div>
+                </div>
+                <div class="xray-item" onclick="showModal('xrayViewerModal')">
+                  <div class="xray-preview">🦷<span class="xray-type">根尖片</span></div>
+                  <div class="xray-info">
+                    <div class="xray-name">李明 · 正畸复诊</div>
+                    <div class="xray-date">2024-05-15 · 王丽华</div>
+                  </div>
+                </div>
+                <div class="xray-item" onclick="showModal('xrayViewerModal')">
+                  <div class="xray-preview">🦷<span class="xray-type">CBCT</span></div>
+                  <div class="xray-info">
+                    <div class="xray-name">吴婷 · 牙周检查</div>
+                    <div class="xray-date">2024-05-16 · 王丽华</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📋 影像统计</div>
+            </div>
+            <div class="card-body">
+              <div style="margin-bottom:20px">
+                <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                  <span style="font-size:12px">全景片</span><span style="font-size:12px;color:var(--blue)">186</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width:44%;background:var(--blue)"></div>
+                </div>
+              </div>
+              <div style="margin-bottom:20px">
+                <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                  <span style="font-size:12px">CBCT</span><span style="font-size:12px;color:var(--accent)">142</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width:34%"></div>
+                </div>
+              </div>
+              <div style="margin-bottom:20px">
+                <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                  <span style="font-size:12px">根尖片</span><span style="font-size:12px;color:var(--yellow)">68</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width:16%;background:var(--yellow)"></div>
+                </div>
+              </div>
+              <div style="margin-bottom:20px">
+                <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+                  <span style="font-size:12px">咬合片</span><span style="font-size:12px;color:var(--purple)">27</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill" style="width:6%;background:var(--purple)"></div>
+                </div>
+              </div>
+              <div style="padding-top:16px;border-top:1px solid var(--border);font-size:11px;color:var(--text-muted)">
+                <div>本月新增：38 张</div>
+                <div>待阅片：5 张</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Follow-up -->
+      <div id="section-followup" class="page-section">
+        <div class="filter-row">
+          <div class="search-box">
+            <span>🔍</span>
+            <input type="text" placeholder="搜索患者...">
+          </div>
+          <select class="form-select" style="width:auto">
+            <option>全部类型</option>
+            <option>术后随访</option>
+            <option>复诊提醒</option>
+            <option>常规检查</option>
+          </select>
+          <select class="form-select" style="width:auto">
+            <option>全部状态</option>
+            <option>紧急</option>
+            <option>正常</option>
+            <option>逾期</option>
+          </select>
+          <button class="topbar-btn primary" onclick="showModal('followupModal')">+ 添加随访</button>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">🔔 随访提醒列表</div>
+            </div>
+            <div class="card-body panel-scroll">
+              <div class="follow-item">
+                <div class="follow-avatar" style="background:linear-gradient(135deg,var(--red),#c93c37)">王</div>
+                <div class="follow-info">
+                  <div class="follow-name">王建国</div>
+                  <div class="follow-reason">种植体植入术后第7天拆线</div>
+                  <div class="follow-meta">
+                    <span>📅 今天 10:00</span>
+                    <span>📍 3号诊室</span>
+                    <span>👨 陈思远</span>
+                  </div>
+                </div>
+                <span class="follow-status urgent">紧急</span>
+              </div>
+              <div class="follow-item">
+                <div class="follow-avatar" style="background:linear-gradient(135deg,var(--accent),#008066)">刘</div>
+                <div class="follow-info">
+                  <div class="follow-name">刘芳</div>
+                  <div class="follow-reason">种植手术后1个月复查</div>
+                  <div class="follow-meta">
+                    <span>📅 明天 09:30</span>
+                    <span>📍 3号诊室</span>
+                    <span>👨 陈思远</span>
+                  </div>
+                </div>
+                <span class="follow-status normal">正常</span>
+              </div>
+              <div class="follow-item">
+                <div class="follow-avatar" style="background:linear-gradient(135deg,var(--yellow),#d4a017)">张</div>
+                <div class="follow-info">
+                  <div class="follow-name">张伟</div>
+                  <div class="follow-reason">根管治疗术后2周复查</div>
+                  <div class="follow-meta">
+                    <span>📅 昨天 14:00</span>
+                    <span>📍 1号诊室</span>
+                    <span>👨 陈思远</span>
+                  </div>
+                </div>
+                <span class="follow-status overdue">逾期</span>
+              </div>
+              <div class="follow-item">
+                <div class="follow-avatar" style="background:linear-gradient(135deg,var(--blue),#1f6feb)">李</div>
+                <div class="follow-info">
+                  <div class="follow-name">李梅</div>
+                  <div class="follow-reason">正畸矫正第8周调整牙套</div>
+                  <div class="follow-meta">
+                    <span>📅 明天 11:30</span>
+                    <span>📍 2号诊室</span>
+                    <span>👨 王丽华</span>
+                  </div>
+                </div>
+                <span class="follow-status normal">正常</span>
+              </div>
+              <div class="follow-item">
+                <div class="follow-avatar" style="background:linear-gradient(135deg,var(--purple),#8b5cf6)">周</div>
+                <div class="follow-info">
+                  <div class="follow-name">周杰</div>
+                  <div class="follow-reason">智齿拔除术后3天复查</div>
+                  <div class="follow-meta">
+                    <span>📅 今天 16:00</span>
+                    <span>📍 1号诊室</span>
+                    <span>👨 赵敏</span>
+                  </div>
+                </div>
+                <span class="follow-status urgent">紧急</span>
+              </div>
+              <div class="follow-item">
+                <div class="follow-avatar" style="background:linear-gradient(135deg,var(--orange),#c93c37)">郑</div>
+                <div class="follow-info">
+                  <div class="follow-name">郑浩</div>
+                  <div class="follow-reason">牙冠修复后1周咬合调整</div>
+                  <div class="follow-meta">
+                    <span>📅 后天 10:00</span>
+                    <span>📍 5号诊室</span>
+                    <span>👨 赵敏</span>
+                  </div>
+                </div>
+                <span class="follow-status normal">正常</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">📊 随访统计</div>
+            </div>
+            <div class="card-body">
+              <div class="stats-grid" style="grid-template-columns:1fr 1fr;gap:12px">
+                <div class="stat-card" style="padding:16px">
+                  <div class="stat-icon red" style="width:32px;height:32px;font-size:14px">🔴</div>
+                  <div class="stat-value" style="font-size:22px">2</div>
+                  <div class="stat-label" style="font-size:11px">紧急待处理</div>
+                </div>
+                <div class="stat-card" style="padding:16px">
+                  <div class="stat-icon yellow" style="width:32px;height:32px;font-size:14px">🟡</div>
+                  <div class="stat-value" style="font-size:22px">1</div>
+                  <div class="stat-label" style="font-size:11px">逾期未到诊</div>
+                </div>
+                <div class="stat-card" style="padding:16px">
+                  <div class="stat-icon teal" style="width:32px;height:32px;font-size:14px">🟢</div>
+                  <div class="stat-value" style="font-size:22px">8</div>
+                  <div class="stat-label" style="font-size:11px">本周已完成</div>
+                </div>
+                <div class="stat-card" style="padding:16px">
+                  <div class="stat-icon blue" style="width:32px;height:32px;font-size:14px">🔵</div>
+                  <div class="stat-value" style="font-size:22px">12</div>
+                  <div class="stat-label" style="font-size:11px">本月总随访</div>
+                </div>
+              </div>
+              <div style="margin-top:16px;padding:12px;background:var(--bg);border-radius:8px">
+                <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px">随访完成率</div>
+                <div style="display:flex;align-items:center;gap:12px">
+                  <div class="progress-bar" style="flex:1">
+                    <div class="progress-fill" style="width:75%;background:var(--accent)"></div>
+                  </div>
+                  <span style="font-size:14px;font-weight:600;color:var(--accent)">75%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Modals -->
+<!-- Booking Modal -->
+<div class="modal-overlay" id="bookingModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📅 新建预约</div>
+      <button class="modal-close" onclick="closeModal('bookingModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">患者姓名 *</label>
+          <input type="text" class="form-input" placeholder="输入患者姓名">
+        </div>
+        <div class="form-group">
+          <label class="form-label">联系电话 *</label>
+          <input type="tel" class="form-input" placeholder="输入手机号码">
+        </div>
+        <div class="form-group">
+          <label class="form-label">预约日期 *</label>
+          <input type="date" class="form-input" value="2024-05-17">
+        </div>
+        <div class="form-group">
+          <label class="form-label">预约时间 *</label>
+          <select class="form-select">
+            <option>08:00</option>
+            <option>08:30</option>
+            <option>09:00</option>
+            <option selected>09:30</option>
+            <option>10:00</option>
+            <option>10:30</option>
+            <option>11:00</option>
+            <option>14:00</option>
+            <option>14:30</option>
+            <option>15:00</option>
+            <option>15:30</option>
+            <option>16:00</option>
+            <option>16:30</option>
+            <option>17:00</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">负责医生 *</label>
+          <select class="form-select">
+            <option>陈思远</option>
+            <option>王丽华</option>
+            <option>赵敏</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">诊疗项目 *</label>
+          <select class="form-select">
+            <option>检查</option>
+            <option>补牙</option>
+            <option>根管治疗</option>
+            <option>拔牙</option>
+            <option>智齿拔除</option>
+            <option>种植牙</option>
+            <option>正畸</option>
+            <option>牙齿美白</option>
+            <option>牙周治疗</option>
+            <option>牙冠修复</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">备注</label>
+          <textarea class="form-textarea" placeholder="输入其他备注信息..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('bookingModal')">取消</button>
+      <button class="btn btn-primary" onclick="saveBooking()">保存预约</button>
+    </div>
+  </div>
+</div>
+
+<!-- Patient Detail Modal -->
+<div class="modal-overlay" id="patientDetailModal">
+  <div class="modal large">
+    <div class="modal-header">
+      <div class="modal-title">👤 患者详情 - 王建国</div>
+      <button class="modal-close" onclick="closeModal('patientDetailModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab(this, 'tab-basic')">基本信息</div>
+        <div class="tab" onclick="switchTab(this, 'tab-medical')">病历记录</div>
+        <div class="tab" onclick="switchTab(this, 'tab-treatment')">治疗计划</div>
+        <div class="tab" onclick="switchTab(this, 'tab-billing')">账单明细</div>
+      </div>
+      <div id="tab-basic">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">患者姓名</label>
+            <input type="text" class="form-input" value="王建国" readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-label">性别</label>
+            <input type="text" class="form-input" value="男" readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-label">年龄</label>
+            <input type="text" class="form-input" value="52岁" readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-label">联系电话</label>
+            <input type="text" class="form-input" value="138****1234" readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-label">身份证号</label>
+            <input type="text" class="form-input" value="320106****1234" readonly>
+          </div>
+          <div class="form-group">
+            <label class="form-label">过敏史</label>
+            <input type="text" class="form-input" value="青霉素" readonly style="border-color:var(--red)">
+          </div>
+          <div class="form-group full">
+            <label class="form-label">既往病史</label>
+            <textarea class="form-textarea" readonly>高血压病史10年，服用氨氯地平控制良好。否认糖尿病、心脏病病史。</textarea>
+          </div>
+          <div class="form-group full">
+            <label class="form-label">患者标签</label>
+            <div style="display:flex;gap:8px">
+              <span class="tag tag-teal">VIP</span>
+              <span class="tag tag-purple">种植患者</span>
+              <span class="tag tag-yellow">高血压</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="tab-medical" style="display:none">
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-date">2024-05-10</div>
+            <div class="timeline-content">
+              <div class="timeline-title">种植牙手术前检查</div>
+              <div class="timeline-desc">CBCT扫描、骨量评估、血常规检查</div>
+              <div style="margin-top:6px"><span class="tag tag-teal">主诊：陈思远</span></div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">2024-04-15</div>
+            <div class="timeline-content">
+              <div class="timeline-title">牙周治疗复诊</div>
+              <div class="timeline-desc">龈下刮治后复查，牙周状况改善</div>
+              <div style="margin-top:6px"><span class="tag tag-blue">主诊：王丽华</span></div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">2024-03-20</div>
+            <div class="timeline-content">
+              <div class="timeline-title">初诊咨询</div>
+              <div class="timeline-desc">患者主诉右上后牙缺失，要求种植修复</div>
+              <div style="margin-top:6px"><span class="tag tag-teal">主诊：陈思远</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="tab-treatment" style="display:none">
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-date">2024-05-10 · 已完成</div>
+            <div class="timeline-content">
+              <div class="timeline-title">第一阶段：术前检查与评估</div>
+              <div class="timeline-desc">CBCT扫描、骨量评估、方案制定</div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">2024-05-15 · 进行中</div>
+            <div class="timeline-content">
+              <div class="timeline-title">第二阶段：种植体植入手术</div>
+              <div class="timeline-desc">牙槽骨切开、种植体植入、缝合</div>
+            </div>
+          </div>
+          <div class="timeline-item" style="opacity:0.4">
+            <div class="timeline-date">预计 2024-06-10</div>
+            <div class="timeline-content">
+              <div class="timeline-title">第三阶段：骨结合期</div>
+              <div class="timeline-desc">等待种植体与骨组织结合</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="tab-billing" style="display:none">
+        <table>
+          <thead><tr><th>单号</th><th>日期</th><th>项目</th><th>金额</th><th>状态</th></tr></thead>
+          <tbody>
+            <tr><td>B2024051001</td><td>2024-05-10</td><td>CBCT扫描</td><td>¥380</td><td><span class="tag tag-teal">已支付</span></td></tr>
+            <tr><td>B2024051002</td><td>2024-05-10</td><td>术前检查费</td><td>¥220</td><td><span class="tag tag-teal">已支付</span></td></tr>
+            <tr><td>B2024051701</td><td>2024-05-17</td><td>种植体手术</td><td>¥18,500</td><td><span class="tag tag-teal">已支付</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('patientDetailModal')">关闭</button>
+      <button class="btn btn-primary" onclick="closeModal('patientDetailModal');showSection('treatment')">查看治疗计划</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Patient Modal -->
+<div class="modal-overlay" id="newPatientModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">👤 新建患者档案</div>
+      <button class="modal-close" onclick="closeModal('newPatientModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">患者姓名 *</label>
+          <input type="text" class="form-input" placeholder="输入姓名">
+        </div>
+        <div class="form-group">
+          <label class="form-label">性别</label>
+          <select class="form-select">
+            <option>男</option>
+            <option>女</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">出生日期</label>
+          <input type="date" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">联系电话 *</label>
+          <input type="tel" class="form-input" placeholder="输入手机号码">
+        </div>
+        <div class="form-group">
+          <label class="form-label">身份证号</label>
+          <input type="text" class="form-input" placeholder="输入身份证号">
+        </div>
+        <div class="form-group">
+          <label class="form-label">过敏史</label>
+          <input type="text" class="form-input" placeholder="如：青霉素、碘伏">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">既往病史</label>
+          <textarea class="form-textarea" placeholder="输入既往病史..."></textarea>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">备注</label>
+          <textarea class="form-textarea" placeholder="输入其他备注..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('newPatientModal')">取消</button>
+      <button class="btn btn-primary" onclick="savePatient()">保存档案</button>
+    </div>
+  </div>
+</div>
+
+<!-- Treatment Plan Modal -->
+<div class="modal-overlay" id="treatmentPlanModal">
+  <div class="modal large">
+    <div class="modal-header">
+      <div class="modal-title">💊 新建治疗计划</div>
+      <button class="modal-close" onclick="closeModal('treatmentPlanModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">患者 *</label>
+          <select class="form-select">
+            <option>王建国</option>
+            <option>李梅</option>
+            <option>张伟</option>
+            <option>刘芳</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">负责医生 *</label>
+          <select class="form-select">
+            <option>陈思远</option>
+            <option>王丽华</option>
+            <option>赵敏</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">方案名称 *</label>
+          <input type="text" class="form-input" placeholder="如：种植牙修复方案">
+        </div>
+        <div class="form-group">
+          <label class="form-label">预计开始日期 *</label>
+          <input type="date" class="form-input" value="2024-05-17">
+        </div>
+        <div class="form-group full">
+          <label class="form-label">治疗描述</label>
+          <textarea class="form-textarea" placeholder="详细描述治疗方案..."></textarea>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">医嘱</label>
+          <textarea class="form-textarea" placeholder="输入医嘱..."></textarea>
+        </div>
+      </div>
+      <div style="margin-top:16px;padding:12px;background:var(--bg);border-radius:8px;font-size:12px;color:var(--text-muted)">
+        💡 提示：创建治疗计划后，可在中途添加多个治疗阶段，并设置提醒。
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('treatmentPlanModal')">取消</button>
+      <button class="btn btn-primary" onclick="saveTreatmentPlan()">保存计划</button>
+    </div>
+  </div>
+</div>
+
+<!-- Billing Modal -->
+<div class="modal-overlay" id="billingModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">💰 新建账单</div>
+      <button class="modal-close" onclick="closeModal('billingModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">患者 *</label>
+          <select class="form-select">
+            <option>王建国</option>
+            <option>李梅</option>
+            <option>张伟</option>
+            <option>刘芳</option>
+            <option>周杰</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">账单类型 *</label>
+          <select class="form-select">
+            <option>检查费</option>
+            <option>治疗费</option>
+            <option>手术费</option>
+            <option>药品费</option>
+            <option>材料费</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">金额 *</label>
+          <input type="number" class="form-input" placeholder="输入金额">
+        </div>
+        <div class="form-group">
+          <label class="form-label">支付方式</label>
+          <select class="form-select">
+            <option>微信支付</option>
+            <option>支付宝</option>
+            <option>银行卡</option>
+            <option>医保卡</option>
+            <option>现金</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">费用明细</label>
+          <textarea class="form-textarea" placeholder="详细费用明细..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('billingModal')">取消</button>
+      <button class="btn btn-primary" onclick="saveBilling()">确认收款</button>
+    </div>
+  </div>
+</div>
+
+<!-- Inventory Modal -->
+<div class="modal-overlay" id="inventoryModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">📦 物资入库</div>
+      <button class="modal-close" onclick="closeModal('inventoryModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">物资名称 *</label>
+          <input type="text" class="form-input" placeholder="输入物资名称">
+        </div>
+        <div class="form-group">
+          <label class="form-label">分类</label>
+          <select class="form-select">
+            <option>耗材类</option>
+            <option>药品类</option>
+            <option>器械类</option>
+            <option>其他</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">入库数量 *</label>
+          <input type="number" class="form-input" placeholder="输入数量">
+        </div>
+        <div class="form-group">
+          <label class="form-label">供应商</label>
+          <input type="text" class="form-input" placeholder="输入供应商">
+        </div>
+        <div class="form-group">
+          <label class="form-label">单价</label>
+          <input type="number" class="form-input" placeholder="输入单价">
+        </div>
+        <div class="form-group">
+          <label class="form-label">入库日期</label>
+          <input type="date" class="form-input" value="2024-05-17">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('inventoryModal')">取消</button>
+      <button class="btn btn-primary" onclick="saveInventory()">确认入库</button>
+    </div>
+  </div>
+</div>
+
+<!-- X-ray Upload Modal -->
+<div class="modal-overlay" id="xrayUploadModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🩻 上传影像</div>
+      <button class="modal-close" onclick="closeModal('xrayUploadModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">患者 *</label>
+          <select class="form-select">
+            <option>王建国</option>
+            <option>李梅</option>
+            <option>张伟</option>
+            <option>刘芳</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">影像类型 *</label>
+          <select class="form-select">
+            <option>全景片</option>
+            <option>CBCT</option>
+            <option>根尖片</option>
+            <option>咬合片</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">拍摄日期</label>
+          <input type="date" class="form-input" value="2024-05-17">
+        </div>
+        <div class="form-group">
+          <label class="form-label">拍摄医生</label>
+          <select class="form-select">
+            <option>陈思远</option>
+            <option>王丽华</option>
+            <option>赵敏</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">影像文件</label>
+          <div style="border:2px dashed var(--border);border-radius:8px;padding:40px;text-align:center;color:var(--text-muted);cursor:pointer;font-size:13px">
+            📁 点击或拖拽文件到此处上传<br><span style="font-size:11px;margin-top:8px;display:block">支持 DICOM, JPEG, PNG 格式</span>
+          </div>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">备注</label>
+          <textarea class="form-textarea" placeholder="输入影像说明..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('xrayUploadModal')">取消</button>
+      <button class="btn btn-primary" onclick="saveXray()">上传影像</button>
+    </div>
+  </div>
+</div>
+
+<!-- X-ray Viewer Modal -->
+<div class="modal-overlay" id="xrayViewerModal">
+  <div class="modal large">
+    <div class="modal-header">
+      <div class="modal-title">🩻 影像查看 - 王建国全景片</div>
+      <button class="modal-close" onclick="closeModal('xrayViewerModal')">×</button>
+    </div>
+    <div class="modal-body" style="text-align:center">
+      <div style="background:#1a2332;border-radius:12px;padding:60px;font-size:80px;margin-bottom:16px">🦷</div>
+      <div style="font-size:12px;color:var(--text-muted)">
+        <div>拍摄日期：2024-05-10</div>
+        <div>类型：全景片 | 医生：陈思远</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('xrayViewerModal')">关闭</button>
+      <button class="btn btn-primary" onclick="closeModal('xrayViewerModal')">下载报告</button>
+    </div>
+  </div>
+</div>
+
+<!-- Follow-up Modal -->
+<div class="modal-overlay" id="followupModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🔔 添加随访</div>
+      <button class="modal-close" onclick="closeModal('followupModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">患者 *</label>
+          <select class="form-select">
+            <option>王建国</option>
+            <option>李梅</option>
+            <option>张伟</option>
+            <option>刘芳</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">随访类型</label>
+          <select class="form-select">
+            <option>术后随访</option>
+            <option>复诊提醒</option>
+            <option>常规检查</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">随访日期 *</label>
+          <input type="date" class="form-input" value="2024-05-18">
+        </div>
+        <div class="form-group">
+          <label class="form-label">随访时间 *</label>
+          <select class="form-select">
+            <option>09:00</option>
+            <option selected>09:30</option>
+            <option>10:00</option>
+            <option>10:30</option>
+            <option>14:00</option>
+            <option>14:30</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">负责医生</label>
+          <select class="form-select">
+            <option>陈思远</option>
+            <option>王丽华</option>
+            <option>赵敏</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">诊室</label>
+          <select class="form-select">
+            <option>1号诊室</option>
+            <option>2号诊室</option>
+            <option>3号诊室</option>
+            <option>4号诊室</option>
+            <option>5号诊室</option>
+          </select>
+        </div>
+        <div class="form-group full">
+          <label class="form-label">随访内容 *</label>
+          <textarea class="form-textarea" placeholder="输入随访目的和内容..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('followupModal')">取消</button>
+      <button class="btn btn-primary" onclick="saveFollowup()">保存随访</button>
+    </div>
+  </div>
+</div>
+
+<!-- Search Modal -->
+<div class="modal-overlay" id="searchModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">🔍 搜索患者</div>
+      <button class="modal-close" onclick="closeModal('searchModal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="search-box" style="margin-bottom:16px;background:var(--card)">
+        <span>🔍</span>
+        <input type="text" placeholder="输入患者姓名、电话或身份证..." style="width:100%">
+      </div>
+      <div style="font-size:12px;color:var(--text-muted)">搜索结果：</div>
+      <div style="margin-top:12px">
+        <div onclick="closeModal('searchModal');showModal('patientDetailModal')" style="padding:10px;cursor:pointer;border-radius:6px;margin-bottom:4px" onmouseover="this.style.background='var(--card-hover)'" onmouseout="this.style.background='transparent'">
+          <div style="font-size:13px;font-weight:500">王建国</div>
+          <div style="font-size:11px;color:var(--text-muted)">138****1234 · 最后就诊：2024-05-10</div>
+        </div>
+        <div onclick="closeModal('searchModal');showModal('patientDetailModal')" style="padding:10px;cursor:pointer;border-radius:6px;margin-bottom:4px" onmouseover="this.style.background='var(--card-hover)'" onmouseout="this.style.background='transparent'">
+          <div style="font-size:13px;font-weight:500">李梅</div>
+          <div style="font-size:11px;color:var(--text-muted)">139****5678 · 最后就诊：2024-05-12</div>
+        </div>
+        <div onclick="closeModal('searchModal');showModal('patientDetailModal')" style="padding:10px;cursor:pointer;border-radius:6px;margin-bottom:4px" onmouseover="this.style.background='var(--card-hover)'" onmouseout="this.style.background='transparent'">
+          <div style="font-size:13px;font-weight:500">张伟</div>
+          <div style="font-size:11px;color:var(--text-muted)">136****9012 · 最后就诊：2024-05-08</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('searchModal')">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- Notification -->
+<div class="notif" id="notification">
+  <span>✓</span>
+  <span id="notifText">操作成功</span>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// Navigation
+function showSection(name) {
+  document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+  document.getElementById('section-' + name).classList.add('active');
+  
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  event.target.closest('.nav-item').classList.add('active');
+  
+  const titles = {
+    dashboard: '工作台',
+    appointments: '预约管理',
+    patients: '患者档案',
+    schedule: '医生排班',
+    treatment: '治疗计划',
+    billing: '账单管理',
+    inventory: '物资库存',
+    xray: 'X光影像',
+    followup: '随访提醒'
+  };
+  document.getElementById('topbarTitle').textContent = titles[name] || '工作台';
+}
+
+// Modal
+function showModal(id) {
+  document.getElementById(id).classList.add('show');
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+}
+
+// Tab switching
+function switchTab(tabEl, tabId) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  tabEl.classList.add('active');
+  document.querySelectorAll('[id^="tab-"]').forEach(t => t.style.display = 'none');
+  document.getElementById(tabId).style.display = 'block';
+}
+
+// Toast notification
+function showToast(msg, type = 'success') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast ' + type;
+  toast.innerHTML = '<span>' + (type === 'success' ? '✓' : '✗') + '</span><span>' + msg + '</span>';
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+// Save functions
+function saveBooking() {
+  closeModal('bookingModal');
+  showToast('预约创建成功');
+}
+function savePatient() {
+  closeModal('newPatientModal');
+  showToast('患者档案创建成功');
+}
+function saveTreatmentPlan() {
+  closeModal('treatmentPlanModal');
+  showToast('治疗计划创建成功');
+}
+function saveBilling() {
+  closeModal('billingModal');
+  showToast('账单已确认收款');
+}
+function saveInventory() {
+  closeModal('inventoryModal');
+  showToast('物资已入库');
+}
+function saveXray() {
+  closeModal('xrayUploadModal');
+  showToast('影像上传成功');
+}
+function saveFollowup() {
+  closeModal('followupModal');
+  showToast('随访计划已创建');
+}
+
+// Week navigation
+function changeWeek(dir) {
+  // Just a placeholder - in real app would change dates
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', function(e) {
+    if (e.target === this) {
+      this.classList.remove('show');
+    }
+  });
+});
+</script>
+</body>
+</html>

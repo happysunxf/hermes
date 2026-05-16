@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星幕 · 私人影院管理系统</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #0d0f1a;
+  --bg-secondary: #141729;
+  --bg-card: #1a1e35;
+  --bg-hover: #222640;
+  --accent: #e63946;
+  --accent-glow: rgba(230,57,70,0.3);
+  --gold: #f4a261;
+  --gold-glow: rgba(244,162,97,0.3);
+  --teal: #2ec4b6;
+  --teal-glow: rgba(46,196,182,0.3);
+  --purple: #9b5de5;
+  --purple-glow: rgba(155,93,229,0.3);
+  --text-primary: #f0f0f5;
+  --text-secondary: #8888a8;
+  --text-muted: #555670;
+  --border: #2a2e4a;
+  --success: #4ade80;
+  --warning: #fbbf24;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Noto Sans SC',sans-serif; background:var(--bg-primary); color:var(--text-primary); height:100vh; overflow:hidden; display:flex; }
+::-webkit-scrollbar { width:5px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:3px; }
+
+/* SIDEBAR */
+.sidebar {
+  width:240px; min-width:240px; background:var(--bg-secondary); border-right:1px solid var(--border);
+  display:flex; flex-direction:column; padding:20px 0; height:100vh; position:relative; z-index:10;
+}
+.logo { padding:10px 24px 30px; display:flex; align-items:center; gap:12px; }
+.logo-icon { width:42px; height:42px; background:linear-gradient(135deg,var(--accent),#ff6b6b); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; box-shadow:0 4px 20px var(--accent-glow); }
+.logo-text { font-size:20px; font-weight:700; letter-spacing:2px; background:linear-gradient(90deg,var(--accent),var(--gold)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.logo-sub { font-size:10px; color:var(--text-muted); letter-spacing:1px; }
+.nav-section { flex:1; overflow-y:auto; padding:0 12px; }
+.nav-label { font-size:10px; text-transform:uppercase; letter-spacing:2px; color:var(--text-muted); padding:16px 12px 8px; }
+.nav-item {
+  display:flex; align-items:center; gap:12px; padding:11px 14px; border-radius:10px; cursor:pointer;
+  transition:all 0.2s; color:var(--text-secondary); font-size:14px; margin-bottom:2px; position:relative;
+}
+.nav-item:hover { background:var(--bg-hover); color:var(--text-primary); }
+.nav-item.active { background:var(--bg-card); color:var(--text-primary); }
+.nav-item.active::before {
+  content:''; position:absolute; left:0; top:50%; transform:translateY(-50%);
+  width:3px; height:60%; background:var(--accent); border-radius:0 3px 3px 0;
+}
+.nav-item .material-icons-round { font-size:20px; }
+.nav-badge { margin-left:auto; background:var(--accent); color:#fff; font-size:10px; padding:2px 7px; border-radius:10px; font-weight:500; }
+
+/* MAIN CONTENT */
+.main-wrap { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+.topbar {
+  height:60px; background:var(--bg-secondary); border-bottom:1px solid var(--border);
+  display:flex; align-items:center; padding:0 24px; gap:20px; flex-shrink:0;
+}
+.topbar-title { font-size:18px; font-weight:500; }
+.topbar-search { display:flex; align-items:center; background:var(--bg-card); border:1px solid var(--border); border-radius:8px; padding:6px 14px; flex:1; max-width:400px; }
+.topbar-search input { background:none; border:none; outline:none; color:var(--text-primary); font-size:13px; width:100%; font-family:inherit; }
+.topbar-search input::placeholder { color:var(--text-muted); }
+.topbar-actions { display:flex; align-items:center; gap:8px; margin-left:auto; }
+.icon-btn { width:38px; height:38px; border-radius:8px; border:none; background:var(--bg-card); color:var(--text-secondary); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; position:relative; }
+.icon-btn:hover { background:var(--bg-hover); color:var(--text-primary); }
+.icon-btn .material-icons-round { font-size:20px; }
+.notif-dot { position:absolute; top:8px; right:8px; width:8px; height:8px; background:var(--accent); border-radius:50%; border:2px solid var(--bg-card); }
+.user-avatar { width:36px; height:36px; border-radius:10px; background:linear-gradient(135deg,var(--purple),var(--accent)); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:600; cursor:pointer; }
+
+.main-content { flex:1; overflow-y:auto; padding:24px; }
+
+/* PAGE HEADER */
+.page-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:24px; }
+.page-title { font-size:26px; font-weight:700; }
+.page-subtitle { color:var(--text-secondary); font-size:13px; margin-top:4px; }
+.header-actions { display:flex; gap:10px; }
+
+/* BUTTONS */
+.btn { padding:9px 20px; border-radius:8px; border:none; cursor:pointer; font-size:13px; font-weight:500; font-family:inherit; transition:all 0.2s; display:inline-flex; align-items:center; gap:6px; }
+.btn-primary { background:var(--accent); color:#fff; box-shadow:0 4px 15px var(--accent-glow); }
+.btn-primary:hover { background:#ff4d5a; transform:translateY(-1px); }
+.btn-secondary { background:var(--bg-card); color:var(--text-primary); border:1px solid var(--border); }
+.btn-secondary:hover { background:var(--bg-hover); }
+.btn-gold { background:linear-gradient(135deg,var(--gold),#e76f51); color:#fff; box-shadow:0 4px 15px var(--gold-glow); }
+.btn-teal { background:var(--teal); color:#0d1117; box-shadow:0 4px 15px var(--teal-glow); }
+.btn-sm { padding:5px 12px; font-size:12px; }
+.btn .material-icons-round { font-size:16px; }
+
+/* CARDS */
+.card { background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:20px; }
+.card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.card-title { font-size:15px; font-weight:600; display:flex; align-items:center; gap:8px; }
+.card-title .material-icons-round { font-size:18px; color:var(--text-secondary); }
+
+/* STAT GRID */
+.stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px; }
+.stat-card { background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; }
+.stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+.stat-card.red::before { background:var(--accent); }
+.stat-card.gold::before { background:var(--gold); }
+.stat-card.teal::before { background:var(--teal); }
+.stat-card.purple::before { background:var(--purple); }
+.stat-icon { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:12px; }
+.stat-card.red .stat-icon { background:rgba(230,57,70,0.15); color:var(--accent); }
+.stat-card.gold .stat-icon { background:rgba(244,162,97,0.15); color:var(--gold); }
+.stat-card.teal .stat-icon { background:rgba(46,196,182,0.15); color:var(--teal); }
+.stat-card.purple .stat-icon { background:rgba(155,93,229,0.15); color:var(--purple); }
+.stat-value { font-size:26px; font-weight:700; margin-bottom:4px; }
+.stat-label { font-size:12px; color:var(--text-secondary); }
+.stat-trend { font-size:11px; margin-top:8px; display:flex; align-items:center; gap:4px; }
+.stat-trend.up { color:var(--success); }
+.stat-trend.down { color:var(--accent); }
+
+/* GRID LAYOUTS */
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+.three-col { display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px; }
+.grid-2-1 { display:grid; grid-template-columns:2fr 1fr; gap:20px; }
+.grid-1-2 { display:grid; grid-template-columns:1fr 2fr; gap:20px; }
+
+/* SCHEDULE TABLE */
+.schedule-table { width:100%; border-collapse:collapse; }
+.schedule-table th { text-align:left; padding:10px 12px; font-size:11px; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); border-bottom:1px solid var(--border); font-weight:500; }
+.schedule-table td { padding:12px; font-size:13px; border-bottom:1px solid rgba(42,46,74,0.5); vertical-align:middle; }
+.schedule-table tr:hover td { background:rgba(255,255,255,0.02); }
+.film-chip { display:inline-block; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:500; }
+.film-chip.action { background:rgba(230,57,70,0.2); color:var(--accent); }
+.film-chip.comedy { background:rgba(244,162,97,0.2); color:var(--gold); }
+.film-chip.scifi { background:rgba(155,93,229,0.2); color:var(--purple); }
+.film-chip.horror { background:rgba(46,196,182,0.2); color:var(--teal); }
+.film-chip.romance { background:rgba(255,107,107,0.2); color:#ff6b6b; }
+.film-chip.drama { background:rgba(74,144,226,0.2); color:#4a90e2; }
+.time-slot { display:flex; gap:4px; align-items:center; }
+.time-slot span { background:var(--bg-secondary); padding:3px 8px; border-radius:5px; font-size:11px; color:var(--text-secondary); }
+.room-badge { display:inline-flex; align-items:center; gap:4px; font-size:12px; color:var(--text-secondary); }
+.room-badge .material-icons-round { font-size:14px; color:var(--teal); }
+.seats-bar { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-secondary); }
+.seats-fill { height:4px; background:var(--bg-secondary); border-radius:2px; flex:1; max-width:60px; overflow:hidden; }
+.seats-fill-inner { height:100%; background:var(--teal); border-radius:2px; }
+.seats-fill-inner.low { background:var(--warning); }
+.seats-fill-inner.crit { background:var(--accent); }
+
+/* SEAT GRID */
+.seat-grid-wrap { display:flex; flex-direction:column; align-items:center; }
+.screen-indicator { width:60%; height:20px; background:linear-gradient(180deg,var(--text-muted),transparent); border-radius:0 0 50% 50%; margin-bottom:20px; display:flex; align-items:center; justify-content:center; font-size:10px; color:var(--text-muted); letter-spacing:2px; }
+.seat-map { display:grid; grid-template-columns:repeat(8,1fr); gap:6px; margin-bottom:16px; }
+.seat { width:28px; height:28px; border-radius:5px; border:1px solid var(--border); background:var(--bg-secondary); cursor:pointer; transition:all 0.15s; display:flex; align-items:center; justify-content:center; font-size:8px; color:var(--text-muted); }
+.seat:hover { border-color:var(--accent); background:rgba(230,57,70,0.1); color:var(--accent); }
+.seat.booked { background:rgba(42,196,182,0.15); border-color:var(--teal); color:var(--teal); cursor:default; }
+.seat.booked:hover { background:rgba(42,196,182,0.15); }
+.seat.selected { background:rgba(230,57,70,0.2); border-color:var(--accent); color:var(--accent); }
+.seat.vip { border-color:var(--gold); color:var(--gold); }
+.seat.vip.selected { background:rgba(244,162,97,0.2); }
+.seat-label { font-size:10px; color:var(--text-muted); text-align:center; margin-top:4px; }
+.seat-legend { display:flex; gap:16px; margin-top:12px; font-size:11px; color:var(--text-secondary); align-items:center; }
+.seat-legend-item { display:flex; align-items:center; gap:5px; }
+
+/* MEMBER CARDS */
+.member-card { background:var(--bg-secondary); border:1px solid var(--border); border-radius:12px; padding:16px; display:flex; gap:14px; align-items:center; transition:all 0.2s; cursor:pointer; }
+.member-card:hover { border-color:var(--teal); background:var(--bg-hover); }
+.member-avatar { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:15px; flex-shrink:0; }
+.member-info { flex:1; }
+.member-name { font-weight:600; font-size:14px; margin-bottom:2px; }
+.member-tier { font-size:11px; color:var(--text-secondary); display:flex; align-items:center; gap:4px; }
+.tier-badge { padding:2px 8px; border-radius:4px; font-size:10px; font-weight:600; }
+.tier-gold { background:rgba(244,162,97,0.2); color:var(--gold); }
+.tier-silver { background:rgba(148,159,182,0.2); color:#9499b6; }
+.tier-diamond { background:rgba(155,93,229,0.2); color:var(--purple); }
+.member-stats { text-align:right; }
+.member-points { font-weight:700; font-size:15px; color:var(--gold); }
+.member-balance { font-size:11px; color:var(--text-secondary); }
+
+/* SNACK MENU */
+.snack-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; }
+.snack-item { background:var(--bg-secondary); border:1px solid var(--border); border-radius:10px; padding:14px; display:flex; gap:12px; transition:all 0.2s; cursor:pointer; }
+.snack-item:hover { border-color:var(--accent); transform:translateY(-1px); }
+.snack-img { width:50px; height:50px; border-radius:8px; background:var(--bg-card); display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0; }
+.snack-info { flex:1; }
+.snack-name { font-weight:600; font-size:13px; margin-bottom:3px; }
+.snack-desc { font-size:11px; color:var(--text-secondary); margin-bottom:6px; }
+.snack-price { font-weight:700; color:var(--gold); font-size:13px; }
+.snack-qty { display:flex; align-items:center; gap:8px; margin-top:6px; }
+.qty-btn { width:22px; height:22px; border-radius:5px; border:1px solid var(--border); background:none; color:var(--text-secondary); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:14px; transition:all 0.15s; }
+.qty-btn:hover { border-color:var(--accent); color:var(--accent); }
+.qty-display { font-size:13px; font-weight:600; min-width:20px; text-align:center; }
+
+/* CHARTS PLACEHOLDER */
+.chart-area { height:200px; display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-size:13px; position:relative; }
+.bar-chart { display:flex; align-items:flex-end; gap:8px; height:160px; padding:0 8px; }
+.bar-group { display:flex; flex-direction:column; align-items:center; gap:4px; flex:1; }
+.bar { width:100%; background:var(--accent); border-radius:4px 4px 0 0; min-height:8px; transition:all 0.3s; cursor:pointer; position:relative; }
+.bar:hover { filter:brightness(1.2); }
+.bar::after { content:attr(data-val); position:absolute; top:-20px; left:50%; transform:translateX(-50%); font-size:10px; color:var(--text-secondary); white-space:nowrap; }
+.bar-label { font-size:10px; color:var(--text-muted); }
+.bar.teal { background:var(--teal); }
+.bar.gold { background:var(--gold); }
+.bar.purple { background:var(--purple); }
+
+/* DONUT CHART */
+.donut-wrap { display:flex; align-items:center; gap:24px; }
+.donut { width:140px; height:140px; position:relative; }
+.donut svg { transform:rotate(-90deg); }
+.donut-center { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; }
+.donut-center .val { font-size:22px; font-weight:700; }
+.donut-center .lbl { font-size:10px; color:var(--text-secondary); }
+.donut-legend { flex:1; }
+.legend-item { display:flex; align-items:center; gap:8px; margin-bottom:10px; font-size:12px; }
+.legend-dot { width:10px; height:10px; border-radius:3px; flex-shrink:0; }
+
+/* PROMO CARDS */
+.promo-card { background:linear-gradient(135deg,var(--bg-card),var(--bg-secondary)); border:1px solid var(--border); border-radius:12px; padding:16px; position:relative; overflow:hidden; transition:all 0.2s; cursor:pointer; }
+.promo-card:hover { transform:translateY(-2px); border-color:var(--accent); }
+.promo-card::before { content:''; position:absolute; top:0; right:0; width:80px; height:80px; border-radius:0 0 0 80px; opacity:0.1; }
+.promo-card.c1::before { background:var(--accent); }
+.promo-card.c2::before { background:var(--gold); }
+.promo-card.c3::before { background(var(--teal)); }
+.promo-tag { display:inline-block; padding:3px 8px; border-radius:4px; font-size:10px; font-weight:600; margin-bottom:8px; }
+.promo-card.c1 .promo-tag { background:rgba(230,57,70,0.2); color:var(--accent); }
+.promo-card.c2 .promo-tag { background:rgba(244,162,97,0.2); color:var(--gold); }
+.promo-card.c3 .promo-tag { background:rgba(46,196,182,0.2); color:var(--teal); }
+.promo-name { font-weight:700; font-size:15px; margin-bottom:4px; }
+.promo-desc { font-size:12px; color:var(--text-secondary); margin-bottom:10px; }
+.promo-bar { height:4px; background:var(--bg-primary); border-radius:2px; overflow:hidden; margin-bottom:8px; }
+.promo-bar-fill { height:100%; border-radius:2px; }
+.promo-meta { display:flex; justify-content:space-between; font-size:11px; color:var(--text-muted); }
+
+/* EQUIPMENT LIST */
+.equip-item { display:flex; align-items:center; gap:14px; padding:12px 0; border-bottom:1px solid rgba(42,46,74,0.5); }
+.equip-item:last-child { border-bottom:none; }
+.equip-icon { width:40px; height:40px; border-radius:10px; background:var(--bg-secondary); display:flex; align-items:center; justify-content:center; }
+.equip-info { flex:1; }
+.equip-name { font-size:13px; font-weight:600; margin-bottom:2px; }
+.equip-detail { font-size:11px; color:var(--text-secondary); }
+.equip-status { font-size:11px; padding:3px 10px; border-radius:5px; }
+.status-ok { background:rgba(74,222,128,0.15); color:var(--success); }
+.status-warn { background:rgba(251,191,36,0.15); color:var(--warning); }
+.status-err { background:rgba(230,57,70,0.15); color:var(--accent); }
+
+/* GROUP BOOKING */
+.booking-card { background:var(--bg-secondary); border:1px solid var(--border); border-radius:12px; padding:16px; }
+.booking-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; }
+.booking-org { font-weight:700; font-size:14px; }
+.booking-date { font-size:11px; color:var(--text-secondary); margin-top:2px; }
+.booking-tag { padding:3px 8px; border-radius:4px; font-size:10px; font-weight:600; }
+.booking-tag.confirmed { background:rgba(74,222,128,0.15); color:var(--success); }
+.booking-tag.pending { background:rgba(251,191,36,0.15); color:var(--warning); }
+.booking-details { display:flex; gap:16px; font-size:12px; color:var(--text-secondary); margin-bottom:12px; }
+.booking-detail { display:flex; align-items:center; gap:4px; }
+.booking-detail .material-icons-round { font-size:14px; }
+.booking-footer { display:flex; justify-content:space-between; align-items:center; }
+.booking-amount { font-weight:700; color:var(--gold); font-size:15px; }
+.booking-guests { display:flex; align-items:center; gap:6px; }
+.booking-guests .material-icons-round { font-size:14px; color:var(--text-muted); }
+
+/* LOYALTY TABLE */
+.loyalty-table { width:100%; border-collapse:collapse; }
+.loyalty-table th { text-align:left; padding:8px 10px; font-size:10px; text-transform:uppercase; letter-spacing:1px; color:var(--text-muted); border-bottom:1px solid var(--border); }
+.loyalty-table td { padding:10px; font-size:12px; border-bottom:1px solid rgba(42,46,74,0.4); }
+.rank-badge { display:inline-flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:6px; font-weight:700; font-size:11px; }
+.rank-1 { background:rgba(244,162,97,0.2); color:var(--gold); }
+.rank-2 { background:rgba(148,159,182,0.2); color:#9499b6; }
+.rank-3 { background:rgba(205,127,50,0.2); color:#cd7f32; }
+.progress-mini { width:60px; height:4px; background:var(--bg-primary); border-radius:2px; overflow:hidden; display:inline-block; vertical-align:middle; margin-left:8px; }
+.progress-mini-fill { height:100%; background:var(--teal); border-radius:2px; }
+
+/* TABS */
+.tabs { display:flex; gap:4px; margin-bottom:16px; border-bottom:1px solid var(--border); padding-bottom:0; }
+.tab { padding:8px 16px; font-size:13px; cursor:pointer; color:var(--text-secondary); border-bottom:2px solid transparent; transition:all 0.2s; margin-bottom:-1px; }
+.tab:hover { color:var(--text-primary); }
+.tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+
+/* MODAL */
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; z-index:100; opacity:0; pointer-events:none; transition:opacity 0.3s; }
+.modal-overlay.show { opacity:1; pointer-events:all; }
+.modal { background:var(--bg-card); border:1px solid var(--border); border-radius:16px; width:480px; max-width:90vw; max-height:85vh; overflow-y:auto; transform:scale(0.95); transition:transform 0.3s; }
+.modal-overlay.show .modal { transform:scale(1); }
+.modal-header { padding:20px 24px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+.modal-title { font-size:17px; font-weight:700; }
+.modal-close { width:32px; height:32px; border-radius:8px; border:none; background:var(--bg-secondary); color:var(--text-secondary); cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
+.modal-close:hover { background:var(--bg-hover); color:var(--text-primary); }
+.modal-body { padding:24px; }
+.modal-footer { padding:16px 24px; border-top:1px solid var(--border); display:flex; justify-content:flex-end; gap:10px; }
+
+/* FORM ELEMENTS */
+.form-group { margin-bottom:16px; }
+.form-label { font-size:12px; color:var(--text-secondary); margin-bottom:6px; display:block; }
+.form-input { width:100%; padding:9px 14px; background:var(--bg-secondary); border:1px solid var(--border); border-radius:8px; color:var(--text-primary); font-size:13px; font-family:inherit; outline:none; transition:border-color 0.2s; }
+.form-input:focus { border-color:var(--accent); }
+.form-select { width:100%; padding:9px 14px; background:var(--bg-secondary); border:1px solid var(--border); border-radius:8px; color:var(--text-primary); font-size:13px; font-family:inherit; outline:none; appearance:none; cursor:pointer; }
+.form-select option { background:var(--bg-card); }
+
+/* FILM RENTAL */
+.film-poster { width:80px; height:110px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:36px; flex-shrink:0; }
+.film-card { display:flex; gap:14px; padding:14px; background:var(--bg-secondary); border:1px solid var(--border); border-radius:12px; transition:all 0.2s; cursor:pointer; }
+.film-card:hover { border-color:var(--purple); transform:translateY(-1px); }
+.film-info { flex:1; }
+.film-title { font-weight:700; font-size:14px; margin-bottom:4px; }
+.film-meta { font-size:11px; color:var(--text-secondary); display:flex; gap:10px; margin-bottom:6px; }
+.film-rating { display:flex; align-items:center; gap:3px; color:var(--gold); font-size:12px; font-weight:600; }
+.film-price { font-weight:700; color:var(--purple); font-size:14px; }
+.film-avail { font-size:11px; margin-top:4px; }
+
+/* REVENUE BY HOUR CHART */
+.rev-chart { display:flex; flex-direction:column; gap:8px; }
+.rev-row { display:flex; align-items:center; gap:12px; font-size:12px; }
+.rev-label { width:60px; color:var(--text-secondary); font-size:11px; }
+.rev-bar-wrap { flex:1; height:24px; background:var(--bg-secondary); border-radius:4px; overflow:hidden; position:relative; }
+.rev-bar-fill { height:100%; border-radius:4px; display:flex; align-items:center; padding-left:8px; font-size:11px; font-weight:600; white-space:nowrap; transition:width 1s ease; }
+.rev-total { width:70px; text-align:right; font-weight:600; font-size:12px; }
+
+/* PAGE SECTIONS (hidden by default) */
+.page-section { display:none; }
+.page-section.active { display:block; }
+
+/* ANIMATIONS */
+@keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.animate-in { animation:fadeIn 0.3s ease forwards; }
+.delay-1 { animation-delay:0.05s; opacity:0; }
+.delay-2 { animation-delay:0.1s; opacity:0; }
+.delay-3 { animation-delay:0.15s; opacity:0; }
+.delay-4 { animation-delay:0.2s; opacity:0; }
+
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+.live-dot { width:8px; height:8px; background:var(--success); border-radius:50%; animation:pulse 1.5s infinite; }
+
+/* TOAST */
+.toast-container { position:fixed; bottom:24px; right:24px; z-index:200; display:flex; flex-direction:column; gap:8px; }
+.toast { background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:12px 16px; display:flex; align-items:center; gap:10px; font-size:13px; box-shadow:0 8px 30px rgba(0,0,0,0.3); animation:slideIn 0.3s ease; }
+@keyframes slideIn { from { transform:translateX(100%); opacity:0; } to { transform:translateX(0); opacity:1; } }
+.toast-icon { font-size:18px; }
+.toast.success .toast-icon { color:var(--success); }
+.toast.error .toast-icon { color:var(--accent); }
+.toast.info .toast-icon { color:var(--teal); }
+
+/* MISC */
+.text-gold { color:var(--gold); }
+.text-teal { color:var(--teal); }
+.text-accent { color:var(--accent); }
+.text-purple { color:var(--purple); }
+.text-muted { color:var(--text-secondary); font-size:12px; }
+.divider { height:1px; background:var(--border); margin:16px 0; }
+.flex-between { display:flex; justify-content:space-between; align-items:center; }
+.tag { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; }
+.tag-red { background:rgba(230,57,70,0.15); color:var(--accent); }
+.tag-gold { background:rgba(244,162,97,0.15); color:var(--gold); }
+.tag-teal { background:rgba(46,196,182,0.15); color:var(--teal); }
+.tag-purple { background:rgba(155,93,229,0.15); color:var(--purple); }
+.tag-green { background:rgba(74,222,128,0.15); color:var(--success); }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="logo">
+    <div class="logo-icon">🎬</div>
+    <div>
+      <div class="logo-text">星幕</div>
+      <div class="logo-sub">PRIVATE CINEMA</div>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">主菜单</div>
+    <div class="nav-item active" onclick="showPage('dashboard')">
+      <span class="material-icons-round">dashboard</span>
+      控制台
+    </div>
+    <div class="nav-item" onclick="showPage('schedule')">
+      <span class="material-icons-round">calendar_month</span>
+      排片计划
+      <span class="nav-badge">8</span>
+    </div>
+    <div class="nav-item" onclick="showPage('booking')">
+      <span class="material-icons-round">event_seat</span>
+      座位预订
+    </div>
+    <div class="nav-item" onclick="showPage('membership')">
+      <span class="material-icons-round">card_membership</span>
+      会员管理
+    </div>
+    <div class="nav-item" onclick="showPage('snacks')">
+      <span class="material-icons-round">fastfood</span>
+      卖品管理
+    </div>
+    <div class="nav-item" onclick="showPage('revenue')">
+      <span class="material-icons-round">analytics</span>
+      营收分析
+    </div>
+    <div class="nav-item" onclick="showPage('loyalty')">
+      <span class="material-icons-round">stars</span>
+      客户忠诚度
+    </div>
+    <div class="nav-item" onclick="showPage('films')">
+      <span class="material-icons-round">movie</span>
+      影片库
+    </div>
+    <div class="nav-item" onclick="showPage('equipment')">
+      <span class="material-icons-round">settings_input_hdmi</span>
+      设备管理
+    </div>
+    <div class="nav-item" onclick="showPage('groups')">
+      <span class="material-icons-round">groups</span>
+      团体预订
+    </div>
+    <div class="nav-item" onclick="showPage('promos')">
+      <span class="material-icons-round">local_offer</span>
+      活动促销
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN WRAP -->
+<div class="main-wrap">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title">控制台</div>
+    <div class="topbar-search">
+      <span class="material-icons-round" style="color:var(--text-muted);font-size:18px;">search</span>
+      <input type="text" placeholder="搜索电影、会员、订单..." id="searchInput">
+    </div>
+    <div class="topbar-actions">
+      <button class="icon-btn" onclick="showToast('暂无新通知','info')">
+        <span class="material-icons-round">notifications</span>
+        <div class="notif-dot"></div>
+      </button>
+      <button class="icon-btn" onclick="showToast('已刷新','success')">
+        <span class="material-icons-round">refresh</span>
+      </button>
+      <div class="user-avatar">林</div>
+    </div>
+  </div>
+
+  <div class="main-content">
+
+    <!-- ========== DASHBOARD ========== -->
+    <div class="page-section active" id="page-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card red animate-in delay-1">
+          <div class="stat-icon"><span class="material-icons-round">movie</span></div>
+          <div class="stat-value" id="stat-tickets">1,847</div>
+          <div class="stat-label">今日出票</div>
+          <div class="stat-trend up"><span class="material-icons-round" style="font-size:12px;">trending_up</span> 较昨日 +12.3%</div>
+        </div>
+        <div class="stat-card gold animate-in delay-2">
+          <div class="stat-icon"><span class="material-icons-round">attach_money</span></div>
+          <div class="stat-value">¥48,920</div>
+          <div class="stat-label">今日营收</div>
+          <div class="stat-trend up"><span class="material-icons-round" style="font-size:12px;">trending_up</span> 较昨日 +8.7%</div>
+        </div>
+        <div class="stat-card teal animate-in delay-3">
+          <div class="stat-icon"><span class="material-icons-round">card_membership</span></div>
+          <div class="stat-value">3,256</div>
+          <div class="stat-label">活跃会员</div>
+          <div class="stat-trend up"><span class="material-icons-round" style="font-size:12px;">trending_up</span> 本月 +186</div>
+        </div>
+        <div class="stat-card purple animate-in delay-4">
+          <div class="stat-icon"><span class="material-icons-round">fastfood</span></div>
+          <div class="stat-value">¥6,830</div>
+          <div class="stat-label">卖品收入</div>
+          <div class="stat-trend up"><span class="material-icons-round" style="font-size:12px;">trending_up</span> 较昨日 +15.2%</div>
+        </div>
+      </div>
+
+      <div class="grid-2-1">
+        <div class="card animate-in delay-2">
+          <div class="card-header">
+            <div class="card-title"><span class="material-icons-round">calendar_month</span> 今日排片</div>
+            <button class="btn btn-sm btn-secondary" onclick="showPage('schedule')">查看全部</button>
+          </div>
+          <table class="schedule-table">
+            <thead><tr><th>影厅</th><th>影片</th><th>时间</th><th>上座率</th><th>操作</th></tr></thead>
+            <tbody>
+              <tr><td><div class="room-badge"><span class="material-icons-round" style="font-size:13px;">living</span> 星辰厅</div></td><td><span class="film-chip action">流浪地球3</span></td><td class="time-slot"><span>10:30</span><span>13:45</span></td><td><div class="seats-bar"><div class="seats-fill"><div class="seats-fill-inner" style="width:85%"></div></div> 85%</div></td><td><button class="btn btn-sm btn-primary" onclick="showPage('booking')">选座</button></td></tr>
+              <tr><td><div class="room-badge"><span class="material-icons-round" style="font-size:13px;">living</span> 月华厅</div></td><td><span class="film-chip romance">爱情神话</span></td><td class="time-slot"><span>11:00</span><span>13:20</span></td><td><div class="seats-bar"><div class="seats-fill"><div class="seats-fill-inner" style="width:62%"></div></div> 62%</div></td><td><button class="btn btn-sm btn-primary" onclick="showPage('booking')">选座</button></td></tr>
+              <tr><td><div class="room-badge"><span class="material-icons-round" style="font-size:13px;">weekend</span> 星空厅</div></td><td><span class="film-chip scifi">星际穿越</span></td><td class="time-slot"><span>14:00</span><span>16:50</span></td><td><div class="seats-bar"><div class="seats-fill"><div class="seats-fill-inner low" style="width:38%"></div></div> 38%</div></td><td><button class="btn btn-sm btn-primary" onclick="showPage('booking')">选座</button></td></tr>
+              <tr><td><div class="room-badge"><span class="material-icons-round" style="font-size:13px;">weekend</span> 银河厅</div></td><td><span class="film-chip horror">封校惊魂夜</span></td><td class="time-slot"><span>15:30</span><span>17:40</span></td><td><div class="seats-bar"><div class="seats-fill"><div class="seats-fill-inner" style="width:91%"></div></div> 91%</div></td><td><button class="btn btn-sm btn-primary" onclick="showPage('booking')">选座</button></td></tr>
+              <tr><td><div class="room-badge"><span class="material-icons-round" style="font-size:13px;">living</span> 梦境厅</div></td><td><span class="film-chip comedy">热辣滚烫</span></td><td class="time-slot"><span>16:00</span><span>18:10</span></td><td><div class="seats-bar"><div class="seats-fill"><div class="seats-fill-inner" style="width:73%"></div></div> 73%</div></td><td><button class="btn btn-sm btn-primary" onclick="showPage('booking')">选座</button></td></tr>
+              <tr><td><div class="room-badge"><span class="material-icons-round" style="font-size:13px;">weekend</span> 星际厅</div></td><td><span class="film-chip drama">第二十条</span></td><td class="time-slot"><span>18:30</span><span>21:00</span></td><td><div class="seats-bar"><div class="seats-fill"><div class="seats-fill-inner crit" style="width:15%"></div></div> 15%</div></td><td><button class="btn btn-sm btn-primary" onclick="showPage('booking')">选座</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="card animate-in delay-3">
+            <div class="card-header">
+              <div class="card-title"><span class="material-icons-round">speed</span> 实时概况</div>
+              <div class="live-dot"></div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:14px;">
+              <div class="flex-between">
+                <span class="text-muted">当前在场</span>
+                <span style="font-weight:700;color:var(--teal);">127人</span>
+              </div>
+              <div class="flex-between">
+                <span class="text-muted">本场上座率</span>
+                <span style="font-weight:700;">68.4%</span>
+              </div>
+              <div class="flex-between">
+                <span class="text-muted">排队中</span>
+                <span style="font-weight:700;color:var(--gold);">14人</span>
+              </div>
+              <div class="flex-between">
+                <span class="text-muted">今日场均</span>
+                <span style="font-weight:700;">¥3,280</span>
+              </div>
+              <div class="flex-between">
+                <span class="text-muted">爆米花余量</span>
+                <span style="font-weight:700;color:var(--success);">充足</span>
+              </div>
+            </div>
+          </div>
+          <div class="card animate-in delay-4">
+            <div class="card-header">
+              <div class="card-title"><span class="material-icons-round">local_offer</span> 热门活动</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div class="flex-between">
+                <div><div style="font-size:13px;font-weight:600;">会员日特惠</div><div class="text-muted">每周三 全部影片5折</div></div>
+                <span class="tag tag-gold">进行中</span>
+              </div>
+              <div class="flex-between">
+                <div><div style="font-size:13px;font-weight:600;">爆米花套餐</div><div class="text-muted">二人套餐 立减20元</div></div>
+                <span class="tag tag-teal">进行中</span>
+              </div>
+              <div class="flex-between">
+                <div><div style="font-size:13px;font-weight:600;">生日特权</div><div class="text-muted">生日当月 免费观影一次</div></div>
+                <span class="tag tag-purple">进行中</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== SCHEDULE ========== -->
+    <div class="page-section" id="page-schedule">
+      <div class="page-header">
+        <div>
+          <div class="page-title">排片计划</div>
+          <div class="page-subtitle">2026年5月17日 · 周日</div>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-secondary"><span class="material-icons-round">download</span> 导出</button>
+          <button class="btn btn-primary" onclick="openModal('addSchedule')"><span class="material-icons-round">add</span> 新增加场</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="tabs">
+          <div class="tab active">今天 5/17</div>
+          <div class="tab">明天 5/18</div>
+          <div class="tab">周三 5/19</div>
+          <div class="tab">周四 5/20</div>
+        </div>
+        <table class="schedule-table">
+          <thead><tr><th>影厅</th><th>影片</th><th>类型</th><th>开映</th><th>结束</th><th>时长</th><th>票价</th><th>座位</th><th>上座</th><th>状态</th><th>操作</th></tr></thead>
+          <tbody>
+            <tr><td><div class="room-badge"><span class="material-icons-round" style="font-size:13px;">living</span> 星辰厅</div></td><td style="font-weight:600;">流浪地球3</td><td><span class="film-chip action">科幻</span></td><td>10:30</td><td>13:45</td><td>195分钟</td><td>¥68</td><td><div class="seats-bar"><div class="seats-fill"><div class="seats-fill-inner" style="width:85%"></div></div> 102/120</div></td><td>85%</td><td><span class="tag tag-green">热映</span></td><td><button class="btn btn-sm btn-secondary" onclick="showPage('booking')">选座</button></td></tr>
+            <tr><td><div class="room-badge"><span class="material-icons-round" style="font-size:13px;">living</span> 月华厅</div></td><td style="font-weight:600;">爱情神话</td><td><span class="film-chip romance">爱情</span></td><td>11:00</td><td>13:20</td><td>140分钟</td><td>¥58</td><td><div class="seats-bar"><div class="seats-fill"><div class="seats-fill-inner" style="width:62%"></div></div> 62/100</div></td><td>62%</td><td><span class="tag tag-green">热映</span></td><td><button class="btn btn-sm btn-secondary" onclick="showPage('booking')">选座</button></td></tr>
+            <tr><td><div class="room-badge"><span class="material-icons-round" style="font-size:13px;">weekend</span> 星空厅</div></td><td style="font-weight:600;">星际穿越</td><td><span class="film-chip scifi">科幻</span></td><td>14:00</td><td>16:50</td><td>169分钟</td><td>¥68</td><td><div class="seats-bar"><div class="seats-fill"><div class="seats-fill-inner low" style="width:38%"></div></div> 38/100</div></td><td>38%</td><td><span class="tag tag-green">热映</span></td><td><button class="btn btn-sm btn-secondary" onclick="showPage('booking')">选座</button></td></tr>
+            <tr><td><div class="room-badge"><span class="material-icons-round" style="font-size:13px;">weekend</span> 银河厅</div></td><td style="font-weight:600;">封校惊魂夜</td><td><span class="film-chip horror">恐怖</span></td><td>15:30</td><td>17:40</td><td>130分钟</td><td>¥58</td><td><div class="seats-bar"><div class="seats-fill"><div class="seats-fill-inner" style="width:91%"></div></div> 91/100</div></td><td>91%</td><td><span class="tag tag-green">热映</span></td><td><button class="btn btn-sm btn-secondary" onclick="showPage('booking')">选座</button></td></tr>
+            <tr><td><div class="room-badge"><span class="material-icons-round" style="font-size:13px;">weekend</span> 星际厅</div></td><td style="font-weight:600;">第二十条</td><td><span class="film-chip drama">剧情</span></td><td>18:30</td><td>21:00</td><td>150分钟</td><td>¥78</td><td><div class="seats-bar"><div class="seats-fill"><div class="seats-fill-inner crit" style="width:15%"></div></div> 15/100</div></td><td>15%</td><td><span class="tag tag-gold">冷门</span></td><td><button class="btn btn-sm btn-primary" onclick="showPage('booking')">选座</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ========== BOOKING ========== -->
+    <div class="page-section" id="page-booking">
+      <div class="page-header">
+        <div>
+          <div class="page-title">座位预订</div>
+          <div class="page-subtitle">星辰厅 · 流浪地球3 · 10:30</div>
+        </div>
+        <div class="header-actions">
+          <div style="display:flex;align-items:center;gap:10px;font-size:13px;">
+            <span class="text-muted">已选 <strong id="seatCount" style="color:var(--accent);">0</strong> 座</span>
+            <span class="text-muted">总价 <strong id="seatTotal" style="color:var(--gold);">¥0</strong></span>
+            <button class="btn btn-primary" onclick="confirmBooking()"><span class="material-icons-round">check</span> 确认预订</button>
+          </div>
+        </div>
+      </div>
+      <div class="grid-2-1">
+        <div class="card">
+          <div class="seat-grid-wrap">
+            <div class="screen-indicator">银幕 SCREEN</div>
+            <div class="seat-map" id="seatMap">
+              <!-- Generated by JS -->
+            </div>
+            <div class="seat-legend">
+              <div class="seat-legend-item"><div style="width:18px;height:18px;background:var(--bg-secondary);border:1px solid var(--border);border-radius:3px;"></div> 可选</div>
+              <div class="seat-legend-item"><div style="width:18px;height:18px;background:rgba(42,196,182,0.15);border:1px solid var(--teal);border-radius:3px;"></div> 已售</div>
+              <div class="seat-legend-item"><div style="width:18px;height:18px;background:rgba(230,57,70,0.2);border:1px solid var(--accent);border-radius:3px;"></div> 选中</div>
+              <div class="seat-legend-item"><div style="width:18px;height:18px;background:rgba(244,162,97,0.2);border:1px solid var(--gold);border-radius:3px;"></div> VIP</div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="card">
+            <div class="card-header"><div class="card-title"><span class="material-icons-round">info</span> 预订信息</div></div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div class="flex-between"><span class="text-muted">影厅</span><span>星辰厅</span></div>
+              <div class="flex-between"><span class="text-muted">影片</span><span>流浪地球3</span></div>
+              <div class="flex-between"><span class="text-muted">场次</span><span>10:30 - 13:45</span></div>
+              <div class="flex-between"><span class="text-muted">座位</span><span id="selectedSeats" class="text-accent">未选择</span></div>
+              <div class="flex-between"><span class="text-muted">单价</span><span class="text-gold">¥68</span></div>
+              <div class="divider"></div>
+              <div class="flex-between"><span style="font-weight:600;">合计</span><span id="totalPrice" class="text-gold" style="font-size:20px;font-weight:700;">¥0</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title"><span class="material-icons-round">person</span> 会员绑定</div></div>
+            <div class="form-group">
+              <div class="form-label">会员卡号 / 手机号</div>
+              <input type="text" class="form-input" placeholder="请输入会员号或手机号" id="memberInput">
+            </div>
+            <div id="memberInfo" style="display:none;" class="member-card" style="margin-top:10px;">
+              <div class="member-avatar" style="background:linear-gradient(135deg,var(--gold),var(--accent));color:#fff;">张</div>
+              <div class="member-info">
+                <div class="member-name">张明远</div>
+                <div class="member-tier"><span class="tier-badge tier-gold">黄金会员</span> · 积分 2,480</div>
+              </div>
+              <span class="text-gold" style="font-weight:700;">-¥10</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== MEMBERSHIP ========== -->
+    <div class="page-section" id="page-membership">
+      <div class="page-header">
+        <div>
+          <div class="page-title">会员管理</div>
+          <div class="page-subtitle">共 3,256 位活跃会员</div>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-secondary"><span class="material-icons-round">download</span> 导出</button>
+          <button class="btn btn-gold" onclick="openModal('addMember')"><span class="material-icons-round">person_add</span> 新增会员</button>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><div class="card-title"><span class="material-icons-round">groups</span> 会员概览</div></div>
+          <div class="donut-wrap">
+            <div class="donut">
+              <svg width="140" height="140" viewBox="0 0 140 140">
+                <circle cx="70" cy="70" r="55" fill="none" stroke="var(--bg-secondary)" stroke-width="18"/>
+                <circle cx="70" cy="70" r="55" fill="none" stroke="var(--gold)" stroke-width="18" stroke-dasharray="173 173" stroke-dashoffset="0"/>
+                <circle cx="70" cy="70" r="55" fill="none" stroke="var(--purple)" stroke-width="18" stroke-dasharray="87 173" stroke-dashoffset="-173"/>
+                <circle cx="70" cy="70" r="55" fill="none" stroke="var(--teal)" stroke-width="18" stroke-dasharray="52 173" stroke-dashoffset="-260"/>
+                <circle cx="70" cy="70" r="55" fill="none" stroke="var(--text-muted)" stroke-width="18" stroke-dasharray="34 173" stroke-dashoffset="-312"/>
+              </svg>
+              <div class="donut-center">
+                <div class="val">3,256</div>
+                <div class="lbl">总会员</div>
+              </div>
+            </div>
+            <div class="donut-legend">
+              <div class="legend-item"><div class="legend-dot" style="background:var(--gold);"></div> 黄金会员 <span style="margin-left:auto;font-weight:600;">1,847</span></div>
+              <div class="legend-item"><div class="legend-dot" style="background:var(--purple);"></div> 钻石会员 <span style="margin-left:auto;font-weight:600;">826</span></div>
+              <div class="legend-item"><div class="legend-dot" style="background:var(--teal);"></div> 白银会员 <span style="margin-left:auto;font-weight:600;">423</span></div>
+              <div class="legend-item"><div class="legend-dot" style="background:var(--text-muted);"></div> 普通会员 <span style="margin-left:auto;font-weight:600;">160</span></div>
+            </div>
+          </div>
+          <div class="divider"></div>
+          <div class="flex-between" style="margin-bottom:12px;"><span class="card-title"><span class="material-icons-round">toll</span> 本月充值</span><span class="text-gold" style="font-weight:700;">¥128,450</span></div>
+          <div class="flex-between"><span class="text-muted">本月新增会员</span><span style="font-weight:600;">186人</span></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div class="member-card" style="background:var(--bg-secondary);">
+            <div class="member-avatar" style="background:linear-gradient(135deg,var(--gold),#e76f51);color:#fff;">张</div>
+            <div class="member-info">
+              <div class="member-name">张明远</div>
+              <div class="member-tier"><span class="tier-badge tier-gold">黄金会员</span> · 积分 2,480</div>
+            </div>
+            <div class="member-stats">
+              <div class="member-points">¥2,480</div>
+              <div class="member-balance">余额</div>
+            </div>
+          </div>
+          <div class="member-card" style="background:var(--bg-secondary);">
+            <div class="member-avatar" style="background:linear-gradient(135deg,var(--purple),var(--accent));color:#fff;">李</div>
+            <div class="member-info">
+              <div class="member-name">李诗涵</div>
+              <div class="member-tier"><span class="tier-badge tier-diamond">钻石会员</span> · 积分 8,920</div>
+            </div>
+            <div class="member-stats">
+              <div class="member-points">¥8,920</div>
+              <div class="member-balance">余额</div>
+            </div>
+          </div>
+          <div class="member-card" style="background:var(--bg-secondary);">
+            <div class="member-avatar" style="background:linear-gradient(135deg,var(--teal),#1a9e8f);color:#0d1117;">王</div>
+            <div class="member-info">
+              <div class="member-name">王子豪</div>
+              <div class="member-tier"><span class="tier-badge tier-silver">白银会员</span> · 积分 860</div>
+            </div>
+            <div class="member-stats">
+              <div class="member-points">¥860</div>
+              <div class="member-balance">余额</div>
+            </div>
+          </div>
+          <div class="member-card" style="background:var(--bg-secondary);">
+            <div class="member-avatar" style="background:linear-gradient(135deg,#4a90e2,#2c6fa8);color:#fff;">陈</div>
+            <div class="member-info">
+              <div class="member-name">陈雨萱</div>
+              <div class="member-tier"><span class="tier-badge tier-gold">黄金会员</span> · 积分 4,230</div>
+            </div>
+            <div class="member-stats">
+              <div class="member-points">¥4,230</div>
+              <div class="member-balance">余额</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== SNACKS ========== -->
+    <div class="page-section" id="page-snacks">
+      <div class="page-header">
+        <div>
+          <div class="page-title">卖品管理</div>
+          <div class="page-subtitle">爆米花、饮料、零食、套餐</div>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-secondary"><span class="material-icons-round">inventory_2</span> 库存</button>
+          <button class="btn btn-primary" onclick="openModal('addSnack')"><span class="material-icons-round">add</span> 添加商品</button>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><div class="card-title"><span class="material-icons-round">fastfood</span> 菜单</div></div>
+          <div class="snack-grid">
+            <div class="snack-item">
+              <div class="snack-img">🍿</div>
+              <div class="snack-info">
+                <div class="snack-name">大桶爆米花</div>
+                <div class="snack-desc">焦糖/奶油 双口味可选</div>
+                <div class="snack-price">¥28</div>
+                <div class="snack-qty"><button class="qty-btn" onclick="changeQty(this,-1)">−</button><span class="qty-display">0</span><button class="qty-btn" onclick="changeQty(this,1)">+</button></div>
+              </div>
+            </div>
+            <div class="snack-item">
+              <div class="snack-img">🥤</div>
+              <div class="snack-info">
+                <div class="snack-name">可乐大杯</div>
+                <div class="snack-desc">22oz 超大杯装</div>
+                <div class="snack-price">¥18</div>
+                <div class="snack-qty"><button class="qty-btn" onclick="changeQty(this,-1)">−</button><span class="qty-display">0</span><button class="qty-btn" onclick="changeQty(this,1)">+</button></div>
+              </div>
+            </div>
+            <div class="snack-item">
+              <div class="snack-img">🍫</div>
+              <div class="snack-info">
+                <div class="snack-name">进口巧克力</div>
+                <div class="snack-desc">比利时黑巧 50g</div>
+                <div class="snack-price">¥22</div>
+                <div class="snack-qty"><button class="qty-btn" onclick="changeQty(this,-1)">−</button><span class="qty-display">0</span><button class="qty-btn" onclick="changeQty(this,1)">+</button></div>
+              </div>
+            </div>
+            <div class="snack-item">
+              <div class="snack-img">🍿🍹</div>
+              <div class="snack-info">
+                <div class="snack-name">双人套餐</div>
+                <div class="snack-desc">爆米花大桶 + 可乐×2 + 巧克力</div>
+                <div class="snack-price">¥68</div>
+                <div class="snack-qty"><button class="qty-btn" onclick="changeQty(this,-1)">−</button><span class="qty-display">0</span><button class="qty-btn" onclick="changeQty(this,1)">+</button></div>
+              </div>
+            </div>
+            <div class="snack-item">
+              <div class="snack-img">🧃</div>
+              <div class="snack-info">
+                <div class="snack-name">果汁气泡水</div>
+                <div class="snack-desc">橙子/葡萄 两种口味</div>
+                <div class="snack-price">¥16</div>
+                <div class="snack-qty"><button class="qty-btn" onclick="changeQty(this,-1)">−</button><span class="qty-display">0</span><button class="qty-btn" onclick="changeQty(this,1)">+</button></div>
+              </div>
+            </div>
+            <div class="snack-item">
+              <div class="snack-img">🍕</div>
+              <div class="snack-info">
+                <div class="snack-name">芝士披萨</div>
+                <div class="snack-desc">6寸迷你披萨 趁热食用</div>
+                <div class="snack-price">¥35</div>
+                <div class="snack-qty"><button class="qty-btn" onclick="changeQty(this,-1)">−</button><span class="qty-display">0</span><button class="qty-btn" onclick="changeQty(this,1)">+</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="card">
+            <div class="card-header"><div class="card-title"><span class="material-icons-round">shopping_cart</span> 当前订单</div></div>
+            <div id="snackOrder">
+              <div style="text-align:center;color:var(--text-muted);padding:30px 0;">点击左侧商品添加到订单</div>
+            </div>
+            <div class="divider"></div>
+            <div class="flex-between" style="margin-bottom:12px;">
+              <span class="text-muted">共 <strong id="snackItemCount" style="color:var(--text-primary);">0</strong> 件</span>
+              <span style="font-size:18px;font-weight:700;" class="text-gold">¥<span id="snackTotal">0</span></span>
+            </div>
+            <button class="btn btn-primary" style="width:100%;" onclick="showToast('订单已提交','success')"><span class="material-icons-round">receipt_long</span> 提交订单</button>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title"><span class="material-icons-round">inventory</span> 库存提醒</div></div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div class="flex-between"><span style="font-size:13px;">爆米花原料</span><span class="tag tag-green">充足 200桶</span></div>
+              <div class="flex-between"><span style="font-size:13px;">可乐糖浆</span><span class="tag tag-gold">偏低 15袋</span></div>
+              <div class="flex-between"><span style="font-size:13px;">巧克力库存</span><span class="tag tag-red">告急 3块</span></div>
+              <div class="flex-between"><span style="font-size:13px;">披萨半成品</span><span class="tag tag-green">充足 48份</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== REVENUE ========== -->
+    <div class="page-section" id="page-revenue">
+      <div class="page-header">
+        <div>
+          <div class="page-title">营收分析</div>
+          <div class="page-subtitle">数据更新于 10分钟前</div>
+        </div>
+        <div class="header-actions">
+          <select class="form-select" style="width:auto;">
+            <option>今天</option><option>本周</option><option>本月</option><option>本年</option>
+          </select>
+          <button class="btn btn-secondary"><span class="material-icons-round">download</span> 导出报表</button>
+        </div>
+      </div>
+      <div class="stats-grid" style="grid-template-columns:repeat(5,1fr);">
+        <div class="stat-card red"><div class="stat-icon"><span class="material-icons-round">movie</span></div><div class="stat-value">¥41,890</div><div class="stat-label">票房收入</div><div class="stat-trend up">+12.3%</div></div>
+        <div class="stat-card gold"><div class="stat-icon"><span class="material-icons-round">attach_money</span></div><div class="stat-value">¥6,830</div><div class="stat-label">卖品收入</div><div class="stat-trend up">+15.2%</div></div>
+        <div class="stat-card teal"><div class="stat-icon"><span class="material-icons-round">card_membership</span></div><div class="stat-value">¥3,280</div><div class="stat-label">会员充值</div><div class="stat-trend up">+8.5%</div></div>
+        <div class="stat-card purple"><div class="stat-icon"><span class="material-icons-round">local_offer</span></div><div class="stat-value">¥1,280</div><div class="stat-label">活动优惠</div><div class="stat-trend down">-3.1%</div></div>
+        <div class="stat-card red"><div class="stat-icon"><span class="material-icons-round">trending_up</span></div><div class="stat-value">¥48,920</div><div class="stat-label">总收入</div><div class="stat-trend up">+11.8%</div></div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><div class="card-title"><span class="material-icons-round">bar_chart</span> 票房趋势（近7天）</div></div>
+          <div class="bar-chart">
+            <div class="bar-group"><div class="bar" style="height:45%;" data-val="¥32k"></div><div class="bar-label">周一</div></div>
+            <div class="bar-group"><div class="bar" style="height:38%;" data-val="¥28k"></div><div class="bar-label">周二</div></div>
+            <div class="bar-group"><div class="bar" style="height:62%;" data-val="¥46k"></div><div class="bar-label">周三</div></div>
+            <div class="bar-group"><div class="bar" style="height:55%;" data-val="¥40k"></div><div class="bar-label">周四</div></div>
+            <div class="bar-group"><div class="bar" style="height:78%;" data-val="¥58k"></div><div class="bar-label">周五</div></div>
+            <div class="bar-group"><div class="bar gold" style="height:92%;" data-val="¥68k"></div><div class="bar-label">周六</div></div>
+            <div class="bar-group"><div class="bar gold" style="height:100%;" data-val="¥72k"></div><div class="bar-label">周日</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title"><span class="material-icons-round">schedule</span> 分时营收</div></div>
+          <div class="rev-chart">
+            <div class="rev-row"><div class="rev-label">09:00</div><div class="rev-bar-wrap"><div class="rev-bar-fill" style="width:15%;background:var(--text-muted);">¥1.2k</div></div><div class="rev-total">¥1.2k</div></div>
+            <div class="rev-row"><div class="rev-label">11:00</div><div class="rev-bar-wrap"><div class="rev-bar-fill" style="width:32%;background:var(--teal);">¥4.8k</div></div><div class="rev-total">¥4.8k</div></div>
+            <div class="rev-row"><div class="rev-label">13:00</div><div class="rev-bar-wrap"><div class="rev-bar-fill" style="width:55%;background:var(--accent);">¥8.2k</div></div><div class="rev-total">¥8.2k</div></div>
+            <div class="rev-row"><div class="rev-label">15:00</div><div class="rev-bar-wrap"><div class="rev-bar-fill" style="width:48%;background:var(--purple);">¥7.1k</div></div><div class="rev-total">¥7.1k</div></div>
+            <div class="rev-row"><div class="rev-label">17:00</div><div class="rev-bar-wrap"><div class="rev-bar-fill" style="width:72%;background:var(--accent);">¥10.8k</div></div><div class="rev-total">¥10.8k</div></div>
+            <div class="rev-row"><div class="rev-label">19:00</div><div class="rev-bar-wrap"><div class="rev-bar-fill" style="width:100%;background:var(--gold);">¥14.8k</div></div><div class="rev-total">¥14.8k</div></div>
+            <div class="rev-row"><div class="rev-label">21:00</div><div class="rev-bar-wrap"><div class="rev-bar-fill" style="width:68%;background:var(--purple);">¥10.2k</div></div><div class="rev-total">¥10.2k</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:20px;">
+        <div class="card-header"><div class="card-title"><span class="material-icons-round">pie_chart</span> 收入构成</div></div>
+        <div class="donut-wrap">
+          <div class="donut">
+            <svg width="140" height="140" viewBox="0 0 140 140">
+              <circle cx="70" cy="70" r="55" fill="none" stroke="var(--bg-secondary)" stroke-width="18"/>
+              <circle cx="70" cy="70" r="55" fill="none" stroke="var(--accent)" stroke-width="18" stroke-dasharray="217 346" stroke-dashoffset="0"/>
+              <circle cx="70" cy="70" r="55" fill="none" stroke="var(--gold)" stroke-width="18" stroke-dasharray="52 346" stroke-dashoffset="-217"/>
+              <circle cx="70" cy="70" r="55" fill="none" stroke="var(--teal)" stroke-width="18" stroke-dasharray="52 346" stroke-dashoffset="-269"/>
+              <circle cx="70" cy="70" r="55" fill="none" stroke="var(--purple)" stroke-width="18" stroke-dasharray="26 346" stroke-dashoffset="-321"/>
+            </svg>
+            <div class="donut-center"><div class="val">¥48.9k</div><div class="lbl">总收入</div></div>
+          </div>
+          <div class="donut-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:var(--accent);"></div> 票房收入 <span style="margin-left:auto;font-weight:600;">¥41,890 (85.6%)</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--gold);"></div> 卖品收入 <span style="margin-left:auto;font-weight:600;">¥6,830 (6.9%)</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--teal);"></div> 会员充值 <span style="margin-left:auto;font-weight:600;">¥3,280 (4.1%)</span></div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--purple);"></div> 其他收入 <span style="margin-left:auto;font-weight:600;">¥1,280 (2.4%)</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== LOYALTY ========== -->
+    <div class="page-section" id="page-loyalty">
+      <div class="page-header">
+        <div>
+          <div class="page-title">客户忠诚度</div>
+          <div class="page-subtitle">会员积分、等级、特权管理</div>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-secondary"><span class="material-icons-round">settings</span> 积分规则</button>
+          <button class="btn btn-gold" onclick="openModal('redeem')"><span class="material-icons-round">redeem</span> 积分兑换</button>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><div class="card-title"><span class="material-icons-round">leaderboard</span> 积分排行</div></div>
+          <table class="loyalty-table">
+            <thead><tr><th>排名</th><th>会员</th><th>等级</th><th>积分</th><th>进度</th><th>本月消费</th></tr></thead>
+            <tbody>
+              <tr><td><span class="rank-badge rank-1">🥇</span></td><td><div style="font-weight:600;">李诗涵</div><div style="font-size:10px;color:var(--text-muted);">138****8888</div></td><td><span class="tier-badge tier-diamond">钻石</span></td><td style="font-weight:700;color:var(--purple);">8,920</td><td><div class="progress-mini"><div class="progress-mini-fill" style="width:89%;"></div></div></td><td>¥3,280</td></tr>
+              <tr><td><span class="rank-badge rank-2">🥈</span></td><td><div style="font-weight:600;">张明远</div><div style="font-size:10px;color:var(--text-muted);">159****2341</div></td><td><span class="tier-badge tier-gold">黄金</span></td><td style="font-weight:700;color:var(--gold);">4,230</td><td><div class="progress-mini"><div class="progress-mini-fill" style="width:42%;"></div></div></td><td>¥1,840</td></tr>
+              <tr><td><span class="rank-badge rank-3">🥉</span></td><td><div style="font-weight:600;">陈雨萱</div><div style="font-size:10px;color:var(--text-muted);">186****7729</div></td><td><span class="tier-badge tier-gold">黄金</span></td><td style="font-weight:700;color:var(--gold);">3,860</td><td><div class="progress-mini"><div class="progress-mini-fill" style="width:38%;"></div></div></td><td>¥1,520</td></tr>
+              <tr><td><span style="font-size:12px;color:var(--text-muted);">4</span></td><td><div style="font-weight:600;">王子豪</div><div style="font-size:10px;color:var(--text-muted);">177****5512</div></td><td><span class="tier-badge tier-silver">白银</span></td><td style="font-weight:700;color:var(--text-secondary);">1,240</td><td><div class="progress-mini"><div class="progress-mini-fill" style="width:62%;"></div></div></td><td>¥860</td></tr>
+              <tr><td><span style="font-size:12px;color:var(--text-muted);">5</span></td><td><div style="font-weight:600;">周小雅</div><div style="font-size:10px;color:var(--text-muted);">135****3390</div></td><td><span class="tier-badge tier-silver">白银</span></td><td style="font-weight:700;color:var(--text-secondary);">980</td><td><div class="progress-mini"><div class="progress-mini-fill" style="width:49%;"></div></div></td><td>¥720</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="card">
+            <div class="card-header"><div class="card-title"><span class="material-icons-round">workspace_premium</span> 会员权益</div></div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div class="flex-between" style="padding:8px 0;border-bottom:1px solid rgba(42,46,74,0.4);">
+                <div><div style="font-size:13px;font-weight:600;">🎫 免费观影</div><div class="text-muted">每月1次（钻石会员）</div></div>
+                <span class="tag tag-purple">钻石专属</span>
+              </div>
+              <div class="flex-between" style="padding:8px 0;border-bottom:1px solid rgba(42,46,74,0.4);">
+                <div><div style="font-size:13px;font-weight:600;">🍿 卖品折扣</div><div class="text-muted">黄金8折 / 钻石7折</div></div>
+                <span class="tag tag-gold">黄金+</span>
+              </div>
+              <div class="flex-between" style="padding:8px 0;border-bottom:1px solid rgba(42,46,74,0.4);">
+                <div><div style="font-size:13px;font-weight:600;">🎂 生日特权</div><div class="text-muted">生日当月 免费爆米花</div></div>
+                <span class="tag tag-teal">全员</span>
+              </div>
+              <div class="flex-between" style="padding:8px 0;border-bottom:1px solid rgba(42,46,74,0.4);">
+                <div><div style="font-size:13px;font-weight:600;">⏰ 优先选座</div><div class="text-muted">提前30分钟选座</div></div>
+                <span class="tag tag-gold">黄金+</span>
+              </div>
+              <div class="flex-between" style="padding:8px 0;">
+                <div><div style="font-size:13px;font-weight:600;">💰 积分抵现</div><div class="text-muted">100积分抵1元</div></div>
+                <span class="tag tag-teal">全员</span>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title"><span class="material-icons-round">card_giftcard</span> 可兑换礼品</div></div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div class="flex-between"><span style="font-size:13px;">🎬 免费观影券</span><span class="text-gold" style="font-weight:600;">5,000积分</span></div>
+              <div class="flex-between"><span style="font-size:13px;">🍿 爆米花套餐</span><span class="text-gold" style="font-weight:600;">2,000积分</span></div>
+              <div class="flex-between"><span style="font-size:13px;">🥤 可乐+零食</span><span class="text-gold" style="font-weight:600;">1,000积分</span></div>
+              <div class="flex-between"><span style="font-size:13px;">☕ 会员专享咖啡</span><span class="text-gold" style="font-weight:600;">800积分</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== FILMS ========== -->
+    <div class="page-section" id="page-films">
+      <div class="page-header">
+        <div>
+          <div class="page-title">影片库</div>
+          <div class="page-subtitle">共 12 部影片 · 8 部正在热映</div>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-secondary"><span class="material-icons-round">cloud_upload</span> 批量导入</button>
+          <button class="btn btn-primary" onclick="openModal('addFilm')"><span class="material-icons-round">add</span> 添加影片</button>
+        </div>
+      </div>
+      <div class="three-col">
+        <div class="film-card">
+          <div class="film-poster" style="background:linear-gradient(135deg,rgba(230,57,70,0.2),rgba(155,93,229,0.2));">🌍</div>
+          <div class="film-info">
+            <div class="film-title">流浪地球3</div>
+            <div class="film-meta"><span>科幻</span><span>2026</span><span>195分钟</span></div>
+            <div class="film-rating"><span class="material-icons-round" style="font-size:13px;">star</span> 9.2</div>
+            <div class="film-price">租赁 ¥500/天</div>
+            <div class="film-avail text-teal">● 可租赁</div>
+          </div>
+        </div>
+        <div class="film-card">
+          <div class="film-poster" style="background:linear-gradient(135deg,rgba(244,162,97,0.2),rgba(255,107,107,0.2));">💕</div>
+          <div class="film-info">
+            <div class="film-title">爱情神话</div>
+            <div class="film-meta"><span>爱情</span><span>2026</span><span>140分钟</span></div>
+            <div class="film-rating"><span class="material-icons-round" style="font-size:13px;">star</span> 8.7</div>
+            <div class="film-price">租赁 ¥350/天</div>
+            <div class="film-avail text-teal">● 可租赁</div>
+          </div>
+        </div>
+        <div class="film-card">
+          <div class="film-poster" style="background:linear-gradient(135deg,rgba(155,93,229,0.2),rgba(46,196,182,0.2));">🚀</div>
+          <div class="film-info">
+            <div class="film-title">星际穿越</div>
+            <div class="film-meta"><span>科幻</span><span>2014</span><span>169分钟</span></div>
+            <div class="film-rating"><span class="material-icons-round" style="font-size:13px;">star</span> 9.3</div>
+            <div class="film-price">租赁 ¥280/天</div>
+            <div class="film-avail text-teal">● 可租赁</div>
+          </div>
+        </div>
+        <div class="film-card">
+          <div class="film-poster" style="background:linear-gradient(135deg,rgba(46,196,182,0.2),rgba(74,222,128,0.2));">🔪</div>
+          <div class="film-info">
+            <div class="film-title">封校惊魂夜</div>
+            <div class="film-meta"><span>恐怖</span><span>2026</span><span>130分钟</span></div>
+            <div class="film-rating"><span class="material-icons-round" style="font-size:13px;">star</span> 8.1</div>
+            <div class="film-price">租赁 ¥300/天</div>
+            <div class="film-avail text-gold">● 即将到期 3天</div>
+          </div>
+        </div>
+        <div class="film-card">
+          <div class="film-poster" style="background:linear-gradient(135deg,rgba(244,162,97,0.2),rgba(251,191,36,0.2));">😄</div>
+          <div class="film-info">
+            <div class="film-title">热辣滚烫</div>
+            <div class="film-meta"><span>喜剧</span><span>2024</span><span>118分钟</span></div>
+            <div class="film-rating"><span class="material-icons-round" style="font-size:13px;">star</span> 8.5</div>
+            <div class="film-price">租赁 ¥250/天</div>
+            <div class="film-avail text-teal">● 可租赁</div>
+          </div>
+        </div>
+        <div class="film-card">
+          <div class="film-poster" style="background:linear-gradient(135deg,rgba(74,144,226,0.2),rgba(155,93,229,0.2));">⚖️</div>
+          <div class="film-info">
+            <div class="film-title">第二十条</div>
+            <div class="film-meta"><span>剧情</span><span>2024</span><span>150分钟</span></div>
+            <div class="film-rating"><span class="material-icons-round" style="font-size:13px;">star</span> 8.9</div>
+            <div class="film-price">租赁 ¥320/天</div>
+            <div class="film-avail text-accent">● 已下架</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== EQUIPMENT ========== -->
+    <div class="page-section" id="page-equipment">
+      <div class="page-header">
+        <div>
+          <div class="page-title">设备管理</div>
+          <div class="page-subtitle">投影仪、音响、座椅、银幕、空调</div>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-secondary"><span class="material-icons-round">build</span> 维护记录</button>
+          <button class="btn btn-primary"><span class="material-icons-round">add</span> 报修</button>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><div class="card-title"><span class="material-icons-round">videocam</span> 投影设备</div></div>
+          <div class="equip-item">
+            <div class="equip-icon"><span class="material-icons-round" style="color:var(--accent);font-size:20px;">videocam</span></div>
+            <div class="equip-info"><div class="equip-name">星辰厅 · 索尼 4K 投影仪</div><div class="equip-detail">型号: VPL-XW7000ES · 2024年采购</div></div>
+            <span class="equip-status status-ok">运行正常</span>
+          </div>
+          <div class="equip-item">
+            <div class="equip-icon"><span class="material-icons-round" style="color:var(--accent);font-size:20px;">videocam</span></div>
+            <div class="equip-info"><div class="equip-name">月华厅 · 索尼 4K 投影仪</div><div class="equip-detail">型号: VPL-XW7000ES · 2024年采购</div></div>
+            <span class="equip-status status-ok">运行正常</span>
+          </div>
+          <div class="equip-item">
+            <div class="equip-icon"><span class="material-icons-round" style="color:var(--accent);font-size:20px;">videocam</span></div>
+            <div class="equip-info"><div class="equip-name">星空厅 · 巴可 激光投影</div><div class="equip-detail">型号: Barco laser · 2025年升级</div></div>
+            <span class="equip-status status-ok">运行正常</span>
+          </div>
+          <div class="equip-item">
+            <div class="equip-icon"><span class="material-icons-round" style="color:var(--warning);font-size:20px;">videocam</span></div>
+            <div class="equip-info"><div class="equip-name">银河厅 · 爱普生 投影仪</div><div class="equip-detail">型号: Pro L1755U · 灯泡寿命不足</div></div>
+            <span class="equip-status status-warn">需维护</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="card">
+            <div class="card-header"><div class="card-title"><span class="material-icons-round">speaker</span> 音响系统</div></div>
+            <div class="equip-item">
+              <div class="equip-icon"><span class="material-icons-round" style="color:var(--teal);font-size:20px;">speaker</span></div>
+              <div class="equip-info"><div class="equip-name">杜比全景声 · 星辰/银河厅</div><div class="equip-detail">64声道环绕 · 2025年安装</div></div>
+              <span class="equip-status status-ok">正常</span>
+            </div>
+            <div class="equip-item">
+              <div class="equip-icon"><span class="material-icons-round" style="color:var(--teal);font-size:20px;">speaker</span></div>
+              <div class="equip-info"><div class="equip-name">普通音响 · 月华/星空厅</div><div class="equip-detail">7.1声道 · 2023年安装</div></div>
+              <span class="equip-status status-ok">正常</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title"><span class="material-icons-round">chair</span> 座椅状况</div></div>
+            <div class="flex-between" style="margin-bottom:12px;"><span style="font-size:13px;">星辰厅 120座</span><span class="tag tag-green">全部正常</span></div>
+            <div class="flex-between" style="margin-bottom:12px;"><span style="font-size:13px;">月华厅 100座</span><span class="tag tag-green">全部正常</span></div>
+            <div class="flex-between" style="margin-bottom:12px;"><span style="font-size:13px;">银河厅 100座</span><span class="tag tag-gold">3座损坏</span></div>
+            <div class="flex-between"><span style="font-size:13px;">星空厅 100座</span><span class="tag tag-green">全部正常</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== GROUPS ========== -->
+    <div class="page-section" id="page-groups">
+      <div class="page-header">
+        <div>
+          <div class="page-title">团体预订</div>
+          <div class="page-subtitle">包场、企业活动、生日派对、学校团体</div>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-secondary"><span class="material-icons-round">download</span> 导出</button>
+          <button class="btn btn-primary" onclick="openModal('addGroup')"><span class="material-icons-round">add</span> 新建预订</button>
+        </div>
+      </div>
+      <div class="three-col">
+        <div class="booking-card">
+          <div class="booking-header">
+            <div><div class="booking-org">腾讯科技深圳分公司</div><div class="booking-date">2026年5月20日 14:00</div></div>
+            <span class="booking-tag confirmed">已确认</span>
+          </div>
+          <div class="booking-details">
+            <div class="booking-detail"><span class="material-icons-round">living</span> 星辰厅</div>
+            <div class="booking-detail"><span class="material-icons-round">movie</span> 流浪地球3</div>
+            <div class="booking-detail"><span class="material-icons-round">schedule</span> 14:00-17:15</div>
+          </div>
+          <div class="booking-footer">
+            <span class="booking-amount">¥8,800</span>
+            <div class="booking-guests"><span class="material-icons-round">group</span> 80人</div>
+          </div>
+        </div>
+        <div class="booking-card">
+          <div class="booking-header">
+            <div><div class="booking-org">深圳中学高二(3)班</div><div class="booking-date">2026年5月21日 10:00</div></div>
+            <span class="booking-tag confirmed">已确认</span>
+          </div>
+          <div class="booking-details">
+            <div class="booking-detail"><span class="material-icons-round">living</span> 月华厅</div>
+            <div class="booking-detail"><span class="material-icons-round">movie</span> 星际穿越</div>
+            <div class="booking-detail"><span class="material-icons-round">schedule</span> 10:00-12:49</div>
+          </div>
+          <div class="booking-footer">
+            <span class="booking-amount">¥5,800</span>
+            <div class="booking-guests"><span class="material-icons-round">group</span> 50人</div>
+          </div>
+        </div>
+        <div class="booking-card">
+          <div class="booking-header">
+            <div><div class="booking-org">王琳女士 生日派对</div><div class="booking-date">2026年5月22日 19:00</div></div>
+            <span class="booking-tag pending">待确认</span>
+          </div>
+          <div class="booking-details">
+            <div class="booking-detail"><span class="material-icons-round">living</span> 星空厅</div>
+            <div class="booking-detail"><span class="material-icons-round">movie</span> 爱情神话</div>
+            <div class="booking-detail"><span class="material-icons-round">schedule</span> 19:00-21:20</div>
+          </div>
+          <div class="booking-footer">
+            <span class="booking-amount">¥4,500</span>
+            <div class="booking-guests"><span class="material-icons-round">group</span> 20人</div>
+          </div>
+        </div>
+        <div class="booking-card">
+          <div class="booking-header">
+            <div><div class="booking-org">招商银行VIP客户答谢</div><div class="booking-date">2026年5月25日 15:00</div></div>
+            <span class="booking-tag pending">待确认</span>
+          </div>
+          <div class="booking-details">
+            <div class="booking-detail"><span class="material-icons-round">living</span> 银河厅</div>
+            <div class="booking-detail"><span class="material-icons-round">movie</span> 热辣滚烫</div>
+            <div class="booking-detail"><span class="material-icons-round">schedule</span> 15:00-17:00</div>
+          </div>
+          <div class="booking-footer">
+            <span class="booking-amount">¥6,800</span>
+            <div class="booking-guests"><span class="material-icons-round">group</span> 60人</div>
+          </div>
+        </div>
+        <div class="booking-card">
+          <div class="booking-header">
+            <div><div class="booking-org">华为技术有限公司</div><div class="booking-date">2026年5月28日 18:00</div></div>
+            <span class="booking-tag confirmed">已确认</span>
+          </div>
+          <div class="booking-details">
+            <div class="booking-detail"><span class="material-icons-round">living</span> 星辰厅</div>
+            <div class="booking-detail"><span class="material-icons-round">movie</span> 第二十条</div>
+            <div class="booking-detail"><span class="material-icons-round">schedule</span> 18:00-20:30</div>
+          </div>
+          <div class="booking-footer">
+            <span class="booking-amount">¥9,800</span>
+            <div class="booking-guests"><span class="material-icons-round">group</span> 100人</div>
+          </div>
+        </div>
+        <div class="booking-card">
+          <div class="booking-header">
+            <div><div class="booking-org">深圳市图书馆文化活动</div><div class="booking-date">2026年6月1日 09:00</div></div>
+            <span class="booking-tag pending">待确认</span>
+          </div>
+          <div class="booking-details">
+            <div class="booking-detail"><span class="material-icons-round">living</span> 月华厅</div>
+            <div class="booking-detail"><span class="material-icons-round">movie</span> 待定</div>
+            <div class="booking-detail"><span class="material-icons-round">schedule</span> 09:00-11:30</div>
+          </div>
+          <div class="booking-footer">
+            <span class="booking-amount">¥3,800</span>
+            <div class="booking-guests"><span class="material-icons-round">group</span> 40人</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== PROMOS ========== -->
+    <div class="page-section" id="page-promos">
+      <div class="page-header">
+        <div>
+          <div class="page-title">活动促销</div>
+          <div class="page-subtitle">优惠券、满减活动、会员专享</div>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-secondary"><span class="material-icons-round">history</span> 历史活动</button>
+          <button class="btn btn-primary" onclick="openModal('addPromo')"><span class="material-icons-round">add</span> 创建活动</button>
+        </div>
+      </div>
+      <div class="three-col">
+        <div class="promo-card c1">
+          <div class="promo-tag">进行中</div>
+          <div class="promo-name">周三会员日</div>
+          <div class="promo-desc">每周三全部影片五折观影，不限场次</div>
+          <div class="promo-bar"><div class="promo-bar-fill" style="width:34%;background:var(--accent);"></div></div>
+          <div class="promo-meta"><span>5月已举办 3 场</span><span>剩余 1 场</span></div>
+        </div>
+        <div class="promo-card c2">
+          <div class="promo-tag">进行中</div>
+          <div class="promo-name">爆米花套餐特惠</div>
+          <div class="promo-desc">双人套餐原价98元，特惠价78元立省20元</div>
+          <div class="promo-bar"><div class="promo-bar-fill" style="width:62%;background:var(--gold);"></div></div>
+          <div class="promo-meta"><span>已售 186 份</span><span>限量 300 份</span></div>
+        </div>
+        <div class="promo-card c1">
+          <div class="promo-tag">进行中</div>
+          <div class="promo-name">生日当月特权</div>
+          <div class="promo-desc">会员生日当月可免费观看任意一场电影</div>
+          <div class="promo-bar"><div class="promo-bar-fill" style="width:100%;background:var(--teal);"></div></div>
+          <div class="promo-meta"><span>本月 12 人使用</span><span>不限量</span></div>
+        </div>
+        <div class="promo-card c2">
+          <div class="promo-tag">即将开始</div>
+          <div class="promo-name">六一儿童节亲子专场</div>
+          <div class="promo-desc">1.3米以下儿童免费（需成人陪同）</div>
+          <div class="promo-bar"><div class="promo-bar-fill" style="width:0%;background:var(--purple);"></div></div>
+          <div class="promo-meta"><span>6月1日</span><span>即将开始</span></div>
+        </div>
+        <div class="promo-card c1">
+          <div class="promo-tag">进行中</div>
+          <div class="promo-name">新会员首单立减</div>
+          <div class="promo-desc">新注册会员首单立减15元，限一次</div>
+          <div class="promo-bar"><div class="promo-bar-fill" style="width:78%;background:var(--accent);"></div></div>
+          <div class="promo-meta"><span>已领取 456 张</span><span>限量 500 张</span></div>
+        </div>
+        <div class="promo-card c2">
+          <div class="promo-tag">已结束</div>
+          <div class="promo-name">五一黄金周特惠</div>
+          <div class="promo-desc">五一期间全场买一赠一，欢乐假期</div>
+          <div class="promo-bar"><div class="promo-bar-fill" style="width:100%;background:var(--text-muted);"></div></div>
+          <div class="promo-meta"><span>5月1-5日</span><span>已结束</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-content -->
+</div><!-- /main-wrap -->
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">新增预订</div>
+      <button class="modal-close" onclick="closeModal()"><span class="material-icons-round">close</span></button>
+    </div>
+    <div class="modal-body" id="modalBody">
+      <div class="form-group">
+        <label class="form-label">影厅</label>
+        <select class="form-select">
+          <option>星辰厅（120座）</option>
+          <option>月华厅（100座）</option>
+          <option>星空厅（100座）</option>
+          <option>银河厅（100座）</option>
+          <option>梦境厅（80座）</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">影片</label>
+        <select class="form-select">
+          <option>流浪地球3</option>
+          <option>爱情神话</option>
+          <option>星际穿越</option>
+          <option>封校惊魂夜</option>
+          <option>热辣滚烫</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">日期</label>
+        <input type="date" class="form-input" value="2026-05-17">
+      </div>
+      <div class="form-group">
+        <label class="form-label">开场时间</label>
+        <input type="time" class="form-input" value="10:30">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+      <button class="btn btn-primary" onclick="closeModal();showToast('保存成功','success');">确认</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============ NAVIGATION ============
+const pageNames = {
+  dashboard:'控制台', schedule:'排片计划', booking:'座位预订', membership:'会员管理',
+  snacks:'卖品管理', revenue:'营收分析', loyalty:'客户忠诚度', films:'影片库',
+  equipment:'设备管理', groups:'团体预订', promos:'活动促销'
+};
+
+function showPage(page) {
+  document.querySelectorAll('.page-section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  document.getElementById('topbar-title').textContent = pageNames[page] || page;
+}
+
+// ============ SEAT MAP ============
+const ROWS = ['A','B','C','D','E','F','G','H'];
+const COLS = 8;
+const bookedSeats = new Set(['A2','A3','A4','A5','B1','B6','B7','C3','C4','D5','D6','E1','E8','F2','F3','G5','G6','H3','H4','H5']);
+const vipSeats = new Set(['A1','A8','H1','H8']);
+
+function buildSeatMap() {
+  const map = document.getElementById('seatMap');
+  if(!map) return;
+  map.innerHTML = '';
+  ROWS.forEach(row => {
+    for(let col=1; col<=COLS; col++) {
+      const id = row+col;
+      const seat = document.createElement('div');
+      seat.className = 'seat';
+      seat.dataset.seat = id;
+      if(bookedSeats.has(id)) {
+        seat.classList.add('booked');
+        seat.innerHTML = '✓';
+      } else if(vipSeats.has(id)) {
+        seat.classList.add('vip');
+        seat.onclick = () => toggleSeat(id, seat, true);
+      } else {
+        seat.onclick = () => toggleSeat(id, seat, false);
+      }
+      map.appendChild(seat);
+    }
+  });
+}
+
+let selectedSeats = [];
+const TICKET_PRICE = 68;
+const VIP_DISCOUNT = 10;
+let memberDiscount = 0;
+
+function toggleSeat(id, el, isVip) {
+  if(el.classList.contains('booked')) return;
+  if(selectedSeats.includes(id)) {
+    selectedSeats = selectedSeats.filter(s=>s!==id);
+    el.classList.remove('selected');
+  } else {
+    selectedSeats.push(id);
+    el.classList.add('selected');
+  }
+  updateBookingSummary();
+}
+
+function updateBookingSummary() {
+  const count = selectedSeats.length;
+  const hasVip = selectedSeats.some(s=>vipSeats.has(s));
+  const base = count * TICKET_PRICE;
+  const discount = count * VIP_DISCOUNT;
+  const total = base - discount;
+  document.getElementById('seatCount').textContent = count;
+  document.getElementById('selectedSeats').textContent = count>0 ? selectedSeats.join(', ') : '未选择';
+  document.getElementById('totalPrice').textContent = '¥' + total;
+  document.getElementById('seatTotal').textContent = '¥' + total;
+}
+
+function confirmBooking() {
+  if(selectedSeats.length===0) { showToast('请先选择座位','error'); return; }
+  showToast('预订成功！座位：'+selectedSeats.join(', '),'success');
+  selectedSeats=[];
+  document.querySelectorAll('.seat.selected').forEach(s=>s.classList.remove('selected'));
+  updateBookingSummary();
+}
+
+// ============ SNACK ORDER ============
+const snackOrder = {};
+function changeQty(btn, delta) {
+  const item = btn.closest('.snack-item');
+  const name = item.querySelector('.snack-name').textContent;
+  const price = parseInt(item.querySelector('.snack-price').textContent.replace('¥',''));
+  const qtyEl = item.querySelector('.qty-display');
+  let qty = parseInt(qtyEl.textContent) + delta;
+  if(qty<0) qty=0;
+  qtyEl.textContent = qty;
+  snackOrder[name] = {qty, price};
+  updateSnackOrder();
+}
+
+function updateSnackOrder() {
+  const el = document.getElementById('snackOrder');
+  const countEl = document.getElementById('snackItemCount');
+  const totalEl = document.getElementById('snackTotal');
+  let total = 0, count = 0;
+  let html = '';
+  for(const [name, data] of Object.entries(snackOrder)) {
+    if(data.qty>0) {
+      total += data.qty * data.price;
+      count += data.qty;
+      html += `<div class="flex-between" style="margin-bottom:8px;font-size:13px;"><span>${name} ×${data.qty}</span><span class="text-gold" style="font-weight:600;">¥${data.qty*data.price}</span></div>`;
+    }
+  }
+  el.innerHTML = html || '<div style="text-align:center;color:var(--text-muted);padding:30px 0;">点击左侧商品添加到订单</div>';
+  countEl.textContent = count;
+  totalEl.textContent = total;
+}
+
+// ============ MODAL ============
+function openModal(type) {
+  const titles = {addSchedule:'新增加场', addMember:'新增会员', addSnack:'添加商品', addFilm:'添加影片', addGroup:'新建团体预订', addPromo:'创建活动', redeem:'积分兑换'};
+  document.getElementById('modalTitle').textContent = titles[type] || '提示';
+  document.getElementById('modalOverlay').classList.add('show');
+}
+function closeModal(e) {
+  if(e && e.target!==e.currentTarget) return;
+  document.getElementById('modalOverlay').classList.remove('show');
+}
+
+// ============ TOAST ============
+function showToast(msg, type='info') {
+  const icons = {success:'check_circle', error:'error', info:'info'};
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast '+type;
+  toast.innerHTML = `<span class="material-icons-round toast-icon">${icons[type]}</span><span>${msg}</span>`;
+  container.appendChild(toast);
+  setTimeout(()=>toast.remove(),3000);
+}
+
+// ============ MEMBER INPUT ============
+document.getElementById('memberInput')?.addEventListener('input', function() {
+  const info = document.getElementById('memberInfo');
+  if(this.value.length>=3) {
+    info.style.display='flex';
+    info.style.marginTop='10px';
+  } else {
+    info.style.display='none';
+  }
+});
+
+// ============ SEARCH ============
+document.getElementById('searchInput')?.addEventListener('keypress', function(e) {
+  if(e.key==='Enter' && this.value.trim()) {
+    showToast('搜索：'+this.value, 'info');
+  }
+});
+
+// Init
+buildSeatMap();
+</script>
+</body>
+</html>

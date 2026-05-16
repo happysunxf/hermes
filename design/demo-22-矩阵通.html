@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>矩阵通 - 自媒体矩阵运营系统</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0f1c;--card:#111827;--border:#1f2937;--primary:#60a5fa;--accent:#38bdf8;--text:#f9fafb;--muted:#9ca3af;--green:#34d399;--amber:#fbbf24;--red:#f87171;--purple:#a78bfa}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex}
+.sidebar{width:230px;background:#0d1421;border-right:1px solid var(--border);padding:20px 0;flex-shrink:0;display:flex;flex-direction:column;position:fixed;height:100vh;overflow-y:auto}
+.logo{padding:0 20px 24px;border-bottom:1px solid var(--border);margin-bottom:16px}
+.logo h1{font-size:18px;font-weight:700;background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo span{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+.sidebar-nav{flex:1}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;color:var(--muted);cursor:pointer;font-size:13px;transition:all .2s;border-left:3px solid transparent}
+.nav-item:hover,.nav-item.active{background:#1a2332;color:var(--primary);border-left-color:var(--primary)}
+.nav-item .icon{font-size:16px;width:20px;text-align:center}
+.badge{background:var(--primary);color:#000;font-size:10px;padding:1px 6px;border-radius:10px;margin-left:auto}
+.badge.red{background:var(--red)}
+.main{flex:1;margin-left:230px;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:#0d1421;border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between}
+.topbar h2{font-size:15px;font-weight:600}
+.topbar-right{display:flex;align-items:center;gap:16px}
+.demo-badge{background:linear-gradient(135deg,#60a5fa,#a78bfa);color:#fff;font-size:11px;padding:4px 12px;border-radius:20px;font-weight:600}
+.search-box{display:flex;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 12px;gap:8px}
+.search-box input{background:none;border:none;outline:none;color:var(--text);font-size:13px;width:200px}
+.topbar-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#60a5fa,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;cursor:pointer}
+.content{padding:24px;overflow-y:auto;flex:1}
+.panel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;transition:all .3s}
+.panel:hover{border-color:var(--primary);transform:translateY(-2px)}
+.panel-num{font-size:28px;font-weight:800;background:linear-gradient(135deg,#60a5fa,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.panel-label{font-size:12px;color:var(--muted);margin-top:4px}
+.panel-sub{font-size:11px;color:var(--green);margin-top:6px}
+.panel-sub.red{color:var(--red)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.card-title{font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+.tab-bar{display:flex;gap:4px;background:#0d1421;border-radius:8px;padding:4px;margin-bottom:16px}
+.tab{padding:6px 14px;font-size:12px;color:var(--muted);cursor:pointer;border-radius:6px;transition:all .2s}
+.tab.active{background:var(--primary);color:#000;font-weight:600}
+.table-wrp{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--border)}
+th{color:var(--muted);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+tr:hover td{background:#1a2332}
+.status{font-size:11px;padding:2px 8px;border-radius:10px}
+.status.run{color:var(--green);background:rgba(52,211,153,.15)}
+.status.warn{color:var(--amber);background:rgba(251,191,36,.15)}
+.status.err{color:var(--red);background:rgba(248,113,113,.15)}
+.status.info{color:var(--primary);background:rgba(96,165,250,.15)}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;background:rgba(96,165,250,.15);color:var(--primary);margin-right:4px}
+.tag.purple{background:rgba(167,139,250,.15);color:var(--purple)}
+.tag.green{background:rgba(52,211,153,.15);color:var(--green)}
+.tag.amber{background:rgba(251,191,36,.15);color:var(--amber)}
+.tag.red{background:rgba(248,113,113,.15);color:var(--red)}
+.progress-bar{height:4px;background:#1a2332;border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:2px;transition:width .8s ease}
+.flex-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{padding:7px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+.btn-primary{background:var(--primary);color:#000}
+.btn-primary:hover{background:var(--accent)}
+.btn-outline{border:1px solid var(--border);color:var(--muted);background:none}
+.btn-outline:hover{border-color:var(--primary);color:var(--primary)}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}
+.form-item label{display:block;font-size:11px;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.form-item input,.form-item select,.form-item textarea{width:100%;padding:8px 12px;background:#0d1421;border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;outline:none;transition:border .2s;resize:none}
+.form-item input:focus,.form-item select:focus,.form-item textarea:focus{border-color:var(--primary)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(4px)}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;width:640px;max-width:90vw;max-height:85vh;overflow-y:auto}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.modal-title{font-size:16px;font-weight:700}
+.modal-close{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1}
+.modal-close:hover{color:var(--text)}
+.grid-2{grid-template-columns:1fr 1fr;gap:16px;display:grid}
+.grid-3{grid-template-columns:repeat(3,1fr);gap:16px;display:grid}
+.list-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.list-item:last-child{border-bottom:none}
+.list-item .icon-circle{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;background:rgba(96,165,250,.15)}
+.list-item .info{flex:1}
+.list-item .title{font-size:13px;font-weight:600}
+.list-item .desc{font-size:11px;color:var(--muted);margin-top:2px}
+.account-card{background:#0d1421;border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s}
+.account-card:hover{border-color:var(--primary);transform:translateY(-1px)}
+.account-card .avatar{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.account-card .info{flex:1;min-width:0}
+.account-card .name{font-size:13px;font-weight:600}
+.account-card .meta{font-size:11px;color:var(--muted);margin-top:2px;display:flex;gap:8px}
+.account-card .stat{text-align:right}
+.account-card .stat-num{font-size:15px;font-weight:700;color:var(--primary)}
+.account-card .stat-label{font-size:10px;color:var(--muted)}
+.chart-box{height:180px;background:linear-gradient(135deg,#0d1421,#11192b);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;position:relative;overflow:hidden;padding:16px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;animation:pulse 2s infinite}
+.dot.green{background:var(--green)}
+.dot.amber{background:var(--amber)}
+.dot.red{background:var(--red)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner{border:2px solid var(--border);border-top-color:var(--primary);border-radius:50%;width:24px;height:24px;animation:spin .8s linear infinite}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.calendar-grid .day-header{font-size:11px;color:var(--muted);padding:4px}
+.calendar-grid .day{font-size:12px;padding:8px 4px;border-radius:6px;cursor:pointer;transition:all .2s}
+.calendar-grid .day:hover{background:#1a2332}
+.calendar-grid .day.today{border:1px solid var(--primary);color:var(--primary)}
+.calendar-grid .day.event{background:rgba(96,165,250,.15);color:var(--primary)}
+.platform-tag{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600}
+.platform-tag.douyin{background:rgba(255,0,80,.2);color:#ff0050}
+.platform-tag.kuaishou{background:rgba(255,150,0,.2);color:#ff9600}
+.platform-tag.xiaohongshu{background:rgba(255,0,0,.2);color:#ff0000}
+.platform-tag.weixins{background:rgba(0,200,100,.2);color:#00c864}
+.platform-tag.weibo{background:rgba(255,100,0,.2);color:#ff6400}
+.skill-bar{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.skill-bar .label{font-size:11px;color:var(--muted);width:60px}
+.skill-bar .bar{flex:1;height:4px;background:#1a2332;border-radius:2px}
+.skill-bar .fill{height:100%;border-radius:2px}
+.heatmap{display:grid;grid-template-columns:repeat(24,1fr);gap:2px}
+.heatmap-cell{height:16px;border-radius:2px;opacity:.6;cursor:pointer;transition:opacity .2s}
+.heatmap-cell:hover{opacity:1}
+</style>
+</head>
+<body>
+<div class="sidebar">
+  <div class="logo"><h1>📊 矩阵通</h1><span>自媒体矩阵运营系统 · 演示版</span></div>
+  <div class="sidebar-nav">
+    <div class="nav-item active" onclick="showPage('dashboard',this)"><span class="icon">📊</span>数据概览</div>
+    <div class="nav-item" onclick="showPage('accounts',this)"><span class="icon">📱</span>账号矩阵</div>
+    <div class="nav-item" onclick="showPage('content',this)"><span class="icon">✍️</span>内容管理</div>
+    <div class="nav-item" onclick="showPage('calendar',this)"><span class="icon">📅</span>发布日历</div>
+    <div class="nav-item" onclick="showPage('comment',this)"><span class="icon">💬</span>评论私信 <span class="badge red">28</span></div>
+    <div class="nav-item" onclick="showPage('analytics',this)"><span class="icon">📈</span>数据分析</div>
+    <div class="nav-item" onclick="showPage('fan',this)"><span class="icon">👥</span>粉丝画像</div>
+    <div class="nav-item" onclick="showPage('revenue',this)"><span class="icon">💰</span>收益管理</div>
+    <div class="nav-item" onclick="showPage('team',this)"><span class="icon">👔</span>团队协作</div>
+    <div class="nav-item" onclick="showPage('ai',this)"><span class="icon">🤖</span>AI助手</div>
+  </div>
+</div>
+<div class="main">
+  <div class="topbar">
+    <h2>数据概览</h2>
+    <div class="topbar-right">
+      <div class="search-box">🔍 <input placeholder="搜索账号/内容/话题…"></div>
+      <span class="demo-badge">🔬 功能演示</span>
+      <div class="topbar-avatar">M</div>
+    </div>
+  </div>
+  <div class="content" id="pageContent"></div>
+</div>
+<script>
+const mockData={
+  accounts:[
+    {id:1,platform:'douyin',name:'生活小妙招',avatar:'🎬',fans:125800,views:890000,likes:45600,posts:328,status:'active',todayViews:12500,weekTrend:12.5},
+    {id:2,platform:'xiaohongshu',name:'精致生活家',avatar:'💄',fans:89200,views:520000,likes:32100,posts:215,status:'active',todayViews:8200,weekTrend:8.3},
+    {id:3,platform:'kuaishou',name:'搞笑集中营',avatar:'😂',fans:256000,views:1200000,likes:89000,posts:456,status:'active',todayViews:28000,weekTrend:-2.1},
+    {id:4,platform:'weixins',name:'职场充电站',avatar:'💼',fans:45000,views:180000,likes:12000,posts:128,status:'active',todayViews:3200,weekTrend:15.7},
+    {id:5,platform:'weibo',name:'科技前沿',avatar:'🚀',fans:67800,views:340000,likes:21000,posts:198,status:'inactive',todayViews:1200,weekTrend:-5.4},
+  ],
+  contents:[
+    {id:1,title:'5个让厨房焕然一新的小技巧',account:'生活小妙招',platform:'douyin',type:'生活',views:125600,likes:8900,comments:456,shares:1200,fav:2300,status:'published',time:'今天 14:30',duration:'2:35'},
+    {id:2,title:'职场新人必看的5个沟通技巧',account:'职场充电站',platform:'weixins',type:'职场',views:45600,likes:3200,comments:234,shares:890,fav:1100,status:'published',time:'今天 10:20',duration:'3:12'},
+    {id:3,title:'这款面霜让我皮肤年轻了10岁',account:'精致生活家',platform:'xiaohongshu',type:'美妆',views:89000,likes:7800,comments:567,shares:340,fav:4500,status:'published',time:'昨天 18:45',duration:'1:58'},
+    {id:4,title:'程序员自嘲视频合集，笑喷了',account:'搞笑集中营',platform:'kuaishou',type:'搞笑',views:256000,likes:18900,comments:1200,shares:3400,fav:8900,status:'published',time:'昨天 12:00',duration:'4:20'},
+    {id:5,title:'2024年最值得入手的科技产品',account:'科技前沿',platform:'weibo',type:'科技',views:0,likes:0,comments:0,shares:0,fav:0,status:'draft',time:'草稿',duration:''},
+    {id:6,title:'夏日清爽穿搭指南 | 一周不重样',account:'精致生活家',platform:'xiaohongshu',type:'时尚',views:0,likes:0,comments:0,shares:0,fav:0,status:'scheduled',time:'明天 20:00',duration:'2:15'},
+  ],
+  comments:[
+    {id:1,user:'小红薯用户',platform:'xiaohongshu',content:'这个方法太实用了，已收藏！',time:'5分钟前',account:'精致生活家',reply:'感谢支持～有任何问题随时问我',like:45},
+    {id:2,user:'职场小白',platform:'weixins',content:'老师讲的太清楚了，终于知道怎么和领导沟通了',time:'15分钟前',account:'职场充电站',reply:'',like:23},
+    {id:3,user:'抖音粉丝123456',platform:'douyin',content:'哈哈哈哈笑死我了',time:'30分钟前',account:'生活小妙招',reply:'哈哈喜欢就好～',like:12},
+    {id:4,user:'科技迷',platform:'weibo',content:'这篇分析很到位，期待下期',time:'1小时前',account:'科技前沿',reply:'',like:89},
+    {id:5,user:'健身达人',platform:'kuaishou',content:'这个动作我练了3个月真的有效',time:'2小时前',account:'搞笑集中营',reply:'坚持就是胜利💪',like:156},
+  ],
+  messages:[
+    {id:1,user:'张女士',platform:'xiaohongshu',content:'想咨询一下这个产品的使用方法',time:'10分钟前',account:'精致生活家',unread:true},
+    {id:2,user:'李先生',platform:'douyin',content:'请问在哪里可以买到',time:'30分钟前',account:'生活小妙招',unread:true},
+    {id:3,user:'王小红',platform:'xiaohongshu',content:'已下单，期待效果',time:'1小时前',account:'精致生活家',unread:false},
+    {id:4,user:'粉丝A',platform:'kuaishou',content:'博主好棒！',time:'2小时前',account:'搞笑集中营',unread:false},
+  ],
+  analytics:{labels:['周一','周二','周三','周四','周五','周六','周日'],views:[125,98,145,167,132,198,245],likes:[12,8,15,18,14,22,28],fans:[+230,+180,+320,+280,+410,+520,+680]},
+  fanProfile:{male:42,female:58,age18_24:25,age25_34:45,age35_44:20,age45:10,city1:'北京',city2:'上海',city3:'广州',city4:'深圳',city5:'杭州'},
+  revenue:{month:386500,trend:15.8,pending:42000,withdrawn:280000,bank:64500}
+};
+
+let currentPage='dashboard';
+function showPage(page,el){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  el.closest('.nav-item').classList.add('active');
+  const titles={dashboard:'数据概览',accounts:'账号矩阵',content:'内容管理',calendar:'发布日历',comment:'评论私信',analytics:'数据分析',fan:'粉丝画像',revenue:'收益管理',team:'团队协作',ai:'AI助手'};
+  document.querySelector('.topbar h2').textContent=titles[page];
+  const c=document.getElementById('pageContent');
+  switch(page){
+    case 'dashboard':c.innerHTML=renderDashboard();break;
+    case 'accounts':c.innerHTML=renderAccounts();break;
+    case 'content':c.innerHTML=renderContent();break;
+    case 'calendar':c.innerHTML=renderCalendar();break;
+    case 'comment':c.innerHTML=renderComment();break;
+    case 'analytics':c.innerHTML=renderAnalytics();break;
+    case 'fan':c.innerHTML=renderFan();break;
+    case 'revenue':c.innerHTML=renderRevenue();break;
+    case 'team':c.innerHTML=renderTeam();break;
+    case 'ai':c.innerHTML=renderAI();break;
+  }
+}
+
+function renderDashboard(){
+  const totalFans=mockData.accounts.reduce((s,a)=>s+a.fans,0);
+  const totalViews=mockData.accounts.reduce((s,a)=>s+a.views,0);
+  const totalPosts=mockData.accounts.reduce((s,a)=>s+a.posts,0);
+  const activeAccounts=mockData.accounts.filter(a=>a.status==='active').length;
+  const todayTotalViews=mockData.accounts.reduce((s,a)=>s+a.todayViews,0);
+  return `<div class="panel-grid">
+    <div class="panel"><div class="panel-num">${(totalFans/10000).toFixed(1)}万</div><div class="panel-label">总粉丝数</div><div class="panel-sub">↑ 12.5% 本周增长</div></div>
+    <div class="panel"><div class="panel-num">${(totalViews/10000).toFixed(1)}万</div><div class="panel-label">总播放量</div><div class="panel-sub">今日 ${(todayTotalViews/10000).toFixed(1)}万</div></div>
+    <div class="panel"><div class="panel-num">${totalPosts}</div><div class="panel-label">总内容数</div><div class="panel-sub">本月新增 28 篇</div></div>
+    <div class="panel"><div class="panel-num">${activeAccounts}/${mockData.accounts.length}</div><div class="panel-label">活跃账号</div><div class="panel-sub" style="color:var(--green)">● 正常运营</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="card"><div class="card-header"><span class="card-title">📈 传播趋势(7天)</span><div class="tab-bar" style="margin:0"><span class="tab active">播放</span><span class="tab">点赞</span><span class="tab">粉丝</span></div></div>
+      <div class="chart-box">${renderBarChart(mockData.analytics)}</div>
+    </div>
+    <div class="card"><div class="card-header"><span class="card-title">🔥 热门内容 TOP3</span></div>
+      ${mockData.contents.filter(c=>c.status==='published').sort((a,b)=>b.views-a.views).slice(0,3).map((c,i)=>`<div class="list-item">
+        <div class="icon-circle" style="background:${['rgba(255,0,80,.15)','rgba(255,150,0,.15)','rgba(255,0,0,.15)'][i]}">${['🏆','🥈','🥉'][i]}</div>
+        <div class="info"><div class="title">${c.title}</div><div class="desc">${c.account} · ${c.platform==='douyin'?'抖音':c.platform==='xiaohongshu'?'小红书':c.platform==='kuaishou'?'快手':c.platform==='weixins'?'视频号':'微博'}</div></div>
+        <div style="text-align:right"><div style="font-size:14px;font-weight:700;color:var(--primary)">${(c.views/10000).toFixed(1)}万</div><div style="font-size:10px;color:var(--muted)">播放</div></div>
+      </div>`).join('')}
+    </div>
+  </div>
+  <div class="grid-2" style="margin-top:16px">
+    <div class="card"><div class="card-header"><span class="card-title">📱 账号矩阵概览</span><button class="btn btn-outline" style="font-size:11px;padding:4px 10px">管理账号</button></div>
+      ${mockData.accounts.slice(0,3).map(a=>`<div class="account-card" style="margin-bottom:8px">
+        <div class="avatar" style="background:${a.platform==='douyin'?'rgba(255,0,80,.2)':a.platform==='xiaohongshu'?'rgba(255,0,0,.2)':a.platform==='kuaishou'?'rgba(255,150,0,.2)':a.platform==='weixins'?'rgba(0,200,100,.2)':'rgba(255,100,0,.2)'}">${a.avatar}</div>
+        <div class="info"><div class="name">${a.name}</div><div class="meta"><span class="platform-tag ${a.platform}">${a.platform==='douyin'?'抖音':'📱'}</span><span>${(a.fans/10000).toFixed(1)}万粉丝</span></div></div>
+        <div class="stat"><div class="stat-num">${(a.todayViews/10000).toFixed(1)}万</div><div class="stat-label">今日播放</div></div>
+      </div>`).join('')}
+    </div>
+    <div class="card"><div class="card-header"><span class="card-title">💬 最新评论私信</span><span class="badge red">${mockData.comments.length+mockData.messages.filter(m=>m.unread).length}</span></div>
+      ${[...mockData.comments.slice(0,2),...mockData.messages.filter(m=>m.unread).slice(0,1)].map(m=>`<div class="list-item">
+        <div class="icon-circle">💬</div>
+        <div class="info"><div class="title">${m.user}</div><div class="desc">${m.content.substring(0,30)}${m.content.length>30?'…':''}</div></div>
+        <div style="font-size:10px;color:var(--muted)">${m.time}</div>
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function renderBarChart(data){
+  const max=Math.max(...data.views);
+  return `<div style="display:flex;align-items:flex-end;gap:8px;height:140px;padding:8px 0">
+    ${data.labels.map((l,i)=>`<div style="flex:1;text-align:center">
+      <div style="height:${Math.round(data.views[i]/max*120)}px;background:linear-gradient(180deg,var(--primary),rgba(96,165,250,.3));border-radius:4px 4px 0 0;margin-bottom:4px"></div>
+      <div style="font-size:10px;color:var(--muted)">${l}</div>
+    </div>`).join('')}
+  </div>`;
+}
+
+function renderAccounts(){
+  return `<div class="card" style="margin-bottom:16px">
+    <div class="form-grid">
+      <div class="form-item"><label>账号名称</label><input placeholder="搜索账号…"></div>
+      <div class="form-item"><label>平台</label><select><option>全部平台</option><option>抖音</option><option>小红书</option><option>快手</option><option>视频号</option><option>微博</option></select></div>
+      <div class="form-item"><label>状态</label><select><option>全部</option><option>活跃</option><option>停更</option></select></div>
+    </div>
+    <div class="flex-row"><button class="btn btn-primary" onclick="showModal('account')">+ 添加账号</button><button class="btn btn-outline">📊 数据报告</button></div>
+  </div>
+  <div class="panel-grid">
+    <div class="panel"><div class="panel-num">${mockData.accounts.length}</div><div class="panel-label">账号总数</div><div class="panel-sub">覆盖 5 大平台</div></div>
+    <div class="panel"><div class="panel-num">${(mockData.accounts.reduce((s,a)=>s+a.fans,0)/10000).toFixed(1)}万</div><div class="panel-label">累计粉丝</div><div class="panel-sub">本周 +1.2万</div></div>
+    <div class="panel"><div class="panel-num">${(mockData.accounts.reduce((s,a)=>s+a.todayViews,0)/10000).toFixed(1)}万</div><div class="panel-label">今日总播放</div><div class="panel-sub">较昨日 +8.5%</div></div>
+    <div class="panel"><div class="panel-num">${mockData.contents.filter(c=>c.status==='published').length}</div><div class="panel-label">本月发布</div><div class="panel-sub">日均 3.2 条</div></div>
+  </div>
+  <div class="grid-3">
+    ${mockData.accounts.map(a=>`<div class="card" style="padding:16px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+        <div style="width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;background:${a.platform==='douyin'?'rgba(255,0,80,.2)':a.platform==='xiaohongshu'?'rgba(255,0,0,.2)':a.platform==='kuaishou'?'rgba(255,150,0,.2)':a.platform==='weixins'?'rgba(0,200,100,.2)':'rgba(255,100,0,.2)'}">${a.avatar}</div>
+        <div style="flex:1"><div style="font-weight:600;font-size:13px">${a.name}</div><span class="platform-tag ${a.platform}" style="font-size:10px">${a.platform==='douyin'?'抖音':a.platform==='xiaohongshu'?'小红书':a.platform==='kuaishou'?'快手':a.platform==='weixins'?'视频号':'微博'}</span></div>
+        <span class="status ${a.status==='active'?'run':'warn'}">${a.status==='active'?'活跃':'停更'}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;margin-bottom:12px">
+        <div><div style="font-size:16px;font-weight:700;color:var(--primary)">${(a.fans/10000).toFixed(1)}万</div><div style="font-size:10px;color:var(--muted)">粉丝</div></div>
+        <div><div style="font-size:16px;font-weight:700">${(a.views/10000).toFixed(1)}万</div><div style="font-size:10px;color:var(--muted)">播放</div></div>
+        <div><div style="font-size:16px;font-weight:700">${a.posts}</div><div style="font-size:10px;color:var(--muted)">内容</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px">
+        <span style="color:${a.weekTrend>=0?'var(--green)':'var(--red)'}">${a.weekTrend>=0?'↑':'↓'} ${Math.abs(a.weekTrend)}%</span>
+        <span style="color:var(--muted)">本周</span>
+      </div>
+      <div class="progress-bar" style="margin-top:4px"><div class="progress-fill" style="width:${Math.min(100,a.weekTrend*10+50)}%;background:${a.weekTrend>=0?'var(--green)':'var(--red)'}"></div></div>
+    </div>`).join('')}
+  </div>`;
+}
+
+function renderContent(){
+  return `<div class="card" style="margin-bottom:16px">
+    <div class="form-grid">
+      <div class="form-item"><label>内容标题</label><input placeholder="搜索内容…"></div>
+      <div class="form-item"><label>平台</label><select><option>全部</option><option>抖音</option><option>小红书</option><option>快手</option><option>视频号</option><option>微博</option></select></div>
+      <div class="form-item"><label>状态</label><select><option>全部</option><option>已发布</option><option>草稿</option><option>定时</option></select></div>
+      <div class="form-item"><label>类型</label><select><option>全部</option><option>生活</option><option>职场</option><option>美妆</option><option>科技</option><option>搞笑</option></select></div>
+    </div>
+    <div class="flex-row"><button class="btn btn-primary" onclick="showModal('content')">+ 创建内容</button><button class="btn btn-outline">🤖 AI续写</button><button class="btn btn-outline">📤 批量发布</button></div>
+  </div>
+  <div class="card"><div class="card-header"><span class="card-title">内容列表 (${mockData.contents.length})</span><div class="tab-bar"><span class="tab active">全部</span><span class="tab">已发布</span><span class="tab">草稿</span><span class="tab">定时</span></div></div>
+    <div class="table-wrp"><table><thead><tr><th>内容标题</th><th>账号</th><th>类型</th><th>播放</th><th>点赞</th><th>评论</th><th>转发</th><th>收藏</th><th>状态</th><th>操作</th></tr></thead><tbody>
+      ${mockData.contents.map(c=>`<tr>
+        <td style="max-width:200px"><div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.title}</div><div style="font-size:10px;color:var(--muted)">${c.time} ${c.duration?'· '+c.duration:''}</div></td>
+        <td><span class="platform-tag ${c.platform}">${c.platform==='douyin'?'抖音':'📱'}</span></td>
+        <td><span class="tag">${c.type}</span></td>
+        <td style="color:var(--primary);font-weight:600">${c.views>0?(c.views/10000).toFixed(1)+'万':'-'}</td>
+        <td>${c.likes>0?c.likes.toLocaleString():'-'}</td>
+        <td>${c.comments>0?c.comments:'-'}</td>
+        <td>${c.shares>0?c.shares:'-'}</td>
+        <td>${c.fav>0?c.fav:'-'}</td>
+        <td><span class="status ${c.status==='published'?'run':c.status==='draft'?'warn':'info'}">${c.status==='published'?'已发布':c.status==='draft'?'草稿':'待发布'}</span></td>
+        <td><button class="btn btn-outline" style="padding:3px 8px;font-size:11px">编辑</button><button class="btn btn-outline" style="padding:3px 8px;font-size:11px">数据</button></td>
+      </tr>`).join('')}
+    </tbody></table></div>
+  </div>`;
+}
+
+function renderCalendar(){
+  return `<div class="grid-2">
+    <div class="card"><div class="card-header"><span class="card-title">📅 内容日历 · 2025年6月</span><div class="flex-row" style="gap:8px"><button class="btn btn-outline" style="padding:4px 8px">◀</button><button class="btn btn-outline" style="padding:4px 8px">▶</button></div></div>
+      <div class="calendar-grid">
+        ${['日','一','二','三','四','五','六'].map(d=>`<div class="day-header">${d}</div>`).join('')}
+        ${Array.from({length:35},(_,i)=>{const day=i-2;const hasEvent=[5,12,18,25,28].includes(day);const isToday=day===17;return`<div class="day ${hasEvent?'event':''} ${isToday?'today':''}">${day>0&&day<=30?day:''}</div>`}).join('')}
+      </div>
+      <div style="margin-top:16px">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:8px">📌 近期待发布</div>
+        ${mockData.contents.filter(c=>c.status==='scheduled'||c.status==='draft').map(c=>`<div class="list-item">
+          <div class="icon-circle">📅</div>
+          <div class="info"><div class="title">${c.title}</div><div class="desc">${c.time} · ${c.account}</div></div>
+          <span class="status ${c.status==='scheduled'?'info':'warn'}">${c.status==='scheduled'?'已排期':'草稿'}</span>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div class="card"><div class="card-header"><span class="card-title">📊 发布时段分析</span></div>
+      <div style="margin-bottom:16px">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:6px">最佳发布时间推荐</div>
+        ${[['抖音','10:00-11:30','18:00-20:00'],['小红书','12:00-13:30','20:00-22:00'],['快手','07:00-09:00','19:00-21:00'],['视频号','08:00-10:00','21:00-23:00'],['微博','09:00-11:00','14:00-16:00']].map(([p,t1,t2])=>`<div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border)">
+          <span class="platform-tag ${p==='抖音'?'douyin':p==='小红书'?'xiaohongshu':p==='快手'?'kuaishou':p==='视频号'?'weixins':'weibo'}" style="font-size:10px">${p}</span>
+          <span style="font-size:11px;color:var(--primary)">上午: ${t1}</span>
+          <span style="font-size:11px;color:var(--amber)">晚间: ${t2}</span>
+        </div>`).join('')}
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px">📈 发布效果热力图</div>
+      <div class="heatmap" style="margin-bottom:8px">
+        ${['#1a2332','#1a4060','#2563eb','#3b82f6','#60a5fa','#1a2332','#2563eb','#60a5fa','#93c5fd','#1a2332','#2563eb','#3b82f6','#60a5fa','#93c5fd','#2563eb','#60a5fa','#1a2332','#3b82f6','#60a5fa','#93c5fd','#2563eb','#1a2332','#2563eb','#60a5fa'].map(c=>`<div class="heatmap-cell" style="background:${c}"></div>`).join('')}
+      </div>
+      <div style="font-size:10px;color:var(--muted);display:flex;justify-content:space-between"><span>0点</span><span>6点</span><span>12点</span><span>18点</span><span>24点</span></div>
+    </div>
+  </div>`;
+}
+
+function renderComment(){
+  return `<div class="grid-2">
+    <div class="card"><div class="card-header"><span class="card-title">💬 最新评论</span><span class="badge red">${mockData.comments.length}</span></div>
+    ${mockData.comments.map(c=>`<div class="list-item">
+      <div class="icon-circle">💬</div>
+      <div class="info"><div class="title">${c.user}</div><div class="desc">${c.content}</div></div>
+      <div style="text-align:right">
+        <div style="font-size:10px;color:var(--muted)">${c.time}</div>
+        <div style="font-size:11px;color:var(--primary)">❤️ ${c.like}</div>
+      </div>
+    </div>`).join('')}
+    <div class="card"><div class="card-header"><span class="card-title">📩 私信消息</span><span class="badge red">${mockData.messages.filter(m=>m.unread).length} 未读</span></div>
+    ${mockData.messages.map(m=>`<div class="list-item" style="${m.unread?'background:rgba(96,165,250,.05)':''}">
+      <div class="icon-circle" style="${m.unread?'background:rgba(248,113,113,.15)':''}">${m.unread?'🔴':'💬'}</div>
+      <div class="info"><div class="title">${m.user}</div><div class="desc">${m.content}</div></div>
+      <div style="text-align:right"><div style="font-size:10px;color:var(--muted)">${m.time}</div><button class="btn btn-outline" style="padding:2px 6px;font-size:10px;margin-top:2px">回复</button></div>
+    </div>`).join('')}
+  </div>
+  <div class="card" style="margin-top:16px"><div class="card-header"><span class="card-title">🔄 批量评论管理</span><div class="flex-row"><button class="btn btn-outline">自动回复</button><button class="btn btn-primary">开启监控</button></div></div>
+    <div class="form-grid">
+      <div class="form-item" style="grid-column:1/-1"><label>快捷回复模板</label><textarea style="height:80px" placeholder="输入常用回复模板，每行一条…"></textarea></div>
+    </div>
+    <div style="font-size:12px;color:var(--muted)">已设置 12 条自动回复规则 · 今日自动回复 156 条</div>
+  </div>`;
+}
+
+function renderAnalytics(){
+  return `<div class="panel-grid">
+    <div class="panel"><div class="panel-num">${(mockData.accounts.reduce((s,a)=>s+a.views,0)/10000).toFixed(1)}万</div><div class="panel-label">总播放量</div><div class="panel-sub">本周 +18.5%</div></div>
+    <div class="panel"><div class="panel-num">${mockData.accounts.reduce((s,a)=>s+a.likes,0).toLocaleString()}</div><div class="panel-label">总点赞数</div><div class="panel-sub">本周 +12.3%</div></div>
+    <div class="panel"><div class="panel-num">${(mockData.accounts.reduce((s,a)=>s+a.fans,0)/10000).toFixed(1)}万</div><div class="panel-label">总粉丝</div><div class="panel-sub">本周 +2.3%</div></div>
+    <div class="panel"><div class="panel-num">${(mockData.accounts.reduce((s,a)=>s+a.todayViews,0)/10000).toFixed(1)}万</div><div class="panel-label">今日播放</div><div class="panel-sub">实时统计</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="card"><div class="card-header"><span class="card-title">📊 播放趋势</span><div class="tab-bar" style="margin:0"><span class="tab active">7天</span><span class="tab">30天</span><span class="tab">90天</span></div></div>
+      <div class="chart-box" style="height:200px">${renderBigBarChart()}</div>
+    </div>
+    <div class="card"><div class="card-header"><span class="card-title">🎯 互动率分布</span></div>
+      <div style="padding:16px 0">
+        ${[{name:'点赞率',val:4.8},{name:'评论率',val:1.2},{name:'转发率',val:0.8},{name:'收藏率',val:2.1}].map(s=>`<div class="skill-bar"><span class="label">${s.name}</span><div class="bar"><div class="fill" style="width:${s.val*15}%;background:var(--primary)"></div></div><span style="font-size:11px;width:35px;text-align:right">${s.val}%</span></div>`).join('')}
+      </div>
+    </div>
+  </div>
+  <div class="grid-2" style="margin-top:16px">
+    <div class="card"><div class="card-header"><span class="card-title">📱 各平台数据对比</span></div>
+      <div class="table-wrp"><table><thead><tr><th>平台</th><th>粉丝</th><th>播放</th><th>点赞</th><th>互动率</th></tr></thead><tbody>
+        ${mockData.accounts.map(a=>`<tr>
+          <td><span class="platform-tag ${a.platform}">${a.platform==='douyin'?'抖音':a.platform==='xiaohongshu'?'小红书':a.platform==='kuaishou'?'快手':a.platform==='weixins'?'视频号':'微博'}</span></td>
+          <td>${(a.fans/10000).toFixed(1)}万</td>
+          <td>${(a.views/10000).toFixed(1)}万</td>
+          <td>${(a.likes/10000).toFixed(1)}万</td>
+          <td><span style="color:var(--green)">${(a.likes/a.views*100).toFixed(1)}%</span></td>
+        </tr>`).join('')}
+      </tbody></table></div>
+    </div>
+    <div class="card"><div class="card-header"><span class="card-title">🏆 内容类型表现</span></div>
+      ${[['生活',89,156],['职场',76,89],['美妆',92,234],['科技',68,45],['搞笑',95,312]].map(([t,v,p])=>`<div style="display:flex;align-items:center;gap:12px;padding:8px 0">
+        <span style="width:40px;font-size:12px">${t}</span>
+        <div style="flex:1"><div class="progress-bar"><div class="progress-fill" style="width:${v}%;background:${v>85?'var(--green)':v>70?'var(--amber)':'var(--primary)'}"></div></div></div>
+        <span style="font-size:11px;color:var(--muted)">${p}篇</span>
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function renderBigBarChart(){
+  const d=mockData.analytics;
+  const max=Math.max(...d.views);
+  return `<div style="display:flex;align-items:flex-end;gap:8px;height:160px;padding:8px 0">
+    ${d.labels.map((l,i)=>`<div style="flex:1;text-align:center">
+      <div style="height:${Math.round(d.views[i]/max*140)}px;background:linear-gradient(180deg,var(--primary),rgba(56,189,248,.4));border-radius:4px 4px 0 0;margin-bottom:4px"></div>
+      <div style="font-size:10px;color:var(--muted)">${l}</div>
+      <div style="font-size:10px;color:var(--primary);font-weight:600">${d.views[i]}</div>
+    </div>`).join('')}
+  </div>`;
+}
+
+function renderFan(){
+  const fp=mockData.fanProfile;
+  return `<div class="panel-grid">
+    <div class="panel"><div class="panel-num">${(mockData.accounts.reduce((s,a)=>s+a.fans,0)/10000).toFixed(1)}万</div><div class="panel-label">总粉丝</div><div class="panel-sub">↑ 2.3% 本周</div></div>
+    <div class="panel"><div class="panel-num">${fp.male}%</div><div class="panel-label">男性占比</div><div class="panel-sub">女性 ${fp.female}%</div></div>
+    <div class="panel"><div class="panel-num">${fp.age25_34}%</div><div class="panel-label">核心年龄段</div><div class="panel-sub">25-34岁为主</div></div>
+    <div class="panel"><div class="panel-num">${fp.city1}</div><div class="panel-label">粉丝城市TOP1</div><div class="panel-sub">前五: 北上广深杭</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="card"><div class="card-header"><span class="card-title">👥 性别分布</span></div>
+      <div style="display:flex;align-items:center;gap:24px;padding:24px">
+        <div style="text-align:center;flex:1">
+          <div style="font-size:48px;font-weight:800;color:var(--primary)">${fp.male}%</div>
+          <div style="font-size:12px;color:var(--muted)">男性</div>
+        </div>
+        <div style="flex:1;text-align:center">
+          <div style="font-size:48px;font-weight:800;color:#f472b6">${fp.female}%</div>
+          <div style="font-size:12px;color:var(--muted)">女性</div>
+        </div>
+      </div>
+      <div style="padding:0 24px 24px"><div class="progress-bar" style="height:12px;border-radius:6px"><div style="width:${fp.male}%;height:100%;background:var(--primary);border-radius:6px 0 0 6px"></div></div></div>
+    </div>
+    <div class="card"><div class="card-header"><span class="card-title">📊 年龄分布</span></div>
+      <div style="padding:16px">
+        ${[{age:'18-24岁',p:fp.age18_24,col:'var(--primary)'},{age:'25-34岁',p:fp.age25_34,col:'var(--accent)'},{age:'35-44岁',p:fp.age35_44,col:'var(--amber)'},{age:'45岁以上',p:fp.age45,col:'var(--purple)'}].map(a=>`<div class="skill-bar"><span class="label">${a.age}</span><div class="bar"><div class="fill" style="width:${a.p}%;background:${a.col}"></div></div><span style="font-size:11px;width:35px;text-align:right">${a.p}%</span></div>`).join('')}
+      </div>
+    </div>
+  </div>
+  <div class="grid-2" style="margin-top:16px">
+    <div class="card"><div class="card-header"><span class="card-title">🏙️ 地域分布 TOP5</span></div>
+      <div style="padding:16px">
+        ${[['北京',28],['上海',24],['广州',18],['深圳',15],['杭州',12]].map(([c,p],i)=>`<div style="display:flex;align-items:center;gap:12px;padding:6px 0">
+          <span style="width:20px;font-size:11px;color:var(--muted)">${i+1}</span>
+          <span style="flex:1;font-size:12px">${c}</span>
+          <div style="flex:1;height:4px;background:#1a2332;border-radius:2px"><div style="width:${p*3}%;height:100%;background:var(--primary);border-radius:2px"></div></div>
+          <span style="font-size:11px;color:var(--primary)">${p}%</span>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div class="card"><div class="card-header"><span class="card-title">📱 活跃时段</span></div>
+      <div class="heatmap">
+        ${['#1a2332','#1a2332','#1a2332','#1a2332','#2563eb','#3b82f6','#60a5fa','#93c5fd','#93c5fd','#60a5fa','#3b82f6','#2563eb','#1a4060','#2563eb','#3b82f6','#60a5fa','#93c5fd','#93c5fd','#93c5fd','#60a5fa','#3b82f6','#2563eb','#1a2332','#1a2332'].map(c=>`<div class="heatmap-cell" style="background:${c}"></div>`).join('')}
+      </div>
+      <div style="font-size:10px;color:var(--muted);display:flex;justify-content:space-between;margin-top:4px"><span>0点</span><span>6点</span><span>12点</span><span>18点</span><span>24点</span></div>
+    </div>
+  </div>`;
+}
+
+function renderRevenue(){
+  const r=mockData.revenue;
+  return `<div class="panel-grid">
+    <div class="panel"><div class="panel-num">¥${(r.month/10000).toFixed(1)}万</div><div class="panel-label">本月收益</div><div class="panel-sub" style="color:var(--green)">↑ ${r.trend}% 较上月</div></div>
+    <div class="panel"><div class="panel-num">¥${(r.withdrawn/10000).toFixed(1)}万</div><div class="panel-label">已提现金额</div><div class="panel-sub">处理中: ¥${(r.pending/10000).toFixed(1)}万</div></div>
+    <div class="panel"><div class="panel-num">¥${(r.bank/10000).toFixed(1)}万</div><div class="panel-label">账户余额</div><div class="panel-sub" style="color:var(--green)">可立即提现</div></div>
+    <div class="panel"><div class="panel-num">¥8.6万</div><div class="panel-label">待结算金额</div><div class="panel-sub">预计7天后到账</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="card"><div class="card-header"><span class="card-title">💰 收益趋势</span><div class="tab-bar" style="margin:0"><span class="tab active">本月</span><span class="tab">近3月</span><span class="tab">近1年</span></div></div>
+      <div class="chart-box" style="height:200px"><div style="width:100%;height:100%;display:flex;align-items:flex-end;padding:16px;gap:6px">
+        ${[42,38,55,48,62,58,72,65,80,75,88,95].map((v,i)=>`<div style="flex:1;height:${v}%;background:linear-gradient(180deg,var(--primary),rgba(56,189,248,.3));border-radius:3px 3px 0 0;opacity:.8"></div>`).join('')}
+      </div></div>
+    </div>
+    <div class="card"><div class="card-header"><span class="card-title">💳 提现记录</span></div>
+      <div class="table-wrp"><table><thead><tr><th>时间</th><th>金额</th><th>方式</th><th>状态</th></tr></thead><tbody>
+        ${[['今天 14:20','¥5,000','银行卡','已完成'],['06-12','¥8,000','支付宝','已完成'],['06-05','¥12,000','银行卡','已完成'],['05-28','¥6,000','微信','已完成'],['05-20','¥15,000','银行卡','已完成']].map(([t,a,m,s])=>`<tr><td>${t}</td><td style="font-weight:700;color:var(--green)">${a}</td><td>${m}</td><td><span class="status run">${s}</span></td></tr>`).join('')}
+      </tbody></table></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px"><div class="card-header"><span class="card-title">📊 收益来源分布</span></div>
+    <div style="display:flex;gap:24px;padding:16px">
+      ${[['广告植入','¥12.5万','45%','var(--primary)'],['带货分成','¥15.2万','38%','var(--accent)'],['直播打赏','¥4.8万','12%','var(--amber)'],['知识付费','¥2.1万','5%','var(--green)']].map(([s,a,p,c])=>`<div style="flex:1;text-align:center;padding:16px;background:#0d1421;border-radius:8px">
+        <div style="font-size:11px;color:var(--muted)">${s}</div>
+        <div style="font-size:22px;font-weight:800;color:${c};margin:8px 0">${a}</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${p};background:${c}"></div></div>
+        <div style="font-size:11px;margin-top:4px">${p}</div>
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function renderTeam(){
+  return `<div class="panel-grid">
+    <div class="panel"><div class="panel-num">5</div><div class="panel-label">团队成员</div><div class="panel-sub">3 名运营 · 2 名剪辑</div></div>
+    <div class="panel"><div class="panel-num">12</div><div class="panel-label">管理账号</div><div class="panel-sub">人均负责 2.4 个</div></div>
+    <div class="panel"><div class="panel-num">28</div><div class="panel-label">本月发布</div><div class="panel-sub">日均 3.2 条</div></div>
+    <div class="panel"><div class="panel-num">86%</div><div class="panel-label">任务完成率</div><div class="panel-sub">↑ 5% 较上月</div></div>
+  </div>
+  <div class="grid-2">
+    <div class="card"><div class="card-header"><span class="card-title">👔 团队成员</span><button class="btn btn-outline" style="font-size:11px;padding:4px 10px">+ 邀请成员</button></div>
+      ${[
+        {name:'张明远',role:'运营主管',dept:'内容部',tasks:8,comp:6,avatar:'张'},
+        {name:'李诗涵',role:'内容运营',dept:'内容部',tasks:12,comp:10,avatar:'李'},
+        {name:'王思琪',role:'账号运营',dept:'内容部',tasks:6,comp:5,avatar:'王'},
+        {name:'刘健',role:'视频剪辑',dept:'制作部',tasks:15,comp:12,avatar:'刘'},
+        {name:'陈晓文',role:'视频剪辑',dept:'制作部',tasks:10,comp:8,avatar:'陈'},
+      ].map(m=>`<div class="list-item">
+        <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--purple));display:flex;align-items:center;justify-content:center;font-weight:600">${m.avatar}</div>
+        <div class="info"><div class="title">${m.name}</div><div class="desc">${m.role} · ${m.dept}</div></div>
+        <div style="text-align:right">
+          <div style="font-size:11px">任务 ${m.comp}/${m.tasks}</div>
+          <div class="progress-bar" style="width:60px;margin-top:4px"><div class="progress-fill" style="width:${m.comp/m.tasks*100}%"></div></div>
+        </div>
+      </div>`).join('')}
+    </div>
+    <div class="card"><div class="card-header"><span class="card-title">📋 任务看板</span></div>
+      <div class="tab-bar"><span class="tab active">全部</span><span class="tab">进行中</span><span class="tab">已完成</span></div>
+      ${[
+        {t:'拍摄"夏日穿搭"短视频',p:'李诗涵',d:'今天 18:00',s:'run'},
+        {t:'编辑"职场技巧"图文笔记',p:'王思琪',d:'明天 12:00',s:'run'},
+        {t:'剪辑上周直播片段',p:'刘健',d:'今天 20:00',s:'warn'},
+        {t:'发布科技产品测评',p:'张明远',d:'已过期',s:'err'},
+        {t:'小红书封面设计',p:'陈晓文',d:'后天',s:'run'},
+      ].map(task=>`<div class="list-item">
+        <div class="icon-circle">${task.s==='run'?'🔵':task.s==='warn'?'🟡':'🔴'}</div>
+        <div class="info"><div class="title">${task.t}</div><div class="desc">负责人: ${task.p} · 截止: ${task.d}</div></div>
+        <span class="status ${task.s==='run'?'info':task.s==='warn'?'warn':'err'}">${task.s==='run'?'进行中':task.s==='warn'?'待完成':'已逾期'}</span>
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function renderAI(){
+  return `<div class="card" style="margin-bottom:16px">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <div style="width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--purple));display:flex;align-items:center;justify-content:center;font-size:20px">🤖</div>
+      <div><div style="font-size:14px;font-weight:600">AI 智能助手</div><div style="font-size:11px;color:var(--muted)">基于大语言模型的内容创作辅助</div></div>
+    </div>
+    <div style="padding:16px;background:#0d1421;border-radius:8px;margin-bottom:16px;min-height:120px">
+      <div style="font-size:13px;color:var(--muted)">您好！我是矩阵通的AI助手，可以帮您：</div>
+      <div style="font-size:12px;color:var(--primary);margin-top:8px">• 生成短视频脚本、图文笔记<br>• 批量生成各平台适配内容<br>• 分析数据报告，生成运营建议<br>• 提供热点选题推荐<br>• 生成评论回复模板</div>
+    </div>
+    <div class="form-grid">
+      <div class="form-item" style="grid-column:1/-1"><label>请描述您的需求</label><textarea style="height:80px" placeholder="例如：帮我生成一条关于"夏日护肤"的抖音短视频脚本，要求30秒以内，有反转剧情，适合年轻女性用户…"></textarea></div>
+    </div>
+    <div class="flex-row"><button class="btn btn-primary">🤖 开始生成</button><button class="btn btn-outline">📋 查看历史</button></div>
+  </div>
+  <div class="grid-2">
+    <div class="card"><div class="card-header"><span class="card-title">🔥 热点选题推荐</span></div>
+      ${[
+        {t:'#夏日清凉穿搭',h:98,s:'抖音/小红书'},
+        {t:'#职场沟通技巧',h:85,s:'视频号/微博'},
+        {t:'#2024科技新品测评',h:78,s:'微博/B站'},
+        {t:'#搞笑合集',h:92,s:'快手/抖音'},
+        {t:'#美妆产品测评',h:88,s:'小红书'},
+      ].map((x,i)=>`<div class="list-item">
+        <div class="icon-circle" style="background:${i===0?'rgba(248,113,113,.15)':'rgba(96,165,250,.15)'}">${i+1}</div>
+        <div class="info"><div class="title">${x.t}</div><div class="desc">热度 ${x.h} · 适合: ${x.s}</div></div>
+        <button class="btn btn-outline" style="padding:4px 8px;font-size:10px">生成内容</button>
+      </div>`).join('')}
+    </div>
+    <div class="card"><div class="card-header"><span class="card-title">📊 竞品分析</span></div>
+      ${[
+        {n:'@生活小技巧',fans:'156万',week:'+3.2%',content:'日常妙招类'},
+        {n:'@职场充电宝',fans:'89万',week:'-1.5%',content:'知识干货类'},
+        {n:'@美妆达人小雅',fans:'234万',week:'+5.8%',content:'美妆测评类'},
+      ].map(c=>`<div class="list-item">
+        <div class="icon-circle">🔍</div>
+        <div class="info"><div class="title">${c.n}</div><div class="desc">${c.content} · ${c.fans}粉丝</div></div>
+        <div style="text-align:right"><span style="color:${c.week.startsWith('+')?'var(--green)':'var(--red)'};font-size:11px">${c.week}</span><div style="font-size:10px;color:var(--muted)">本周</div></div>
+      </div>`).join('')}
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px"><div class="card-header"><span class="card-title">⚡ 快捷功能</span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;padding:8px 0">
+      ${[['✍️ 写文案','爆款标题生成'],['🎬 写脚本','短视频脚本'],['📝 写笔记','小红书种草文'],['📊 分析报告','数据洞察分析'],['💬 生成回复','评论回复模板'],['📋 选题推荐','热点选题挖掘'],['🏷️ 打标签','内容标签优化'],['📱 多平台适配','一键多版本']].map(([icon,title])=>`<div style="background:#0d1421;border:1px solid var(--border);border-radius:8px;padding:16px;text-align:center;cursor:pointer;transition:all .2s" onclick="this.style.borderColor='var(--primary)'">
+        <div style="font-size:24px;margin-bottom:8px">${icon}</div>
+        <div style="font-size:12px;font-weight:600">${title}</div>
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function showModal(type){
+  const modal=document.createElement('div');
+  modal.className='modal-overlay';
+  modal.onclick=(e)=>{if(e.target===modal)modal.remove();};
+  if(type==='account'){
+    modal.innerHTML=`<div class="modal"><div class="modal-header"><span class="modal-title">📱 添加账号</span><button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button></div>
+      <div class="form-grid"><div class="form-item" style="grid-column:1/-1"><label>账号名称</label><input placeholder="请输入账号名称"></div></div>
+      <div class="form-grid"><div class="form-item"><label>选择平台</label><select><option>抖音</option><option>小红书</option><option>快手</option><option>视频号</option><option>微博</option></select></div><div class="form-item"><label>账号类型</label><select><option>个人号</option><option>企业号</option></select></div></div>
+      <div class="form-item"><label>账号ID/链接</label><input placeholder="请输入平台提供的账号ID或主页链接"></div>
+      <div class="form-item"><label>简介</label><textarea style="height:60px" placeholder="账号简介或定位描述…"></textarea></div>
+      <div class="flex-row" style="margin-top:16px"><button class="btn btn-primary">确认添加</button><button class="btn btn-outline" onclick="this.closest('.modal-overlay').remove()">取消</button></div>
+    </div>`;
+  }
+  if(type==='content'){
+    modal.innerHTML=`<div class="modal" style="width:720px"><div class="modal-header"><span class="modal-title">✍️ 创建内容</span><button class="modal-close" onclick="this.closest('.modal-overlay').remove()">×</button></div>
+      <div class="form-grid"><div class="form-item" style="grid-column:1/-1"><label>内容标题</label><input placeholder="请输入内容标题"></div></div>
+      <div class="form-grid"><div class="form-item"><label>发布账号</label><select><option>生活小妙招 (抖音)</option><option>精致生活家 (小红书)</option><option>搞笑集中营 (快手)</option></select></div><div class="form-item"><label>内容类型</label><select><option>生活</option><option>职场</option><option>美妆</option><option>科技</option><option>搞笑</option></select></div></div>
+      <div class="form-item"><label>正文内容</label><textarea style="height:120px" placeholder="输入正文内容，支持AI续写…"></textarea></div>
+      <div class="form-grid"><div class="form-item"><label>发布平台</label><select><option>仅抖音</option><option>仅小红书</option><option>多平台同步</option></select></div><div class="form-item"><label>定时发布</label><input type="datetime-local"></div></div>
+      <div class="flex-row" style="margin-top:16px"><button class="btn btn-primary">🤖 AI续写</button><button class="btn btn-primary">立即发布</button><button class="btn btn-outline">保存草稿</button><button class="btn btn-outline" onclick="this.closest('.modal-overlay').remove()">取消</button></div>
+    </div>`;
+  }
+  document.body.appendChild(modal);
+}
+
+renderDashboard();
+</script>
+</body>
+</html>

@@ -1,0 +1,2978 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>宠归堂 - 宠物殡葬服务管理系统</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0f0f14;
+            --bg-secondary: #1a1a24;
+            --bg-card: #22222e;
+            --bg-card-hover: #2a2a38;
+            --accent: #c9a96e;
+            --accent-light: #dfc08a;
+            --accent-dark: #a8884f;
+            --text-primary: #f0ede6;
+            --text-secondary: #9a9589;
+            --text-muted: #6b6560;
+            --border: #333344;
+            --success: #5dba8a;
+            --warning: #e8a54b;
+            --danger: #d4585a;
+            --info: #5b9bd5;
+            --sidebar-width: 260px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 2px;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px 12px;
+            overflow-y: auto;
+        }
+
+        .nav-section {
+            margin-bottom: 20px;
+        }
+
+        .nav-section-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            padding: 8px 12px 4px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+            margin-bottom: 2px;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, rgba(201,169,110,0.15), rgba(201,169,110,0.05));
+            color: var(--accent);
+            border: 1px solid rgba(201,169,110,0.2);
+        }
+
+        .nav-item .material-icons-round {
+            font-size: 20px;
+        }
+
+        .nav-item span { font-size: 14px; font-weight: 400; }
+
+        .nav-badge {
+            margin-left: auto;
+            background: var(--danger);
+            color: white;
+            font-size: 10px;
+            padding: 2px 7px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .sidebar-footer {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .staff-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .staff-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .staff-details h4 { font-size: 13px; font-weight: 500; }
+        .staff-details p { font-size: 11px; color: var(--text-muted); }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+        }
+
+        .top-bar {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .page-title {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .top-bar-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .search-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 8px 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 240px;
+        }
+
+        .search-box input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-primary);
+            font-size: 13px;
+            width: 100%;
+            font-family: inherit;
+        }
+
+        .search-box input::placeholder { color: var(--text-muted); }
+
+        .top-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 8px 16px;
+            color: var(--text-primary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .top-btn:hover { background: var(--bg-card-hover); }
+        .top-btn.primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #1a1a24;
+            font-weight: 500;
+        }
+        .top-btn.primary:hover { background: var(--accent-light); }
+
+        .content-area {
+            padding: 28px 32px;
+        }
+
+        /* Page Sections */
+        .page-section { display: none; }
+        .page-section.active { display: block; }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 22px;
+            transition: all 0.25s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(201,169,110,0.3);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .stat-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        .stat-icon.accent { background: rgba(201,169,110,0.15); color: var(--accent); }
+        .stat-icon.success { background: rgba(93,186,138,0.15); color: var(--success); }
+        .stat-icon.warning { background: rgba(232,165,75,0.15); color: var(--warning); }
+        .stat-icon.danger { background: rgba(212,88,90,0.15); color: var(--danger); }
+        .stat-icon.info { background: rgba(91,155,213,0.15); color: var(--info); }
+
+        .stat-value { font-size: 30px; font-weight: 700; margin-bottom: 4px; }
+        .stat-label { font-size: 13px; color: var(--text-secondary); }
+        .stat-change { font-size: 11px; margin-top: 8px; }
+        .stat-change.up { color: var(--success); }
+        .stat-change.down { color: var(--danger); }
+
+        /* Cards / Tables */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 18px 22px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .card-btn {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 6px 14px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 12px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .card-btn:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+        .card-btn.active { background: rgba(201,169,110,0.15); color: var(--accent); border-color: rgba(201,169,110,0.3); }
+
+        .card-body { padding: 20px 22px; }
+
+        /* Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 10px 14px;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table td {
+            padding: 13px 14px;
+            font-size: 13px;
+            border-bottom: 1px solid rgba(51,51,68,0.5);
+            vertical-align: middle;
+        }
+
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tbody tr { transition: background 0.15s; }
+        .data-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+        /* Status badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .badge-pending { background: rgba(232,165,75,0.15); color: var(--warning); }
+        .badge-progress { background: rgba(91,155,213,0.15); color: var(--info); }
+        .badge-done { background: rgba(93,186,138,0.15); color: var(--success); }
+        .badge-cancelled { background: rgba(212,88,90,0.15); color: var(--danger); }
+        .badge-waiting { background: rgba(150,140,130,0.15); color: var(--text-secondary); }
+
+        .pet-avatar-sm {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .pet-info-cell {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pet-info-cell .name { font-weight: 500; }
+        .pet-info-cell .sub { font-size: 11px; color: var(--text-muted); }
+
+        /* Action buttons */
+        .action-btns {
+            display: flex;
+            gap: 6px;
+        }
+
+        .action-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 7px;
+            border: 1px solid var(--border);
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .action-btn:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+        .action-btn.danger:hover { background: rgba(212,88,90,0.15); color: var(--danger); border-color: rgba(212,88,90,0.3); }
+        .action-btn.accent:hover { background: rgba(201,169,110,0.15); color: var(--accent); border-color: rgba(201,169,110,0.3); }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(4px);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active { display: flex; }
+
+        .modal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            width: 560px;
+            max-height: 85vh;
+            overflow-y: auto;
+            animation: modalIn 0.25s ease;
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95) translateY(-10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-header {
+            padding: 22px 26px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .modal-header h3 { font-size: 17px; font-weight: 600; }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 20px;
+            padding: 4px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+        }
+
+        .modal-close:hover { background: var(--bg-card); color: var(--text-primary); }
+
+        .modal-body { padding: 24px 26px; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group.full { grid-column: 1 / -1; }
+
+        .form-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            padding: 10px 14px;
+            color: var(--text-primary);
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            border-color: var(--accent);
+        }
+
+        .form-select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%239a9589' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 32px;
+        }
+
+        .form-select option { background: var(--bg-card); }
+
+        .form-textarea { resize: vertical; min-height: 80px; }
+
+        .modal-footer {
+            padding: 18px 26px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 9px 22px;
+            border-radius: 9px;
+            font-size: 13px;
+            font-family: inherit;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border-color: var(--border);
+            color: var(--text-secondary);
+        }
+
+        .btn-ghost:hover { background: var(--bg-card); color: var(--text-primary); }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #1a1a24;
+            border-color: var(--accent);
+        }
+
+        .btn-primary:hover { background: var(--accent-light); }
+
+        .btn-danger {
+            background: transparent;
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        .btn-danger:hover { background: rgba(212,88,90,0.15); }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 18px;
+            font-size: 13px;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            font-weight: 400;
+        }
+
+        .tab:hover { color: var(--text-secondary); }
+        .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 500; }
+
+        /* Gallery Grid */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .gallery-item {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: all 0.25s;
+            cursor: pointer;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-3px);
+            border-color: rgba(201,169,110,0.3);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .gallery-img {
+            width: 100%;
+            height: 150px;
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: var(--text-muted);
+        }
+
+        .gallery-info {
+            padding: 12px;
+        }
+
+        .gallery-info h4 { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+        .gallery-info p { font-size: 11px; color: var(--text-muted); }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 28px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 24px;
+        }
+
+        .timeline-item:last-child { padding-bottom: 0; }
+
+        .timeline-dot {
+            position: absolute;
+            left: -24px;
+            top: 3px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 2px solid var(--accent);
+        }
+
+        .timeline-dot.done { background: var(--success); border-color: var(--success); }
+        .timeline-dot.active { background: var(--accent); border-color: var(--accent); }
+        .timeline-dot.pending { background: var(--bg-card); border-color: var(--text-muted); }
+
+        .timeline-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+
+        .timeline-title { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+        .timeline-time { font-size: 11px; color: var(--text-muted); }
+        .timeline-desc { font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
+
+        /* Progress Steps */
+        .progress-steps {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            flex: 1;
+        }
+
+        .step::before {
+            content: '';
+            position: absolute;
+            top: 18px;
+            left: 50%;
+            right: -50%;
+            height: 2px;
+            background: var(--border);
+        }
+
+        .step:last-child::before { display: none; }
+
+        .step.done::before { background: var(--success); }
+        .step.active::before { background: linear-gradient(to right, var(--success), var(--border)); }
+
+        .step-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step.done .step-icon { background: var(--success); border-color: var(--success); color: white; }
+        .step.active .step-icon { background: var(--accent); border-color: var(--accent); color: #1a1a24; }
+
+        .step-label { font-size: 11px; color: var(--text-muted); text-align: center; }
+        .step.active .step-label { color: var(--accent); font-weight: 500; }
+
+        /* Inventory Grid */
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 16px;
+        }
+
+        .inventory-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+            transition: all 0.25s;
+            cursor: pointer;
+        }
+
+        .inventory-card:hover {
+            border-color: rgba(201,169,110,0.3);
+            transform: translateY(-2px);
+        }
+
+        .inventory-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .inventory-name { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+        .inventory-stock {
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .stock-ok { background: rgba(93,186,138,0.15); color: var(--success); }
+        .stock-low { background: rgba(232,165,75,0.15); color: var(--warning); }
+        .stock-out { background: rgba(212,88,90,0.15); color: var(--danger); }
+
+        /* Vehicle Map Placeholder */
+        .vehicle-map {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            height: 300px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .map-grid {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(201,169,110,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(201,169,110,0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .vehicle-marker {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .vehicle-marker-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--accent);
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .vehicle-marker-label {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            white-space: nowrap;
+        }
+
+        /* Chart placeholder bars */
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            height: 160px;
+            padding: 10px 0;
+        }
+
+        .bar-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .bar {
+            width: 100%;
+            border-radius: 6px 6px 0 0;
+            background: linear-gradient(to top, var(--accent-dark), var(--accent));
+            transition: height 0.6s ease;
+        }
+
+        .bar-label { font-size: 10px; color: var(--text-muted); }
+        .bar-value { font-size: 11px; font-weight: 600; color: var(--accent); }
+
+        /* Payments */
+        .payment-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .payment-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .payment-card .amount {
+            font-size: 26px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .payment-card .label { font-size: 12px; color: var(--text-secondary); }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in { animation: fadeIn 0.4s ease forwards; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; }
+            .form-grid { grid-template-columns: 1fr; }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 300;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .toast {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 18px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .toast.success { border-left: 3px solid var(--success); }
+        .toast.error { border-left: 3px solid var(--danger); }
+        .toast.info { border-left: 3px solid var(--info); }
+    </style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="logo">
+            <div class="logo-icon">🐾</div>
+            <span class="logo-text">宠归堂</span>
+        </div>
+    </div>
+    <div class="sidebar-nav">
+        <div class="nav-section">
+            <div class="nav-section-title">服务管理</div>
+            <div class="nav-item active" data-page="dashboard">
+                <span class="material-icons-round">dashboard</span>
+                <span>控制台</span>
+            </div>
+            <div class="nav-item" data-page="pickup">
+                <span class="material-icons-round">local_shipping</span>
+                <span>接车记录</span>
+                <span class="nav-badge">3</span>
+            </div>
+            <div class="nav-item" data-page="memorial">
+                <span class="material-icons-round">auto_awesome</span>
+                <span>追悼会管理</span>
+            </div>
+            <div class="nav-item" data-page="cremation">
+                <span class="material-icons-round">whatshot</span>
+                <span>火化追踪</span>
+            </div>
+            <div class="nav-item" data-page="urn">
+                <span class="material-icons-round">inventory_2</span>
+                <span>骨灰盒管理</span>
+            </div>
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">档案与纪念</div>
+            <div class="nav-item" data-page="pets">
+                <span class="material-icons-round">pets</span>
+                <span>宠物档案</span>
+            </div>
+            <div class="nav-item" data-page="gallery">
+                <span class="material-icons-round">photo_library</span>
+                <span>纪念画廊</span>
+            </div>
+            <div class="nav-item" data-page="counseling">
+                <span class="material-icons-round">psychology</span>
+                <span>哀伤辅导</span>
+            </div>
+        </div>
+        <div class="nav-section">
+            <div class="nav-section-title">运营支持</div>
+            <div class="nav-item" data-page="packages">
+                <span class="material-icons-round">card_membership</span>
+                <span>服务套餐</span>
+            </div>
+            <div class="nav-item" data-page="vehicle">
+                <span class="material-icons-round">directions_car</span>
+                <span>车辆调度</span>
+            </div>
+            <div class="nav-item" data-page="inventory">
+                <span class="material-icons-round">warehouse</span>
+                <span>物资库存</span>
+            </div>
+            <div class="nav-item" data-page="payments">
+                <span class="material-icons-round">payments</span>
+                <span>财务收款</span>
+            </div>
+        </div>
+    </div>
+    <div class="sidebar-footer">
+        <div class="staff-info">
+            <div class="staff-avatar">李</div>
+            <div class="staff-details">
+                <h4>李美华</h4>
+                <p>服务主管 · 在线</p>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<main class="main-content">
+    <div class="top-bar">
+        <h1 class="page-title" id="pageTitle">控制台</h1>
+        <div class="top-bar-actions">
+            <div class="search-box">
+                <span class="material-icons-round" style="color: var(--text-muted); font-size: 18px;">search</span>
+                <input type="text" placeholder="搜索宠物姓名、主人..." id="globalSearch">
+            </div>
+            <button class="top-btn primary" onclick="openModal('newService')">
+                <span class="material-icons-round" style="font-size: 16px;">add</span>
+                新建服务
+            </button>
+        </div>
+    </div>
+
+    <div class="content-area">
+        <!-- Dashboard -->
+        <section class="page-section active" id="page-dashboard">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon accent">📦</div>
+                    </div>
+                    <div class="stat-value">48</div>
+                    <div class="stat-label">本月服务订单</div>
+                    <div class="stat-change up">↑ 12% 较上月</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon success">🐾</div>
+                    </div>
+                    <div class="stat-value">36</div>
+                    <div class="stat-label">火化已完成</div>
+                    <div class="stat-change up">↑ 8% 较上月</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon warning">🚐</div>
+                    </div>
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">接车中</div>
+                    <div class="stat-change down">↓ 2 较昨日</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon danger">💰</div>
+                    </div>
+                    <div class="stat-value">¥68,420</div>
+                    <div class="stat-label">本月收款</div>
+                    <div class="stat-change up">↑ 23% 较上月</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon info">📅</div>
+                    </div>
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">明日预约</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon accent">🏺</div>
+                    </div>
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">骨灰盒待取</div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 18px;">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">最近服务记录</span>
+                        <div class="card-actions">
+                            <button class="card-btn active">全部</button>
+                            <button class="card-btn">接车</button>
+                            <button class="card-btn">火化</button>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>宠物</th>
+                                <th>服务类型</th>
+                                <th>状态</th>
+                                <th>预约时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="pet-info-cell">
+                                        <div class="pet-avatar-sm">🐕</div>
+                                        <div>
+                                            <div class="name">豆豆</div>
+                                            <div class="sub">金毛犬 · 张先生</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>标准火化套餐</td>
+                                <td><span class="badge badge-progress">● 火化中</span></td>
+                                <td>05-17 14:00</td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="action-btn accent" title="查看详情">👁</button>
+                                        <button class="action-btn" title="编辑">✏</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="pet-info-cell">
+                                        <div class="pet-avatar-sm">🐱</div>
+                                        <div>
+                                            <div class="name">雪球</div>
+                                            <div class="sub">英短 · 李女士</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>告别仪式 + 火化</td>
+                                <td><span class="badge badge-done">✓ 已完成</span></td>
+                                <td>05-17 10:30</td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="action-btn accent" title="查看详情">👁</button>
+                                        <button class="action-btn" title="编辑">✏</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="pet-info-cell">
+                                        <div class="pet-avatar-sm">🐕</div>
+                                        <div>
+                                            <div class="name">旺财</div>
+                                            <div class="sub">柯基 · 王先生</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>尊享定制套餐</td>
+                                <td><span class="badge badge-pending">◐ 待接车</span></td>
+                                <td>05-17 16:00</td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="action-btn accent" title="查看详情">👁</button>
+                                        <button class="action-btn" title="编辑">✏</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="pet-info-cell">
+                                        <div class="pet-avatar-sm">🐹</div>
+                                        <div>
+                                            <div class="name">小灰</div>
+                                            <div class="sub">仓鼠 · 陈小姐</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>简单火化</td>
+                                <td><span class="badge badge-done">✓ 已完成</span></td>
+                                <td>05-16 15:00</td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="action-btn accent" title="查看详情">👁</button>
+                                        <button class="action-btn" title="编辑">✏</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="pet-info-cell">
+                                        <div class="pet-avatar-sm">🐕‍🦺</div>
+                                        <div>
+                                            <div class="name">黑豹</div>
+                                            <div class="sub">拉布拉多 · 赵先生</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>标准火化套餐</td>
+                                <td><span class="badge badge-waiting">○ 等待中</span></td>
+                                <td>05-18 09:00</td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button class="action-btn accent" title="查看详情">👁</button>
+                                        <button class="action-btn" title="编辑">✏</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">服务统计</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="bar-chart" id="monthlyChart">
+                            <div class="bar-item">
+                                <div class="bar-value">28</div>
+                                <div class="bar" style="height: 70px;"></div>
+                                <div class="bar-label">1月</div>
+                            </div>
+                            <div class="bar-item">
+                                <div class="bar-value">32</div>
+                                <div class="bar" style="height: 80px;"></div>
+                                <div class="bar-label">2月</div>
+                            </div>
+                            <div class="bar-item">
+                                <div class="bar-value">25</div>
+                                <div class="bar" style="height: 62px;"></div>
+                                <div class="bar-label">3月</div>
+                            </div>
+                            <div class="bar-item">
+                                <div class="bar-value">43</div>
+                                <div class="bar" style="height: 100px;"></div>
+                                <div class="bar-label">4月</div>
+                            </div>
+                            <div class="bar-item">
+                                <div class="bar-value">48</div>
+                                <div class="bar" style="height: 110px;"></div>
+                                <div class="bar-label">5月</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+                            <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">
+                                <span>犬类占比</span><span style="color: var(--accent);">62%</span>
+                            </div>
+                            <div style="background: var(--bg-secondary); border-radius: 4px; height: 6px; overflow: hidden;">
+                                <div style="background: linear-gradient(to right, var(--accent-dark), var(--accent)); height: 100%; width: 62%; border-radius: 4px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pickup -->
+        <section class="page-section" id="page-pickup">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon warning">🚐</div>
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">接车中</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon success">✓</div>
+                    <div class="stat-value">15</div>
+                    <div class="stat-label">今日已完成</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon info">📍</div>
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">待分配车辆</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">接车记录</span>
+                    <div class="card-actions">
+                        <button class="card-btn" onclick="openModal('newPickup')">+ 新建接车</button>
+                    </div>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>宠物信息</th>
+                            <th>主人</th>
+                            <th>接车地址</th>
+                            <th>预约时间</th>
+                            <th>司机</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐕</div>
+                                    <div>
+                                        <div class="name">旺财</div>
+                                        <div class="sub">柯基 · 5岁</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>王建国<br><span style="color: var(--text-muted); font-size: 11px;">138-0013-8000</span></td>
+                            <td>朝阳区望京西园四区7号楼</td>
+                            <td>05-17 16:00</td>
+                            <td>张师傅<br><span style="color: var(--text-muted); font-size: 11px;">京A·D8723</span></td>
+                            <td><span class="badge badge-progress">● 前往中</span></td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="action-btn accent">📍</button>
+                                    <button class="action-btn">✏</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐱</div>
+                                    <div>
+                                        <div class="name">团子</div>
+                                        <div class="sub">布偶 · 3岁</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>刘晓燕<br><span style="color: var(--text-muted); font-size: 11px;">139-8876-5432</span></td>
+                            <td>海淀区学院路15号学府花园</td>
+                            <td>05-17 14:30</td>
+                            <td>李师傅<br><span style="color: var(--text-muted); font-size: 11px;">京B·F2931</span></td>
+                            <td><span class="badge badge-done">✓ 已送达</span></td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="action-btn accent">📍</button>
+                                    <button class="action-btn">✏</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐕</div>
+                                    <div>
+                                        <div class="name">大黄</div>
+                                        <div class="sub">柴犬 · 8岁</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>陈大明<br><span style="color: var(--text-muted); font-size: 11px;">136-7654-3210</span></td>
+                            <td>东城区南锣鼓巷15号院</td>
+                            <td>05-17 17:30</td>
+                            <td>待分配</td>
+                            <td><span class="badge badge-pending">◐ 待接车</span></td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="action-btn accent">📍</button>
+                                    <button class="action-btn">✏</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐰</div>
+                                    <div>
+                                        <div class="name">小白</div>
+                                        <div class="sub">垂耳兔 · 2岁</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>周雨晴<br><span style="color: var(--text-muted); font-size: 11px;">158-2234-5678</span></td>
+                            <td>西城区德外大街12号</td>
+                            <td>05-17 10:00</td>
+                            <td>张师傅<br><span style="color: var(--text-muted); font-size: 11px;">京A·D8723</span></td>
+                            <td><span class="badge badge-done">✓ 已完成</span></td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="action-btn accent">📍</button>
+                                    <button class="action-btn">✏</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Memorial -->
+        <section class="page-section" id="page-memorial">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon accent">📅</div>
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">今日追悼会</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon info">🕯</div>
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">本周预约</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">追悼会管理</span>
+                    <div class="card-actions">
+                        <button class="card-btn" onclick="openModal('newMemorial')">+ 新建追悼会</button>
+                    </div>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>宠物</th>
+                            <th>仪式类型</th>
+                            <th>时间</th>
+                            <th>出席人数</th>
+                            <th>布置要求</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐕</div>
+                                    <div><div class="name">豆豆</div><div class="sub">金毛 · 张伟家</div></div>
+                                </div>
+                            </td>
+                            <td>告别仪式</td>
+                            <td>05-17 15:00</td>
+                            <td>8人</td>
+                            <td>白玫瑰、烛台、遗像</td>
+                            <td><span class="badge badge-progress">● 准备中</span></td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="action-btn accent">👁</button>
+                                    <button class="action-btn">✏</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐱</div>
+                                    <div><div class="name">雪球</div><div class="sub">英短 · 李婷家</div></div>
+                                </div>
+                            </td>
+                            <td>送别仪式</td>
+                            <td>05-17 11:00</td>
+                            <td>5人</td>
+                            <td>鲜花、祈福卡</td>
+                            <td><span class="badge badge-done">✓ 已完成</span></td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="action-btn accent">👁</button>
+                                    <button class="action-btn">✏</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐕</div>
+                                    <div><div class="name">安妮</div><div class="sub">边牧 · 王磊家</div></div>
+                                </div>
+                            </td>
+                            <td>定制告别会</td>
+                            <td>05-18 14:00</td>
+                            <td>12人</td>
+                            <td>白百合、LED烛光墙、照片墙</td>
+                            <td><span class="badge badge-pending">◐ 筹备中</span></td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="action-btn accent">👁</button>
+                                    <button class="action-btn">✏</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐹</div>
+                                    <div><div class="name">小灰</div><div class="sub">仓鼠 · 陈晓家</div></div>
+                                </div>
+                            </td>
+                            <td>简单送别</td>
+                            <td>05-16 16:00</td>
+                            <td>3人</td>
+                            <td>小盆栽、祈福卡</td>
+                            <td><span class="badge badge-done">✓ 已完成</span></td>
+                            <td>
+                                <div class="action-btns">
+                                    <button class="action-btn accent">👁</button>
+                                    <button class="action-btn">✏</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Cremation Tracking -->
+        <section class="page-section" id="page-cremation">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon warning">🔥</div>
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">火化进行中</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon success">✓</div>
+                    <div class="stat-value">34</div>
+                    <div class="stat-label">本月完成</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon info">⏱</div>
+                    <div class="stat-value">1台</div>
+                    <div class="stat-label">设备运行中</div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-bottom: 18px;">
+                <div class="card-header">
+                    <span class="card-title">当前火化进度</span>
+                </div>
+                <div class="card-body">
+                    <div class="progress-steps">
+                        <div class="step done">
+                            <div class="step-icon">✓</div>
+                            <div class="step-label">接收宠物</div>
+                        </div>
+                        <div class="step done">
+                            <div class="step-icon">✓</div>
+                            <div class="step-label">身份确认</div>
+                        </div>
+                        <div class="step active">
+                            <div class="step-icon">🔥</div>
+                            <div class="step-label">火化进行中</div>
+                        </div>
+                        <div class="step">
+                            <div class="step-icon">⏳</div>
+                            <div class="step-label">冷却中</div>
+                        </div>
+                        <div class="step">
+                            <div class="step-icon">⏳</div>
+                            <div class="step-label">骨灰收集</div>
+                        </div>
+                        <div class="step">
+                            <div class="step-icon">⏳</div>
+                            <div class="step-label">交付完成</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong style="font-size: 16px;">🐕 豆豆 — 金毛犬</strong>
+                            <span style="color: var(--text-muted); font-size: 13px; margin-left: 12px;">体重约 28kg</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="color: var(--accent); font-weight: 600;">预计剩余 25 分钟</span>
+                            <button class="top-btn">查看详情</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">火化记录</span>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>宠物</th>
+                            <th>火化方式</th>
+                            <th>开始时间</th>
+                            <th>完成时间</th>
+                            <th>骨灰重量</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐕</div>
+                                    <div><div class="name">豆豆</div><div class="sub">金毛 · 张伟</div></div>
+                                </div>
+                            </td>
+                            <td>单独火化</td>
+                            <td>05-17 14:05</td>
+                            <td>—</td>
+                            <td>—</td>
+                            <td><span class="badge badge-progress">● 火化中</span></td>
+                            <td><div class="action-btns"><button class="action-btn accent">👁</button></div></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐱</div>
+                                    <div><div class="name">雪球</div><div class="sub">英短 · 李婷</div></div>
+                                </div>
+                            </td>
+                            <td>单独火化</td>
+                            <td>05-17 10:30</td>
+                            <td>05-17 11:20</td>
+                            <td>28g</td>
+                            <td><span class="badge badge-done">✓ 已完成</span></td>
+                            <td><div class="action-btns"><button class="action-btn accent">👁</button></div></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐹</div>
+                                    <div><div class="name">小灰</div><div class="sub">仓鼠 · 陈晓</div></div>
+                                </div>
+                            </td>
+                            <td>简单火化</td>
+                            <td>05-16 15:00</td>
+                            <td>05-16 15:30</td>
+                            <td>5g</td>
+                            <td><span class="badge badge-done">✓ 已完成</span></td>
+                            <td><div class="action-btns"><button class="action-btn accent">👁</button></div></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐕</div>
+                                    <div><div class="name">哈利</div><div class="sub">萨摩耶 · 马超</div></div>
+                                </div>
+                            </td>
+                            <td>单独火化</td>
+                            <td>05-15 09:00</td>
+                            <td>05-15 10:15</td>
+                            <td>65g</td>
+                            <td><span class="badge badge-done">✓ 已完成</span></td>
+                            <td><div class="action-btns"><button class="action-btn accent">👁</button></div></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Urn Management -->
+        <section class="page-section" id="page-urn">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon accent">🏺</div>
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">待取骨灰</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon success">✓</div>
+                    <div class="stat-value">28</div>
+                    <div class="stat-label">已交付</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">骨灰盒 / 存储管理</span>
+                    <div class="card-actions">
+                        <button class="card-btn" onclick="openModal('newUrn')">+ 录入骨灰</button>
+                    </div>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>宠物</th>
+                            <th>骨灰盒型号</th>
+                            <th>材质</th>
+                            <th>骨灰重量</th>
+                            <th>存放位置</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐕</div>
+                                    <div><div class="name">豆豆</div><div class="sub">金毛 · 张伟</div></div>
+                                </div>
+                            </td>
+                            <td>檀木经典款 A3</td>
+                            <td>红檀木</td>
+                            <td>待收集</td>
+                            <td>存放架 A-07</td>
+                            <td><span class="badge badge-progress">● 处理中</span></td>
+                            <td><div class="action-btns"><button class="action-btn accent">👁</button><button class="action-btn">✏</button></div></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐱</div>
+                                    <div><div class="name">雪球</div><div class="sub">英短 · 李婷</div></div>
+                                </div>
+                            </td>
+                            <td>陶瓷彩绘款 B1</td>
+                            <td>骨质瓷</td>
+                            <td>28g</td>
+                            <td>存放架 B-03</td>
+                            <td><span class="badge badge-pending">◐ 待取</span></td>
+                            <td><div class="action-btns"><button class="action-btn accent">👁</button><button class="action-btn">✏</button></div></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐹</div>
+                                    <div><div class="name">小灰</div><div class="sub">仓鼠 · 陈晓</div></div>
+                                </div>
+                            </td>
+                            <td>小方块纪念盒</td>
+                            <td>岫玉</td>
+                            <td>5g</td>
+                            <td>存放架 C-12</td>
+                            <td><span class="badge badge-done">✓ 已取走</span></td>
+                            <td><div class="action-btns"><button class="action-btn accent">👁</button><button class="action-btn">✏</button></div></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐕</div>
+                                    <div><div class="name">哈利</div><div class="sub">萨摩耶 · 马超</div></div>
+                                </div>
+                            </td>
+                            <td>实木雕刻款 A5</td>
+                            <td>花梨木</td>
+                            <td>65g</td>
+                            <td>存放架 A-02</td>
+                            <td><span class="badge badge-pending">◐ 待取</span></td>
+                            <td><div class="action-btns"><button class="action-btn accent">👁</button><button class="action-btn">✏</button></div></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐕‍🦺</div>
+                                    <div><div class="name">黑豹</div><div class="sub">拉布拉多 · 赵刚</div></div>
+                                </div>
+                            </td>
+                            <td>定制雕刻款</td>
+                            <td>黑檀木</td>
+                            <td>82g</td>
+                            <td>存放架 A-11</td>
+                            <td><span class="badge badge-done">✓ 已取走</span></td>
+                            <td><div class="action-btns"><button class="action-btn accent">👁</button><button class="action-btn">✏</button></div></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Pet Records -->
+        <section class="page-section" id="page-pets">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon accent">🐾</div>
+                    <div class="stat-value">156</div>
+                    <div class="stat-label">宠物档案总数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon success">✓</div>
+                    <div class="stat-value">128</div>
+                    <div class="stat-label">已完成服务</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon info">💀</div>
+                    <div class="stat-value">28</div>
+                    <div class="stat-label">待处理</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">宠物档案</span>
+                    <div class="card-actions">
+                        <button class="card-btn" onclick="openModal('newPet')">+ 新建档案</button>
+                    </div>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>宠物信息</th>
+                            <th>品种 / 年龄</th>
+                            <th>主人</th>
+                            <th>最后一次服务</th>
+                            <th>备注</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐕</div>
+                                    <div><div class="name">豆豆</div><div class="sub">性别: 公</div></div>
+                                </div>
+                            </td>
+                            <td>金毛寻回犬<br><span style="color: var(--text-muted); font-size: 11px;">5岁2月</span></td>
+                            <td>张伟<br><span style="color: var(--text-muted); font-size: 11px;">138-0013-8000</span></td>
+                            <td>05-17 火化中<br><span class="badge badge-progress" style="font-size: 10px;">● 进行中</span></td>
+                            <td>活泼好动，很乖</td>
+                            <td><div class="action-btns"><button class="action-btn accent">👁</button><button class="action-btn">✏</button></div></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐱</div>
+                                    <div><div class="name">雪球</div><div class="sub">性别: 母</div></div>
+                                </div>
+                            </td>
+                            <td>英国短毛猫<br><span style="color: var(--text-muted); font-size: 11px;">3岁6月</span></td>
+                            <td>李婷<br><span style="color: var(--text-muted); font-size: 11px;">136-9876-5432</span></td>
+                            <td>05-17 已完成<br><span class="badge badge-done" style="font-size: 10px;">✓ 完成</span></td>
+                            <td>喜欢晒太阳</td>
+                            <td><div class="action-btns"><button class="action-btn accent">👁</button><button class="action-btn">✏</button></div></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐕</div>
+                                    <div><div class="name">旺财</div><div class="sub">性别: 公</div></div>
+                                </div>
+                            </td>
+                            <td>威尔士柯基<br><span style="color: var(--text-muted); font-size: 11px;">5岁</span></td>
+                            <td>王建国<br><span style="color: var(--text-muted); font-size: 11px;">138-0013-8000</span></td>
+                            <td>05-17 待接车<br><span class="badge badge-pending" style="font-size: 10px;">◐ 待处理</span></td>
+                            <td>很粘人</td>
+                            <td><div class="action-btns"><button class="action-btn accent">👁</button><button class="action-btn">✏</button></div></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐹</div>
+                                    <div><div class="name">小灰</div><div class="sub">性别: 公</div></div>
+                                </div>
+                            </td>
+                            <td>侏儒仓鼠<br><span style="color: var(--text-muted); font-size: 11px;">2岁</span></td>
+                            <td>陈晓<br><span style="color: var(--text-muted); font-size: 11px;">159-2234-5678</span></td>
+                            <td>05-16 已完成<br><span class="badge badge-done" style="font-size: 10px;">✓ 完成</span></td>
+                            <td>孩子很伤心</td>
+                            <td><div class="action-btns"><button class="action-btn accent">👁</button><button class="action-btn">✏</button></div></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐕‍🦺</div>
+                                    <div><div class="name">黑豹</div><div class="sub">性别: 公</div></div>
+                                </div>
+                            </td>
+                            <td>拉布拉多<br><span style="color: var(--text-muted); font-size: 11px;">10岁</span></td>
+                            <td>赵刚<br><span style="color: var(--text-muted); font-size: 11px;">137-4455-6677</span></td>
+                            <td>05-10 已完成<br><span class="badge badge-done" style="font-size: 10px;">✓ 完成</span></td>
+                            <td>老伙计了，陪伴12年</td>
+                            <td><div class="action-btns"><button class="action-btn accent">👁</button><button class="action-btn">✏</button></div></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐕</div>
+                                    <div><div class="name">安妮</div><div class="sub">性别: 母</div></div>
+                                </div>
+                            </td>
+                            <td>边境牧羊犬<br><span style="color: var(--text-muted); font-size: 11px;">7岁</span></td>
+                            <td>王磊<br><span style="color: var(--text-muted); font-size: 11px;">135-2233-4455</span></td>
+                            <td>05-18 告别仪式<br><span class="badge badge-pending" style="font-size: 10px;">◐ 预约</span></td>
+                            <td>主人要求定制仪式</td>
+                            <td><div class="action-btns"><button class="action-btn accent">👁</button><button class="action-btn">✏</button></div></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Memorial Gallery -->
+        <section class="page-section" id="page-gallery">
+            <div class="tabs">
+                <div class="tab active">全部</div>
+                <div class="tab">告别仪式</div>
+                <div class="tab">骨灰安放</div>
+                <div class="tab">纪念活动</div>
+            </div>
+            <div class="gallery-grid">
+                <div class="gallery-item">
+                    <div class="gallery-img">🕯️</div>
+                    <div class="gallery-info">
+                        <h4>豆豆的告别会</h4>
+                        <p>金毛 · 05-17 · 8张</p>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <div class="gallery-img">🌸</div>
+                    <div class="gallery-info">
+                        <h4>雪球送别仪式</h4>
+                        <p>英短 · 05-17 · 12张</p>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <div class="gallery-img">📿</div>
+                    <div class="gallery-info">
+                        <h4>小灰安放纪念</h4>
+                        <p>仓鼠 · 05-16 · 6张</p>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <div class="gallery-img">🌿</div>
+                    <div class="gallery-info">
+                        <h4>黑豹骨灰植树</h4>
+                        <p>拉布拉多 · 05-10 · 15张</p>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <div class="gallery-img">🎶</div>
+                    <div class="gallery-info">
+                        <h4>哈利音乐追思会</h4>
+                        <p>萨摩耶 · 05-15 · 20张</p>
+                    </div>
+                </div>
+                <div class="gallery-item">
+                    <div class="gallery-img">🪦</div>
+                    <div class="gallery-info">
+                        <h4>旺财定制告别</h4>
+                        <p>柯基 · 05-14 · 9张</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Grief Counseling -->
+        <section class="page-section" id="page-counseling">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon accent">💬</div>
+                    <div class="stat-value">18</div>
+                    <div class="stat-label">本月辅导咨询</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon success">👥</div>
+                    <div class="stat-value">6</div>
+                    <div class="stat-label">正在跟进</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon info">📞</div>
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">待回访</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">哀伤辅导记录</span>
+                    <div class="card-actions">
+                        <button class="card-btn" onclick="openModal('newCounseling')">+ 新建记录</button>
+                    </div>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>宠物 / 主人</th>
+                            <th>宠物种类</th>
+                            <th>服务日期</th>
+                            <th>辅导类型</th>
+                            <th>跟进状态</th>
+                            <th>下次回访</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐕</div>
+                                    <div><div class="name">豆豆</div><div class="sub">张伟 / 先生</div></div>
+                                </div>
+                            </td>
+                            <td>金毛</td>
+                            <td>05-17</td>
+                            <td>电话咨询</td>
+                            <td><span class="badge badge-progress">● 跟进中</span></td>
+                            <td>05-24</td>
+                            <td><div class="action-btns"><button class="action-btn accent">👁</button><button class="action-btn">✏</button></div></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐱</div>
+                                    <div><div class="name">雪球</div><div class="sub">李婷 / 女士</div></div>
+                                </div>
+                            </td>
+                            <td>英短</td>
+                            <td>05-17</td>
+                            <td>面谈辅导</td>
+                            <td><span class="badge badge-done">✓ 已结案</span></td>
+                            <td>—</td>
+                            <td><div class="action-btns"><button class="action-btn accent">👁</button><button class="action-btn">✏</button></div></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐕‍🦺</div>
+                                    <div><div class="name">黑豹</div><div class="sub">赵刚 / 先生</div></div>
+                                </div>
+                            </td>
+                            <td>拉布拉多</td>
+                            <td>05-10</td>
+                            <td>微信随访</td>
+                            <td><span class="badge badge-pending">◐ 待回访</span></td>
+                            <td>05-19</td>
+                            <td><div class="action-btns"><button class="action-btn accent">👁</button><button class="action-btn">✏</button></div></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐕</div>
+                                    <div><div class="name">哈利</div><div class="sub">马超 / 先生</div></div>
+                                </div>
+                            </td>
+                            <td>萨摩耶</td>
+                            <td>05-15</td>
+                            <td>电话咨询</td>
+                            <td><span class="badge badge-progress">● 跟进中</span></td>
+                            <td>05-22</td>
+                            <td><div class="action-btns"><button class="action-btn accent">👁</button><button class="action-btn">✏</button></div></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card" style="margin-top: 18px;">
+                <div class="card-header">
+                    <span class="card-title">辅导时间线 — 张伟（豆豆）</span>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-dot active"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">初次电话咨询</div>
+                                <div class="timeline-time">05-17 09:30 — 约25分钟</div>
+                                <div class="timeline-desc">主人情绪激动，表达了深深的不舍。倾听为主，建议参加告别仪式给予告别。</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot done"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">告别仪式陪同</div>
+                                <div class="timeline-time">05-17 15:00 — 约1小时</div>
+                                <div class="timeline-desc">全程陪同主人参与豆豆的告别仪式，仪式后主人情绪有所缓解。</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot done"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">仪式后回访</div>
+                                <div class="timeline-time">05-17 18:00 — 约15分钟</div>
+                                <div class="timeline-desc">主人表示感觉好多了，约好一周后再进行随访。</div>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-dot pending"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">预计下次回访</div>
+                                <div class="timeline-time">05-24 10:00</div>
+                                <div class="timeline-desc">—</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Service Packages -->
+        <section class="page-section" id="page-packages">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">服务套餐</span>
+                    <div class="card-actions">
+                        <button class="card-btn" onclick="openModal('newPackage')">+ 新增套餐</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px;">
+                        <div style="background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 14px; padding: 24px; position: relative; overflow: hidden;">
+                            <div style="position: absolute; top: 0; right: 0; background: var(--text-muted); color: var(--bg-primary); font-size: 10px; padding: 4px 12px; border-radius: 0 14px 0 12px;">基础</div>
+                            <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 6px;">简单火化套餐</div>
+                            <div style="font-size: 28px; font-weight: 700; color: var(--text-primary);">¥680</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); margin: 12px 0;">适合仓鼠、鸟类等小型宠物</div>
+                            <ul style="list-style: none; font-size: 12px; color: var(--text-secondary); line-height: 2;">
+                                <li>✓ 上门接宠</li>
+                                <li>✓ 简单清洁</li>
+                                <li>✓ 集体火化</li>
+                                <li>✓ 骨灰撒入花坛</li>
+                                <li style="color: var(--text-muted);">✗ 告别仪式</li>
+                                <li style="color: var(--text-muted);">✗ 骨灰留存</li>
+                            </ul>
+                            <button class="btn btn-ghost" style="width: 100%; margin-top: 16px;">选择套餐</button>
+                        </div>
+                        <div style="background: var(--bg-secondary); border: 1px solid rgba(201,169,110,0.3); border-radius: 14px; padding: 24px; position: relative; overflow: hidden;">
+                            <div style="position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(to right, var(--accent-dark), var(--accent));"></div>
+                            <div style="position: absolute; top: 0; right: 0; background: var(--accent); color: #1a1a24; font-size: 10px; padding: 4px 12px; border-radius: 0 14px 0 12px; font-weight: 600;">推荐</div>
+                            <div style="font-size: 12px; color: var(--accent); margin-bottom: 6px;">标准火化套餐</div>
+                            <div style="font-size: 28px; font-weight: 700; color: var(--text-primary);">¥1,280</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); margin: 12px 0;">适合猫、狗等中小型宠物</div>
+                            <ul style="list-style: none; font-size: 12px; color: var(--text-secondary); line-height: 2;">
+                                <li>✓ 上门接宠</li>
+                                <li>✓ 专业清洁护理</li>
+                                <li>✓ <strong style="color: var(--accent);">单独火化</strong></li>
+                                <li>✓ 骨灰装盒</li>
+                                <li>✓ <strong style="color: var(--accent);">告别仪式（30分钟）</strong></li>
+                                <li style="color: var(--text-muted);">✗ 定制纪念品</li>
+                            </ul>
+                            <button class="btn btn-primary" style="width: 100%; margin-top: 16px;">选择套餐</button>
+                        </div>
+                        <div style="background: var(--bg-secondary); border: 1px solid rgba(201,169,110,0.2); border-radius: 14px; padding: 24px; position: relative; overflow: hidden;">
+                            <div style="position: absolute; top: 0; right: 0; background: var(--success); color: white; font-size: 10px; padding: 4px 12px; border-radius: 0 14px 0 12px;">高端</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 6px;">尊享定制套餐</div>
+                            <div style="font-size: 28px; font-weight: 700; color: var(--text-primary);">¥3,680</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); margin: 12px 0;">适合大型犬及特殊需求</div>
+                            <ul style="list-style: none; font-size: 12px; color: var(--text-secondary); line-height: 2;">
+                                <li>✓ 上门接宠（专车）</li>
+                                <li>✓ 精细清洁护理</li>
+                                <li>✓ <strong style="color: var(--accent);">单独火化+录像</strong></li>
+                                <li>✓ <strong style="color: var(--accent);">定制告别仪式（60分钟）</strong></li>
+                                <li>✓ <strong style="color: var(--accent);">定制骨灰盒</strong></li>
+                                <li>✓ <strong style="color: var(--accent);">精美纪念品</strong></li>
+                            </ul>
+                            <button class="btn btn-ghost" style="width: 100%; margin-top: 16px;">选择套餐</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Vehicle -->
+        <section class="page-section" id="page-vehicle">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon accent">🚐</div>
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">在线车辆</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon warning">⚠</div>
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">需要维护</div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-bottom: 18px;">
+                <div class="card-header">
+                    <span class="card-title">车辆位置</span>
+                </div>
+                <div class="card-body">
+                    <div class="vehicle-map">
+                        <div class="map-grid"></div>
+                        <div class="vehicle-marker" style="top: 60px; left: 100px;">
+                            <div class="vehicle-marker-icon">🚐</div>
+                            <div class="vehicle-marker-label">张师傅 · 京A·D8723</div>
+                        </div>
+                        <div class="vehicle-marker" style="top: 140px; left: 260px;">
+                            <div class="vehicle-marker-icon">🚐</div>
+                            <div class="vehicle-marker-label">李师傅 · 京B·F2931</div>
+                        </div>
+                        <div class="vehicle-marker" style="top: 200px; left: 180px;">
+                            <div class="vehicle-marker-icon">🏠</div>
+                            <div class="vehicle-marker-label">宠归堂服务中心</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">车辆信息</span>
+                    <div class="card-actions">
+                        <button class="card-btn">+ 调度车辆</button>
+                    </div>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>车牌</th>
+                            <th>司机</th>
+                            <th>车型</th>
+                            <th>当前位置</th>
+                            <th>状态</th>
+                            <th>今日里程</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>京A·D8723</strong></td>
+                            <td>张志国</td>
+                            <td>瑞风商务</td>
+                            <td>朝阳区望京西园</td>
+                            <td><span class="badge badge-progress">● 服务中</span></td>
+                            <td>48km</td>
+                            <td><div class="action-btns"><button class="action-btn accent">📍</button><button class="action-btn">📞</button></div></td>
+                        </tr>
+                        <tr>
+                            <td><strong>京B·F2931</strong></td>
+                            <td>李明</td>
+                            <td>别克GL8</td>
+                            <td>海淀区学院路</td>
+                            <td><span class="badge badge-done">✓ 待命</span></td>
+                            <td>32km</td>
+                            <td><div class="action-btns"><button class="action-btn accent">📍</button><button class="action-btn">📞</button></div></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Inventory -->
+        <section class="page-section" id="page-inventory">
+            <div class="card" style="margin-bottom: 18px;">
+                <div class="card-header">
+                    <span class="card-title">物资库存</span>
+                    <div class="card-actions">
+                        <button class="card-btn" onclick="openModal('newInventory')">+ 入库</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="inventory-grid">
+                        <div class="inventory-card">
+                            <div class="inventory-icon">🏺</div>
+                            <div class="inventory-name">红檀木骨灰盒</div>
+                            <div class="inventory-stock stock-ok">库存 28</div>
+                        </div>
+                        <div class="inventory-card">
+                            <div class="inventory-icon">🫖</div>
+                            <div class="inventory-name">陶瓷骨灰罐</div>
+                            <div class="inventory-stock stock-ok">库存 15</div>
+                        </div>
+                        <div class="inventory-card">
+                            <div class="inventory-icon">🌿</div>
+                            <div class="inventory-name">白玫瑰（束）</div>
+                            <div class="inventory-stock stock-low">库存 5</div>
+                        </div>
+                        <div class="inventory-card">
+                            <div class="inventory-icon">🕯</div>
+                            <div class="inventory-name">哀悼蜡烛</div>
+                            <div class="inventory-stock stock-ok">库存 42</div>
+                        </div>
+                        <div class="inventory-card">
+                            <div class="inventory-icon">📿</div>
+                            <div class="inventory-name">祈福卡</div>
+                            <div class="inventory-stock stock-ok">库存 86</div>
+                        </div>
+                        <div class="inventory-card">
+                            <div class="inventory-icon">🖼</div>
+                            <div class="inventory-name">遗像框</div>
+                            <div class="inventory-stock stock-ok">库存 22</div>
+                        </div>
+                        <div class="inventory-card">
+                            <div class="inventory-icon">🌸</div>
+                            <div class="inventory-name">白百合（束）</div>
+                            <div class="inventory-stock stock-low">库存 3</div>
+                        </div>
+                        <div class="inventory-card">
+                            <div class="inventory-icon">🪵</div>
+                            <div class="inventory-name">香薰木</div>
+                            <div class="inventory-stock stock-out">库存 0</div>
+                        </div>
+                        <div class="inventory-card">
+                            <div class="inventory-icon">🎶</div>
+                            <div class="inventory-name">追思音乐卡</div>
+                            <div class="inventory-stock stock-ok">库存 18</div>
+                        </div>
+                        <div class="inventory-card">
+                            <div class="inventory-icon">📦</div>
+                            <div class="inventory-name">奠仪袋</div>
+                            <div class="inventory-stock stock-ok">库存 55</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">库存变动记录</span>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>物品</th>
+                            <th>类型</th>
+                            <th>数量</th>
+                            <th>操作人</th>
+                            <th>时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>白玫瑰（束）</td>
+                            <td><span class="badge badge-done">入库</span></td>
+                            <td>+10</td>
+                            <td>李美华</td>
+                            <td>05-17 08:30</td>
+                        </tr>
+                        <tr>
+                            <td>香薰木</td>
+                            <td><span class="badge badge-cancelled">出库</span></td>
+                            <td>-5</td>
+                            <td>张志国</td>
+                            <td>05-16 14:20</td>
+                        </tr>
+                        <tr>
+                            <td>红檀木骨灰盒</td>
+                            <td><span class="badge badge-done">入库</span></td>
+                            <td>+20</td>
+                            <td>李美华</td>
+                            <td>05-15 10:00</td>
+                        </tr>
+                        <tr>
+                            <td>祈福卡</td>
+                            <td><span class="badge badge-cancelled">出库</span></td>
+                            <td>-14</td>
+                            <td>王丽</td>
+                            <td>05-14 16:45</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Payments -->
+        <section class="page-section" id="page-payments">
+            <div class="payment-summary">
+                <div class="payment-card">
+                    <div class="amount" style="color: var(--success);">¥68,420</div>
+                    <div class="label">本月已收款</div>
+                </div>
+                <div class="payment-card">
+                    <div class="amount" style="color: var(--warning);">¥12,800</div>
+                    <div class="label">待收款</div>
+                </div>
+                <div class="payment-card">
+                    <div class="amount" style="color: var(--accent);">¥81,220</div>
+                    <div class="label">本月总营收</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">收款记录</span>
+                    <div class="card-actions">
+                        <button class="card-btn" onclick="openModal('newPayment')">+ 登记收款</button>
+                    </div>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>宠物 / 主人</th>
+                            <th>服务套餐</th>
+                            <th>金额</th>
+                            <th>支付方式</th>
+                            <th>支付状态</th>
+                            <th>日期</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐕</div>
+                                    <div><div class="name">豆豆</div><div class="sub">张伟</div></div>
+                                </div>
+                            </td>
+                            <td>标准火化套餐</td>
+                            <td><strong>¥1,280</strong></td>
+                            <td>支付宝</td>
+                            <td><span class="badge badge-done">✓ 已支付</span></td>
+                            <td>05-17</td>
+                            <td><div class="action-btns"><button class="action-btn accent">📄</button></div></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐱</div>
+                                    <div><div class="name">雪球</div><div class="sub">李婷</div></div>
+                                </div>
+                            </td>
+                            <td>告别仪式 + 火化</td>
+                            <td><strong>¥1,280</strong></td>
+                            <td>微信支付</td>
+                            <td><span class="badge badge-done">✓ 已支付</span></td>
+                            <td>05-17</td>
+                            <td><div class="action-btns"><button class="action-btn accent">📄</button></div></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐹</div>
+                                    <div><div class="name">小灰</div><div class="sub">陈晓</div></div>
+                                </div>
+                            </td>
+                            <td>简单火化</td>
+                            <td><strong>¥680</strong></td>
+                            <td>现金</td>
+                            <td><span class="badge badge-done">✓ 已支付</span></td>
+                            <td>05-16</td>
+                            <td><div class="action-btns"><button class="action-btn accent">📄</button></div></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐕</div>
+                                    <div><div class="name">哈利</div><div class="sub">马超</div></div>
+                                </div>
+                            </td>
+                            <td>尊享定制套餐</td>
+                            <td><strong>¥3,680</strong></td>
+                            <td>银行转账</td>
+                            <td><span class="badge badge-done">✓ 已支付</span></td>
+                            <td>05-15</td>
+                            <td><div class="action-btns"><button class="action-btn accent">📄</button></div></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐕</div>
+                                    <div><div class="name">旺财</div><div class="sub">王建国</div></div>
+                                </div>
+                            </td>
+                            <td>尊享定制套餐</td>
+                            <td><strong>¥3,680</strong></td>
+                            <td>—</td>
+                            <td><span class="badge badge-pending">◐ 待支付</span></td>
+                            <td>05-17</td>
+                            <td><div class="action-btns"><button class="action-btn accent">📄</button><button class="action-btn">✏</button></div></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="pet-info-cell">
+                                    <div class="pet-avatar-sm">🐕</div>
+                                    <div><div class="name">安妮</div><div class="sub">王磊</div></div>
+                                </div>
+                            </td>
+                            <td>定制告别会套餐</td>
+                            <td><strong>¥3,680</strong></td>
+                            <td>支付宝</td>
+                            <td><span class="badge badge-progress">● 部分支付 ¥2,000</span></td>
+                            <td>05-17</td>
+                            <td><div class="action-btns"><button class="action-btn accent">📄</button><button class="action-btn">✏</button></div></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</main>
+
+<!-- Modals -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+    <div class="modal" id="modalContent">
+        <!-- Dynamic content -->
+    </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+    // Page titles
+    const pageTitles = {
+        dashboard: '控制台',
+        pickup: '接车记录',
+        memorial: '追悼会管理',
+        cremation: '火化追踪',
+        urn: '骨灰盒管理',
+        pets: '宠物档案',
+        gallery: '纪念画廊',
+        counseling: '哀伤辅导',
+        packages: '服务套餐',
+        vehicle: '车辆调度',
+        inventory: '物资库存',
+        payments: '财务收款'
+    };
+
+    // Navigation
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', () => {
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            item.classList.add('active');
+
+            const page = item.dataset.page;
+            document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+            document.getElementById('page-' + page).classList.add('active');
+            document.getElementById('pageTitle').textContent = pageTitles[page];
+        });
+    });
+
+    // Modal forms
+    const modalForms = {
+        newService: `
+            <div class="modal-header">
+                <h3>新建服务订单</h3>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">宠物名称 *</label>
+                        <input class="form-input" placeholder="请输入宠物名称">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">宠物类型 *</label>
+                        <select class="form-select">
+                            <option>犬类</option>
+                            <option>猫类</option>
+                            <option>鸟类</option>
+                            <option>兔类</option>
+                            <option>仓鼠</option>
+                            <option>其他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">主人姓名 *</label>
+                        <input class="form-input" placeholder="请输入主人姓名">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">联系电话 *</label>
+                        <input class="form-input" placeholder="请输入联系电话">
+                    </div>
+                    <div class="form-group full">
+                        <label class="form-label">接车地址 *</label>
+                        <input class="form-input" placeholder="请输入详细地址">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">服务套餐 *</label>
+                        <select class="form-select">
+                            <option>简单火化套餐 — ¥680</option>
+                            <option>标准火化套餐 — ¥1,280</option>
+                            <option>尊享定制套餐 — ¥3,680</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">预约时间 *</label>
+                        <input class="form-input" type="datetime-local">
+                    </div>
+                    <div class="form-group full">
+                        <label class="form-label">备注</label>
+                        <textarea class="form-textarea" placeholder="其他特殊要求..."></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveService()">确认创建</button>
+            </div>
+        `,
+        newPickup: `
+            <div class="modal-header">
+                <h3>新建接车记录</h3>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">宠物名称 *</label>
+                        <input class="form-input" placeholder="请输入宠物名称">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">宠物类型 *</label>
+                        <select class="form-select">
+                            <option>犬类</option>
+                            <option>猫类</option>
+                            <option>其他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">主人姓名 *</label>
+                        <input class="form-input" placeholder="请输入主人姓名">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">联系电话 *</label>
+                        <input class="form-input" placeholder="请输入联系电话">
+                    </div>
+                    <div class="form-group full">
+                        <label class="form-label">接车地址 *</label>
+                        <input class="form-input" placeholder="请输入详细地址">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">预约时间 *</label>
+                        <input class="form-input" type="datetime-local">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">分配司机</label>
+                        <select class="form-select">
+                            <option>张志国 — 京A·D8723</option>
+                            <option>李明 — 京B·F2931</option>
+                            <option>待分配</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" onclick="showToast('接车记录已创建', 'success')">确认创建</button>
+            </div>
+        `,
+        newMemorial: `
+            <div class="modal-header">
+                <h3>新建追悼会</h3>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">宠物名称 *</label>
+                        <input class="form-input" placeholder="请输入宠物名称">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">仪式类型 *</label>
+                        <select class="form-select">
+                            <option>简单送别</option>
+                            <option>告别仪式</option>
+                            <option>送别仪式</option>
+                            <option>定制告别会</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">仪式时间 *</label>
+                        <input class="form-input" type="datetime-local">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">预计人数</label>
+                        <input class="form-input" type="number" placeholder="预计出席人数">
+                    </div>
+                    <div class="form-group full">
+                        <label class="form-label">布置要求</label>
+                        <textarea class="form-textarea" placeholder="鲜花、烛台、照片墙等特殊布置..."></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" onclick="showToast('追悼会已创建', 'success')">确认创建</button>
+            </div>
+        `,
+        newPet: `
+            <div class="modal-header">
+                <h3>新建宠物档案</h3>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">宠物名称 *</label>
+                        <input class="form-input" placeholder="请输入宠物名称">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">宠物类型 *</label>
+                        <select class="form-select">
+                            <option>犬类</option>
+                            <option>猫类</option>
+                            <option>鸟类</option>
+                            <option>兔类</option>
+                            <option>仓鼠</option>
+                            <option>其他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">品种 *</label>
+                        <input class="form-input" placeholder="例如：金毛、英短">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">年龄</label>
+                        <input class="form-input" placeholder="例如：5岁">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">性别</label>
+                        <select class="form-select">
+                            <option>公</option>
+                            <option>母</option>
+                            <option>未知</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">体重（kg）</label>
+                        <input class="form-input" type="number" placeholder="估计体重">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">主人姓名 *</label>
+                        <input class="form-input" placeholder="请输入主人姓名">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">联系电话 *</label>
+                        <input class="form-input" placeholder="请输入联系电话">
+                    </div>
+                    <div class="form-group full">
+                        <label class="form-label">备注</label>
+                        <textarea class="form-textarea" placeholder="宠物性格、特殊习惯等..."></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" onclick="showToast('宠物档案已创建', 'success')">确认创建</button>
+            </div>
+        `,
+        newCounseling: `
+            <div class="modal-header">
+                <h3>新建辅导记录</h3>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">宠物名称 *</label>
+                        <input class="form-input" placeholder="请输入宠物名称">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">主人姓名 *</label>
+                        <input class="form-input" placeholder="请输入主人姓名">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">辅导类型 *</label>
+                        <select class="form-select">
+                            <option>电话咨询</option>
+                            <option>面谈辅导</option>
+                            <option>微信随访</option>
+                            <option>上门慰问</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">辅导日期 *</label>
+                        <input class="form-input" type="date">
+                    </div>
+                    <div class="form-group full">
+                        <label class="form-label">辅导内容 *</label>
+                        <textarea class="form-textarea" placeholder="记录辅导过程和内容..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">下次回访日期</label>
+                        <input class="form-input" type="date">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">跟进状态</label>
+                        <select class="form-select">
+                            <option>跟进中</option>
+                            <option>待回访</option>
+                            <option>已结案</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" onclick="showToast('辅导记录已创建', 'success')">确认创建</button>
+            </div>
+        `,
+        newPackage: `
+            <div class="modal-header">
+                <h3>新增服务套餐</h3>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label class="form-label">套餐名称 *</label>
+                        <input class="form-input" placeholder="例如：温馨纪念套餐">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">价格（元）*</label>
+                        <input class="form-input" type="number" placeholder="请输入价格">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">适用宠物</label>
+                        <select class="form-select">
+                            <option>小型宠物</option>
+                            <option>中小型宠物</option>
+                            <option>中大型宠物</option>
+                            <option>大型宠物</option>
+                            <option>通用</option>
+                        </select>
+                    </div>
+                    <div class="form-group full">
+                        <label class="form-label">套餐包含服务</label>
+                        <textarea class="form-textarea" placeholder="每行一条服务内容..."></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" onclick="showToast('套餐已添加', 'success')">确认添加</button>
+            </div>
+        `,
+        newInventory: `
+            <div class="modal-header">
+                <h3>物资入库</h3>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">物品名称 *</label>
+                        <input class="form-input" placeholder="请输入物品名称">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">物品类型</label>
+                        <select class="form-select">
+                            <option>骨灰盒</option>
+                            <option>祭祀用品</option>
+                            <option>装饰用品</option>
+                            <option>消耗品</option>
+                            <option>其他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">入库数量 *</label>
+                        <input class="form-input" type="number" placeholder="请输入数量">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">经手人</label>
+                        <input class="form-input" placeholder="请输入经手人姓名">
+                    </div>
+                    <div class="form-group full">
+                        <label class="form-label">备注</label>
+                        <textarea class="form-textarea" placeholder="其他说明..."></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" onclick="showToast('物资已入库', 'success')">确认入库</button>
+            </div>
+        `,
+        newPayment: `
+            <div class="modal-header">
+                <h3>登记收款</h3>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">宠物名称 *</label>
+                        <input class="form-input" placeholder="请输入宠物名称">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">主人姓名 *</label>
+                        <input class="form-input" placeholder="请输入主人姓名">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">服务套餐 *</label>
+                        <select class="form-select">
+                            <option>简单火化套餐 — ¥680</option>
+                            <option>标准火化套餐 — ¥1,280</option>
+                            <option>尊享定制套餐 — ¥3,680</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">支付金额 *</label>
+                        <input class="form-input" type="number" placeholder="请输入金额">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">支付方式</label>
+                        <select class="form-select">
+                            <option>微信支付</option>
+                            <option>支付宝</option>
+                            <option>银行转账</option>
+                            <option>现金</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">支付状态</label>
+                        <select class="form-select">
+                            <option>已支付</option>
+                            <option>部分支付</option>
+                            <option>待支付</option>
+                        </select>
+                    </div>
+                    <div class="form-group full">
+                        <label class="form-label">备注</label>
+                        <textarea class="form-textarea" placeholder="付款凭证号等信息..."></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" onclick="showToast('收款已登记', 'success')">确认登记</button>
+            </div>
+        `,
+        newUrn: `
+            <div class="modal-header">
+                <h3>录入骨灰</h3>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">宠物名称 *</label>
+                        <input class="form-input" placeholder="请输入宠物名称">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">主人姓名 *</label>
+                        <input class="form-input" placeholder="请输入主人姓名">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">骨灰盒型号 *</label>
+                        <select class="form-select">
+                            <option>红檀木经典款 A3</option>
+                            <option>陶瓷彩绘款 B1</option>
+                            <option>实木雕刻款 A5</option>
+                            <option>小方块纪念盒</option>
+                            <option>定制雕刻款</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">骨灰重量（g）</label>
+                        <input class="form-input" type="number" placeholder="请输入重量">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">存放位置 *</label>
+                        <input class="form-input" placeholder="例如：存放架 A-07">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">状态</label>
+                        <select class="form-select">
+                            <option>待取</option>
+                            <option>存放中</option>
+                            <option>已取走</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-ghost" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" onclick="showToast('骨灰已录入', 'success')">确认录入</button>
+            </div>
+        `
+    };
+
+    function openModal(type) {
+        document.getElementById('modalContent').innerHTML = modalForms[type] || '';
+        document.getElementById('modalOverlay').classList.add('active');
+    }
+
+    function closeModal() {
+        document.getElementById('modalOverlay').classList.remove('active');
+    }
+
+    function saveService() {
+        showToast('服务订单已创建', 'success');
+        closeModal();
+    }
+
+    function showToast(message, type = 'info') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        const icons = { success: '✓', error: '✕', info: 'ℹ' };
+        toast.innerHTML = `<span>${icons[type] || 'ℹ'}</span> ${message}`;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    // Search
+    document.getElementById('globalSearch').addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase();
+        if (query.length > 0) {
+            showToast(`搜索: ${query}`, 'info');
+        }
+    });
+</script>
+</body>
+</html>
