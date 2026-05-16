@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>产品展示中心 - Hermes</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #0f0f0f;
+    color: #e0e0e0;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+  header {
+    text-align: center;
+    margin-bottom: 50px;
+  }
+  header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 12px;
+  }
+  header p {
+    color: #888;
+    font-size: 15px;
+  }
+  .badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #667eea22, #764ba222);
+    border: 1px solid #667eea55;
+    color: #a78bfa;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    margin-top: 10px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    padding: 20px 24px;
+    text-decoration: none;
+    color: #e0e0e0;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .card:hover {
+    border-color: #667eea55;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px #00000055;
+  }
+  .card:hover::before { opacity: 1; }
+  .card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+  .card-id {
+    font-size: 12px;
+    color: #667eea;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .card-link {
+    font-size: 13px;
+    color: #888;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .card:hover .card-link { color: #a78bfa; }
+  footer {
+    text-align: center;
+    margin-top: 50px;
+    color: #555;
+    font-size: 13px;
+  }
+  @media (max-width: 600px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🏪 小B端副业软件产品展示中心</h1>
+    <p>基于25个细分行业场景的软件产品原型 / 基于真实市场需求设计</p>
+    <span class="badge">共 25 个产品</span>
+  </header>
+  <div class="grid">
+        <li>
+          <a href="https://happysunxf.github.io/hermes/design/product-01-%E5%B0%8F%E4%BD%9C%E5%9D%8AMES%E7%B3%BB%E7%BB%9F.html" target="_blank">product-01-小作坊MES系统</a>
+        </li>        <li>
+          <a href="https://happysunxf.github.io/hermes/design/product-02-%E5%A9%9A%E5%BA%86%E5%85%AC%E5%8F%B8%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F.html" target="_blank">product-02-婚庆公司管理系统</a>
+        </li>        <li>
+          <a href="https://happysunxf.github.io/hermes/design/product-03-%E5%89%A7%E6%9C%AC%E6%9D%80%C2%B7%E5%AF%86%E5%AE%A4%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F.html" target="_blank">product-03-剧本杀·密室管理系统</a>
+        </li>        <li>
+          <a href="https://happysunxf.github.io/hermes/design/product-04-%E8%B6%B3%E7%96%97%C2%B7%E6%8E%A8%E6%8B%BF%E5%BA%97%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F.html" target="_blank">product-04-足疗·推拿店管理系统</a>
+        </li>        <li>
+          <a href="https://happysunxf.github.io/hermes/design/product-05-%E5%BA%9F%E5%93%81%E5%9B%9E%E6%94%B6%E7%AB%99%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F.html" target="_blank">product-05-废品回收站管理系统</a>
+        </li>        <li>
+          <a href="https://happysunxf.github.io/hermes/design/product-06-%E5%AE%A0%E7%89%A9%E6%AE%A1%E8%91%AC%E6%9C%8D%E5%8A%A1%E7%B3%BB%E7%BB%9F.html" target="_blank">product-06-宠物殡葬服务系统</a>
+        </li>        <li>
+          <a href="https://happysunxf.github.io/hermes/design/product-07-%E8%87%AA%E5%8A%A9%E8%8C%B6%E5%AE%A4%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F.html" target="_blank">product-07-自助茶室管理系统</a>
+        </li>        <li>
+          <a href="https://happysunxf.github.io/hermes/design/product-08-%E8%BF%90%E5%8A%A8%E5%9C%BA%E9%A6%86%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F.html" target="_blank">product-08-运动场馆管理系统</a>
+        </li>        <li>
+          <a href="https://happysunxf.github.io/hermes/design/product-09-%E5%86%9C%E6%9D%91%E9%85%92%E5%B8%AD%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F.html" target="_blank">product-09-农村酒席管理系统</a>
+        </li>        <li>
+          <a href="https://happysunxf.github.io/hermes/design/product-10-%E6%83%85%E8%B6%A3%E7%94%A8%E5%93%81%E6%97%A0%E4%BA%BA%E5%BA%97%E7%B3%BB%E7%BB%9F.html" target="_blank">product-10-情趣用品无人店系统</a>
+        </li>        <li>
+          <a href="https://happysunxf.github.io/hermes/design/product-11-%E5%B0%8F%E5%9E%8B%E6%B8%B8%E6%B3%B3%E9%A6%86%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F.html" target="_blank">product-11-小型游泳馆管理系统</a>
+        </li>        <li>
+          <a href="https://happysunxf.github.io/hermes/design/product-12-%E7%89%99%E7%A7%91%E9%97%A8%E8%AF%8AERP%E7%B3%BB%E7%BB%9F.html" target="_blank">product-12-牙科门诊ERP系统</a>
+        </li>        <li>
+          <a href="https://happysunxf.github.io/hermes/design/product-13-%E5%89%A7%E6%9C%AC%E5%88%9B%E4%BD%9C%E5%B7%A5%E5%85%B7%E5%B9%B3%E5%8F%B0.html" target="_blank">product-13-剧本创作工具平台</a>
+        </li>        <li>
+          <a href="https://happysunxf.github.io/hermes/design/product-14-%E5%B0%8F%E7%A8%8B%E5%BA%8F%E7%9B%B4%E6%92%AD%E5%B8%A6%E8%B4%A7%E5%B7%A5%E5%85%B7.html" target="_blank">product-14-小程序直播带货工具</a>
+        </li>        <li>
+          <a href="https://happysunxf.github.io/hermes/design/product-15-%E8%B7%A8%E5%A2%83%E7%94%B5%E5%95%86%E9%80%89%E5%93%81%E5%B7%A5%E5%85%B7.html" target="_blank">product-15-跨境电商选品工具</a>
+        </li>        <li>
+          <a href="https://happysunxf.github.io/hermes/design/product-16-AI%E5%86%99%E4%BD%9C%E5%B7%A5%E5%85%B7%E7%AE%B1.html" target="_blank">product-16-AI写作工具箱</a>
+        </li>        <li>
+          <a href="https://happysunxf.github.io/hermes/design/product-17-%E7%A4%BE%E5%8C%BA%E5%9B%A2%E8%B4%AD%E5%9B%A2%E9%95%BF%E5%B7%A5%E5%85%B7.html" target="_blank">product-17-社区团购团长工具</a>
+        </li>        <li>
+          <a href="https://happysunxf.github.io/hermes/design/product-18-%E7%81%B5%E6%B4%BB%E7%94%A8%E5%B7%A5%E5%8F%91%E8%96%AA%E7%B3%BB%E7%BB%9F.html" target="_blank">product-18-灵活用工发薪系统</a>
+        </li>        <li>
+          <a href="https://happysunxf.github.io/hermes/design/product-19-%E5%B0%8F%E5%BE%AE%E5%BE%8B%E6%89%80%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F.html" target="_blank">product-19-小微律所管理系统</a>
+        </li>        <li>
+          <a href="https://happysunxf.github.io/hermes/design/product-20-%E5%85%B1%E4%BA%AB%E8%87%AA%E4%B9%A0%E5%AE%A4%E7%B3%BB%E7%BB%9F.html" target="_blank">product-20-共享自习室系统</a>
+        </li>        <li>
+          <a href="https://happysunxf.github.io/hermes/design/product-21-%E5%86%9C%E6%9D%91%E5%90%88%E4%BD%9C%E7%A4%BE%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F.html" target="_blank">product-21-农村合作社管理系统</a>
+        </li>        <li>
+          <a href="https://happysunxf.github.io/hermes/design/product-22-%E7%9F%AD%E8%A7%86%E9%A2%91%E7%9F%A9%E9%98%B5%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7.html" target="_blank">product-22-短视频矩阵管理工具</a>
+        </li>        <li>
+          <a href="https://happysunxf.github.io/hermes/design/product-23-%E5%B0%8F%E5%BE%AE%E6%90%AC%E5%AE%B6%E5%85%AC%E5%8F%B8%E7%B3%BB%E7%BB%9F.html" target="_blank">product-23-小微搬家公司系统</a>
+        </li>        <li>
+          <a href="https://happysunxf.github.io/hermes/design/product-24-%E9%99%AA%E8%AF%8A%E6%9C%8D%E5%8A%A1%E7%B3%BB%E7%BB%9F.html" target="_blank">product-24-陪诊服务系统</a>
+        </li>        <li>
+          <a href="https://happysunxf.github.io/hermes/design/product-25-DM%E4%B8%BB%E6%8C%81%E4%BA%BA%E8%B5%84%E6%BA%90%E5%B9%B3%E5%8F%B0.html" target="_blank">product-25-DM主持人资源平台</a>
+        </li>
+  </div>
+  <footer>
+    <p>Generated by Hermes · <a href="https://github.com/happysunxf/hermes" style="color:#667eea">View on GitHub</a></p>
+  </footer>
+</div>
+</body>
+</html>
