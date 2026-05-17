@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>润土智联 - 土壤监测智能灌溉系统</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0f0a;--card:#111a11;--border:#1e3a1e;--a:#4ade80;--text:#c8e6c8;--muted:#6b8e6b;--bright:#e8ffe8}
+body{font-family:'Noto Sans SC',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.hero{background:linear-gradient(135deg,#0a1f0a 0%,#0d2b0d 50%,#0a1a0a 100%);padding:80px 20px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(74,222,128,0.15) 0%,transparent 60%),radial-gradient(ellipse at 70% 80%,rgba(74,222,128,0.1) 0%,transparent 50%);pointer-events:none}
+.hero-eyebrow{background:rgba(74,222,128,0.15);border:1px solid rgba(74,222,128,0.3);color:var(--a);padding:6px 16px;border-radius:20px;font-size:12px;display:inline-block;margin-bottom:20px;letter-spacing:2px}
+.hero h1{font-size:clamp(36px,6vw,64px);font-weight:800;background:linear-gradient(135deg,#4ade80,#22c55e,#86efac);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.1;margin-bottom:16px}
+.hero-sub{font-size:18px;color:var(--muted);max-width:600px;margin:0 auto 40px;line-height:1.7}
+.hero-stats{display:flex;justify-content:center;gap:40px;flex-wrap:wrap;margin-bottom:40px}
+.stat{text-align:center}
+.stat-val{font-size:32px;font-weight:800;color:var(--a)}
+.stat-name{font-size:13px;color:var(--muted);margin-top:4px}
+.hero-cta{display:flex;justify-content:center;gap:14px;flex-wrap:wrap}
+.btn{padding:12px 28px;border-radius:10px;font-weight:600;text-decoration:none;transition:all .3s;font-size:15px}
+.btn-primary{background:var(--a);color:#0a1f0a}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(74,222,128,0.35)}
+.btn-ghost{background:rgba(74,222,128,0.1);color:var(--a);border:1px solid rgba(74,222,128,0.3)}
+.btn-ghost:hover{background:rgba(74,222,128,0.2);transform:translateY(-2px)}
+.pain-section{padding:80px 20px;background:var(--card)}
+.pain-section h2,.section-title{font-size:clamp(24px,4vw,36px);font-weight:700;color:var(--bright);margin-bottom:40px}
+.pain-section h2{text-align:center}
+.pain-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;max-width:1000px;margin:0 auto}
+.pain-card{background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:24px}
+.pain-icon{font-size:32px;margin-bottom:12px}
+.pain-target{font-size:11px;color:var(--a);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.pain-text{font-size:15px;line-height:1.6;color:var(--text)}
+.feat-section{padding:80px 20px;max-width:1200px;margin:0 auto}
+.section-header{text-align:center;margin-bottom:50px}
+.section-eyebrow{color:var(--a);font-size:12px;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.feat-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;transition:all .3s;animation:fadeUp .6s ease both}
+.feat-card:hover{transform:translateY(-4px);border-color:var(--a);box-shadow:0 12px 40px rgba(74,222,128,0.1)}
+.feat-icon{font-size:40px;margin-bottom:16px}
+.feat-card h3{font-size:18px;color:var(--bright);margin-bottom:10px}
+.feat-card p{font-size:14px;line-height:1.7;color:var(--muted)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.flow-section{padding:80px 20px;background:var(--card)}
+.flow-section h2{text-align:center;font-size:clamp(24px,4vw,36px);color:var(--bright);margin-bottom:50px}
+.flow-steps{display:flex;justify-content:center;flex-wrap:wrap;gap:20px;max-width:900px;margin:0 auto}
+.flow-step{display:flex;flex-direction:column;align-items:center;flex:1;min-width:180px;position:relative}
+.flow-num{width:60px;height:60px;border-radius:50%;background:rgba(74,222,128,0.15);border:2px solid var(--a);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:var(--a);margin-bottom:16px}
+.flow-step h4{font-size:16px;color:var(--bright);margin-bottom:8px}
+.flow-step p{font-size:13px;color:var(--muted);text-align:center;line-height:1.6}
+.pricing-section{padding:80px 20px;max-width:700px;margin:0 auto;text-align:center}
+.pricing-label{color:var(--a);font-size:12px;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.pricing-amount{font-size:64px;font-weight:900;color:var(--bright);line-height:1}
+.pricing-unit{font-size:16px;color:var(--muted);margin-bottom:8px}
+.pricing-note{font-size:14px;color:var(--muted);margin-bottom:40px}
+.cta-section{background:linear-gradient(135deg,#0d2b0d,#0a1f0a);padding:80px 20px;text-align:center}
+.cta-section h2{font-size:clamp(24px,4vw,40px);color:var(--bright);margin-bottom:20px}
+.cta-section p{color:var(--muted);margin-bottom:30px;font-size:16px}
+</style>
+</head>
+<body>
+<section class="hero">
+  <div class="hero-eyebrow">🌱 智慧农业 · 土壤先行</div>
+  <h1>润土智联</h1>
+  <p class="hero-sub">土壤墒情实时感知 · 灌溉决策智能决策 · 节本增效看得见</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-val">98%</div><div class="stat-name">监测准确率</div></div>
+    <div class="stat"><div class="stat-val">40%+</div><div class="stat-name">节水率提升</div></div>
+    <div class="stat"><div class="stat-val">3万亩</div><div class="stat-name">接入面积</div></div>
+    <div class="stat"><div class="stat-val">0.3万</div><div class="stat-name">亩均硬件成本</div></div>
+  </div>
+  <div class="hero-cta">
+    <a href="#contact" class="btn btn-primary">获取方案 →</a>
+    <a href="#features" class="btn btn-ghost">查看功能</a>
+    <a href="demo-03-润土智联.html" class="btn btn-ghost" target="_blank">🔬 在线演示</a>
+  </div>
+</section>
+
+<section class="pain-section">
+  <h2>为什么你需要润土智联？</h2>
+  <div class="pain-grid">
+    <div class="pain-card"><div class="pain-icon">💧</div><div class="pain-target">种植户</div><div class="pain-text">浇水施肥全凭经验判断，土壤干湿靠手感，一不小心就浇多了或忘了浇，作物产量不稳定，品质参差不齐</div></div>
+    <div class="pain-card"><div class="pain-icon">📊</div><div class="pain-target">合作社</div><div class="pain-text">社员地块分散，人工巡查成本高，土壤数据缺失，农资投放不精准，补贴发放缺乏数据依据</div></div>
+    <div class="pain-card"><div class="pain-icon">🌡️</div><div class="pain-target">农技员</div><div class="pain-text">缺乏实时数据支撑，病虫害发现滞后，土壤酸化、盐渍化趋势难察觉，指导方案缺乏说服力</div></div>
+  </div>
+</section>
+
+<section class="feat-section" id="features">
+  <div class="section-header">
+    <div class="section-eyebrow">Core Functions</div>
+    <h2 class="section-title">核心功能全景</h2>
+  </div>
+  <div class="feat-grid">
+    <div class="feat-card" style="animation-delay:0ms"><div class="feat-icon">🌍</div><h3>土壤多参数监测</h3><p>实时监测土壤湿度、温度、pH值、盐分、电导率，支持深层土壤剖面（10cm/20cm/40cm分层），数据5分钟上报一次，云端永久存储</p></div>
+    <div class="feat-card" style="animation-delay:80ms"><div class="feat-icon">💦</div><h3>智能灌溉联动</h3><p>土壤湿度低于阈值自动触发滴灌/微喷，支持定时灌溉、阈值触发、远程手动三种模式，水肥一体化控制，亩均节水40%+</p></div>
+    <div class="feat-card" style="animation-delay:160ms"><div class="feat-icon">📱</div><h3>手机远程控制</h3><p>微信小程序/APP随时查看土壤数据、开关灌溉设备，支持微信授权登录、消息推送、异常告警推送至多个管理员</p></div>
+    <div class="feat-card" style="animation-delay:240ms"><div class="feat-icon">🗺️</div><h3>地块数字地图</h3><p>卫星地图+地块轮廓叠加，传感器位置标注，点击查看单点数据，地块面积自动计算，作物种植情况可视化</p></div>
+    <div class="feat-card" style="animation-delay:320ms"><div class="feat-icon">📈</div><h3>数据分析报表</h3><p>土壤墒情日/周/月报，灌溉用水统计，作物生长周期分析，与气象数据交叉分析，导出Excel/PDF</p></div>
+    <div class="feat-card" style="animation-delay:400ms"><div class="feat-icon">⚠️</div><h3>异常预警中心</h3><p>土壤干旱/过湿、pH异常、设备离线实时报警，支持短信/微信/电话多通道推送，报警阈值可自定义</p></div>
+    <div class="feat-card" style="animation-delay:480ms"><div class="feat-icon">🤖</div><h3>AI灌溉建议</h3><p>结合天气预报、土壤数据、作物模型，AI自动计算最佳灌溉时间和用量建议，降低人工经验依赖</p></div>
+    <div class="feat-card" style="animation-delay:560ms"><div class="feat-icon">🔌</div><h3>设备全生命周期</h3><p>传感器绑定、校准、换电池、更换全流程记录，设备故障自动定位，备件库存提醒，运维成本可控</p></div>
+  </div>
+</section>
+
+<section class="flow-section">
+  <h2>部署流程</h2>
+  <div class="flow-steps">
+    <div class="flow-step"><div class="flow-num">1</div><h4>现场勘察</h4><p>测量地块面积，规划传感器点位，确定网关安装位置</p></div>
+    <div class="flow-step"><div class="flow-num">2</div><h4>设备安装</h4><p>土壤传感器埋入土中，安装网关和灌溉控制器，连接水泵</p></div>
+    <div class="flow-step"><div class="flow-num">3</div><h4>云端配置</h4><p>绑定设备、配置阈值、关联地块、设置报警规则</p></div>
+    <div class="flow-step"><div class="flow-num">4</div><h4>培训上线</h4><p>农户培训、微信推送配置、正式投入使用</p></div>
+  </div>
+</section>
+
+<section class="pricing-section">
+  <div class="pricing-label">Investment Plan</div>
+  <div class="pricing-amount">3-8万</div>
+  <div class="pricing-unit">/10亩 · 含硬件+软件+安装调试</div>
+  <div class="pricing-note">按亩积计费，100亩起接<br>硬件成本 0.2-0.5万/亩 · 软件年费 0.5-1万</div>
+</section>
+
+<section class="cta-section" id="contact">
+  <h2>🌱 让每一寸土地都会说话</h2>
+  <p>提供免费土壤检测数据诊断，定制化方案设计</p>
+  <a href="#" class="btn btn-primary">立即咨询 →</a>
+</section>
+</body>
+</html>

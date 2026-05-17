@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>养殖宝 - 水产养殖智能柜系统</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans SC',sans-serif;background:#0a0a0f;color:#e5e7eb;line-height:1.6}
+.container{max-width:1200px;margin:0 auto;padding:0 20px}
+
+/* Hero */
+.hero{background:linear-gradient(135deg,#042f2e 0%,#0a4a44 50%,#042f2e 100%);padding:100px 0 80px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(45,212,191,0.15) 0%,transparent 70%)}
+.hero-badge{display:inline-block;background:rgba(45,212,191,0.15);border:1px solid rgba(45,212,191,0.3);color:#2dd4bf;padding:6px 18px;border-radius:50px;font-size:13px;margin-bottom:24px}
+.hero h1{font-size:52px;font-weight:700;margin-bottom:16px;background:linear-gradient(135deg,#fff 0%,#2dd4bf 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:18px;color:#9ca3af;max-width:600px;margin:0 auto 40px}
+.hero-partner{font-size:13px;color:#6b7280;margin-top:30px}
+.hero-partner span{color:#2dd4bf}
+.btn-group{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:10px;font-size:15px;font-weight:500;text-decoration:none;transition:all 0.3s;cursor:pointer;border:none}
+.btn-primary{background:#2dd4bf;color:#0a0a0f}
+.btn-primary:hover{background:#5eead4;transform:translateY(-2px)}
+.btn-secondary{background:rgba(45,212,191,0.1);border:1px solid rgba(45,212,191,0.3);color:#2dd4bf}
+.btn-secondary:hover{background:rgba(45,212,191,0.2)}
+.btn-demo{background:transparent;border:1px solid #4b5563;color:#9ca3af}
+.btn-demo:hover{border-color:#2dd4bf;color:#2dd4bf}
+
+/* Pain */
+.section{padding:80px 0}
+.section-title{text-align:center;margin-bottom:50px}
+.section-title h2{font-size:36px;font-weight:700;margin-bottom:12px}
+.section-title p{color:#9ca3af;font-size:16px}
+.pain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.pain-card{background:linear-gradient(135deg,rgba(45,212,191,0.08) 0%,rgba(45,212,191,0.03) 100%);border:1px solid rgba(45,212,191,0.2);border-radius:16px;padding:32px;text-align:center;transition:all 0.3s}
+.pain-card:hover{border-color:rgba(45,212,191,0.5);transform:translateY(-4px)}
+.pain-icon{font-size:40px;margin-bottom:16px}
+.pain-card h3{font-size:18px;margin-bottom:10px;color:#fff}
+.pain-card p{color:#9ca3af;font-size:14px}
+
+/* Features */
+.feature-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.feature-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:24px;transition:all 0.3s}
+.feature-card:hover{background:rgba(45,212,191,0.08);border-color:rgba(45,212,191,0.3)}
+.feature-icon{font-size:28px;margin-bottom:12px;color:#2dd4bf}
+.feature-card h3{font-size:15px;font-weight:600;margin-bottom:8px}
+.feature-card p{color:#6b7280;font-size:13px}
+
+/* Flow */
+.flow-section{background:rgba(255,255,255,0.02)}
+.flow-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:30px;position:relative}
+.flow-steps::before{content:'';position:absolute;top:35px;left:12%;right:12%;height:2px;background:linear-gradient(90deg,rgba(45,212,191,0.3),rgba(45,212,191,0.6),rgba(45,212,191,0.3))}
+.flow-step{text-align:center;position:relative;z-index:1}
+.flow-num{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,#0a4a44,#042f2e);border:2px solid #2dd4bf;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:24px;font-weight:700;color:#2dd4bf}
+.flow-step h4{font-size:16px;font-weight:600;margin-bottom:8px}
+.flow-step p{color:#6b7280;font-size:13px}
+
+/* Pricing */
+.pricing-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.pricing-card{background:linear-gradient(135deg,rgba(45,212,191,0.05) 0%,rgba(45,212,191,0.02) 100%);border:1px solid rgba(45,212,191,0.2);border-radius:16px;padding:36px;text-align:center}
+.pricing-card.featured{border-color:#2dd4bf;position:relative}
+.pricing-card.featured::before{content:'推荐方案';position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#2dd4bf;color:#0a0a0f;padding:4px 16px;border-radius:20px;font-size:12px;font-weight:600}
+.pricing-card h3{font-size:20px;font-weight:600;margin-bottom:16px}
+.price{font-size:36px;font-weight:700;color:#2dd4bf;margin-bottom:6px}
+.price span{font-size:14px;color:#6b7280;font-weight:400}
+.pricing-card p{color:#9ca3af;font-size:14px;margin-bottom:24px}
+.pricing-list{list-style:none;text-align:left;margin-bottom:24px}
+.pricing-list li{padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);color:#9ca3af;font-size:14px}
+.pricing-list li::before{content:'✓ ';color:#2dd4bf;margin-right:8px}
+
+/* Footer CTA */
+.footer-cta{background:linear-gradient(135deg,#042f2e 0%,#0a4a44 100%);padding:80px 0;text-align:center}
+.footer-cta h2{font-size:32px;font-weight:700;margin-bottom:16px}
+.footer-cta p{color:#9ca3af;margin-bottom:32px}
+@media(max-width:900px){.pain-grid,.feature-grid,.pricing-cards{grid-template-columns:1fr}.flow-steps{grid-template-columns:1fr 1fr}.hero h1{font-size:36px}}
+</style>
+</head>
+<body>
+<div class="hero">
+<div class="container">
+<div class="hero-badge">🐟 水产养殖智能柜</div>
+<h1>养殖宝</h1>
+<p>环境实时监测·自动精准投料·疾病智能预警 — 让每一池鱼虾都能健康生长</p>
+<div class="btn-group">
+<a href="demo-18-养殖宝.html" class="btn btn-primary">🚀 在线演示</a>
+<a href="#pricing" class="btn btn-secondary">💰 了解价格</a>
+<a href="#features" class="btn btn-demo">✨ 查看功能</a>
+</div>
+<div class="hero-partner">合作品牌：<span>广州德权</span> · <span>厦门斯坦诺</span></div>
+</div>
+</div>
+
+<div class="section" id="pain">
+<div class="container">
+<div class="section-title">
+<h2>传统养殖的痛点</h2>
+<p>人工经验难复制，损失往往来得猝不及防</p>
+</div>
+<div class="pain-grid">
+<div class="pain-card">
+<div class="pain-icon">📈</div>
+<h3>养殖密度高</h3>
+<p>高密度养殖下，水质变化快，人工巡检无法全覆盖，隐患难以及时发现</p>
+</div>
+<div class="pain-card">
+<div class="pain-icon">🌡️</div>
+<h3>环境控制难</h3>
+<p>温度、溶氧、氨氮等指标人工监测不及时，环境骤变导致大量死亡</p>
+</div>
+<div class="pain-card">
+<div class="pain-icon">💀</div>
+<h3>死亡率高</h3>
+<p>疾病发现滞后，用药不及时，每年因病害造成的损失占总收入的20%以上</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="section" id="features">
+<div class="container">
+<div class="section-title">
+<h2>核心功能</h2>
+<p>八大模块覆盖水产养殖全流程</p>
+</div>
+<div class="feature-grid">
+<div class="feature-card">
+<div class="feature-icon">🌡️</div>
+<h3>温湿度监测</h3>
+<p>7×24小时水质温度监测，超阈值自动告警</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon">🧪</div>
+<h3>气体监测</h3>
+<p>溶解氧、氨氮、亚硝酸盐等关键指标实时监测</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon">🍽️</div>
+<h3>自动投料</h3>
+<p>定时定量自动投料，精准控制饵料系数，降低成本</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon">🔄</div>
+<h3>水循环控制</h3>
+<p>自动水循环、增氧机控制，保持水质稳定</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon">⚠️</div>
+<h3>疾病预警</h3>
+<p>基于历史数据AI分析，提前预警疾病风险</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon">📝</div>
+<h3>数据记录</h3>
+<p>养殖全程数据记录，可追溯、可分析、可优化</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon">📱</div>
+<h3>远程控制</h3>
+<p>手机远程操控设备，突发情况第一时间处理</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon">💰</div>
+<h3>成本核算</h3>
+<p>饵料、用电、用药全程记录，养殖成本清晰可控</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="section flow-section" id="flow">
+<div class="container">
+<div class="section-title">
+<h2>快速部署流程</h2>
+<p>四步完成智能化改造</p>
+</div>
+<div class="flow-steps">
+<div class="flow-step">
+<div class="flow-num">1</div>
+<h4>需求评估</h4>
+<p>评估养殖规模、品种、现有设施，定制改造方案</p>
+</div>
+<div class="flow-step">
+<div class="flow-num">2</div>
+<h4>设备安装</h4>
+<p>安装水质传感器、投料机、增氧机等智能设备</p>
+</div>
+<div class="flow-step">
+<div class="flow-num">3</div>
+<h4>系统配置</h4>
+<p>配置养殖参数、告警阈值、投料策略</p>
+</div>
+<div class="flow-step">
+<div class="flow-num">4</div>
+<h4>培训交付</h4>
+<p>养殖人员培训，系统正式上线运行</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="section" id="pricing">
+<div class="container">
+<div class="section-title">
+<h2>方案报价</h2>
+<p>根据养殖规模灵活选配</p>
+</div>
+<div class="pricing-cards">
+<div class="pricing-card">
+<h3>基础版</h3>
+<div class="price">0.5<span>万/套</span></div>
+<p>单柜使用，基础监测</p>
+<ul class="pricing-list">
+<li>水质传感器（温度/溶氧）</li>
+<li>基础数据查看</li>
+<li>手机告警通知</li>
+<li>单柜支持</li>
+<li>基本数据分析</li>
+</ul>
+<a href="#" class="btn btn-secondary">咨询详情</a>
+</div>
+<div class="pricing-card featured">
+<h3>标准版</h3>
+<div class="price">1.0<span>万/套</span></div>
+<p>中小型养殖场首选</p>
+<ul class="pricing-list">
+<li>全部基础功能</li>
+<li>水质综合监测（含氨氮）</li>
+<li>自动投料控制</li>
+<li>水循环联动控制</li>
+<li>疾病预警分析</li>
+</ul>
+<a href="#" class="btn btn-primary">获取方案</a>
+</div>
+<div class="pricing-card">
+<h3>旗舰版</h3>
+<div class="price">1.5<span>万/套</span></div>
+<p>大型养殖基地/工厂化养殖</p>
+<ul class="pricing-list">
+<li>全部标准功能</li>
+<li>多参数水质监测</li>
+<li>AI疾病诊断</li>
+<li>成本核算分析</li>
+<li>专属技术支持</li>
+</ul>
+<a href="#" class="btn btn-secondary">联系我们</a>
+</div>
+</div>
+</div>
+</div>
+
+<div class="footer-cta">
+<div class="container">
+<h2>开启智慧养殖新时代</h2>
+<p>立即预约演示，体验环境监测与自动投料的便捷</p>
+<div class="btn-group">
+<a href="demo-18-养殖宝.html" class="btn btn-primary">🚀 体验在线演示</a>
+<a href="#pricing" class="btn btn-secondary">💬 咨询报价</a>
+</div>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>明路通 - 演示系统</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:#0a0a0f;color:#e5e5e5;height:100vh;overflow:hidden}
+.wrapper{display:flex;height:100vh}
+/* sidebar */
+.sidebar{width:220px;background:#0f0f18;border-right:1px solid rgba(251,191,36,.2);display:flex;flex-direction:column;flex-shrink:0}
+.sidebar-header{padding:20px 16px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:10px}
+.sidebar-header .logo{font-size:18px;font-weight:700;color:#fbbf24}
+.sidebar-header .logo span{display:block;font-size:11px;color:#666;font-weight:400}
+.sidebar-nav{flex:1;overflow-y:auto;padding:12px 0}
+.nav-item{display:flex;align-items:center;gap:10px;padding:11px 16px;color:#888;font-size:13px;cursor:pointer;border-left:3px solid transparent;transition:all .2s}
+.nav-item:hover{background:rgba(251,191,36,.05);color:#fbbf24}
+.nav-item.active{background:rgba(251,191,36,.1);color:#fbbf24;border-left-color:#fbbf24}
+.nav-item .icon{margin-right:2px}
+/* main */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.main-header{background:#0f0f18;border-bottom:1px solid rgba(255,255,255,.06);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.main-header h2{font-size:18px;font-weight:600}
+.header-actions{display:flex;gap:12px}
+.header-actions .btn{padding:8px 16px;border-radius:6px;font-size:13px;cursor:pointer;border:none;font-weight:500;transition:all .2s}
+.btn-primary{background:#fbbf24;color:#0a0a0f}
+.btn-primary:hover{background:#f59e0b}
+.btn-outline{background:transparent;border:1px solid rgba(251,191,36,.3);color:#fbbf24}
+.content{padding:24px;overflow-y:auto;flex:1}
+/* stats */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:#141420;border-radius:10px;padding:20px;border:1px solid rgba(255,255,255,.06)}
+.stat-card .label{font-size:12px;color:#666;margin-bottom:8px}
+.stat-card .value{font-size:28px;font-weight:700;color:#fbbf24}
+.stat-card .sub{font-size:11px;color:#555;margin-top:4px}
+.stat-card .green{color:#4ade80}
+.stat-card .red{color:#f87171}
+/* bar chart */
+.chart-card{background:#141420;border-radius:10px;padding:20px;border:1px solid rgba(255,255,255,.06);margin-bottom:24px}
+.chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.chart-header h3{font-size:15px}
+.chart-header select{background:#1a1a24;border:1px solid rgba(255,255,255,.1);color:#999;padding:6px 12px;border-radius:6px;font-size:12px}
+.bar-chart{display:flex;align-items:flex-end;gap:8px;height:160px;padding-top:10px}
+.bar-wrap{display:flex;flex-direction:column;align-items:center;flex:1;gap:6px}
+.bar{width:100%;background:#fbbf24;border-radius:3px 3px 0 0;min-height:4px;transition:height .5s}
+.bar-label{font-size:10px;color:#555}
+/* tables */
+.table-card{background:#141420;border-radius:10px;border:1px solid rgba(255,255,255,.06);margin-bottom:24px}
+.table-header{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:center}
+.table-header h3{font-size:15px}
+.table-header .tabs{display:flex;gap:4px}
+.table-header .tab{padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;color:#666;background:none;border:none}
+.table-header .tab.active{background:rgba(251,191,36,.1);color:#fbbf24}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{padding:12px 16px;text-align:left;color:#666;font-weight:500;border-bottom:1px solid rgba(255,255,255,.06);font-size:12px}
+tbody td{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.03);color:#aaa}
+tbody tr:hover{background:rgba(251,191,36,.03)}
+.status{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px}
+.status.online{background:rgba(74,222,128,.1);color:#4ade80}
+.status.offline{background:rgba(248,113,113,.1);color:#f87171}
+.status.warn{background:rgba(251,191,36,.1);color:#fbbf24}
+/* form */
+.form-row{display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-group label{font-size:12px;color:#666}
+.form-control{padding:8px 12px;background:#1a1a24;border:1px solid rgba(255,255,255,.1);border-radius:6px;color:#e5e5e5;font-size:13px;outline:none}
+.form-control:focus{border-color:#fbbf24}
+select.form-control{min-width:120px}
+/* modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:200;display:none}
+.modal-overlay.show{display:flex}
+.modal{background:#141420;border-radius:12px;width:480px;max-width:90%;border:1px solid rgba(251,191,36,.2)}
+.modal-header{padding:20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.06)}
+.modal-header h3{font-size:16px}
+.modal-close{background:none;border:none;color:#666;font-size:20px;cursor:pointer;line-height:1}
+.modal-body{padding:20px}
+.modal-footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:flex-end;gap:10px}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px}
+.badge-success{background:rgba(74,222,128,.15);color:#4ade80}
+.badge-warning{background:rgba(251,191,36,.15);color:#fbbf24}
+.badge-danger{background:rgba(248,113,113,.15);color:#f87171}
+</style>
+</head>
+<body>
+<div class="wrapper">
+<aside class="sidebar">
+<div class="sidebar-header">
+<div class="logo">明路通<span>路灯监控</span></div>
+</div>
+<nav class="sidebar-nav">
+<div class="nav-item active"><span class="icon">📊</span>路灯概览</div>
+<div class="nav-item"><span class="icon">💡</span>单灯控制</div>
+<div class="nav-item"><span class="icon">⚠️</span>故障管理</div>
+<div class="nav-item"><span class="icon">📈</span>能耗统计</div>
+<div class="nav-item"><span class="icon">🌙</span>调光策略</div>
+<div class="nav-item"><span class="icon">🗺️</span>地图管理</div>
+<div class="nav-item"><span class="icon">📡</span>设备管理</div>
+<div class="nav-item"><span class="icon">⚙️</span>系统设置</div>
+</nav>
+</aside>
+<div class="main">
+<div class="main-header">
+<h2>路灯概览</h2>
+<div class="header-actions">
+<button class="btn btn-outline" onclick="showModal('control')">控制策略</button>
+<button class="btn btn-primary" onclick="showModal('add')">新建策略</button>
+</div>
+</div>
+<div class="content">
+<div class="stats-grid">
+<div class="stat-card">
+<div class="label">在线路灯</div>
+<div class="value">1,847 <span class="sub" style="color:#4ade80;font-size:13px">98.2%</span></div>
+<div class="sub">总计 1,881 盏</div>
+</div>
+<div class="stat-card">
+<div class="label">今日能耗</div>
+<div class="value">2,341 <span class="sub" style="font-size:13px">kWh</span></div>
+<div class="sub">同比昨日 -8.3%</div>
+</div>
+<div class="stat-card">
+<div class="label">故障报警</div>
+<div class="value" style="color:#f87171">12</div>
+<div class="sub">本月已处理 87 起</div>
+</div>
+<div class="stat-card">
+<div class="label">当前功率</div>
+<div class="value">68%</div>
+<div class="sub">当前亮度：深夜模式</div>
+</div>
+</div>
+<div class="chart-card">
+<div class="chart-header">
+<h3>近7日用电趋势（kWh）</h3>
+<select><option>本周</option><option>上月</option></select>
+</div>
+<div class="bar-chart" id="chart7days">
+<div class="bar-wrap"><div class="bar" style="height:95px"></div><div class="bar-label">周一</div></div>
+<div class="bar-wrap"><div class="bar" style="height:110px"></div><div class="bar-label">周二</div></div>
+<div class="bar-wrap"><div class="bar" style="height:85px"></div><div class="bar-label">周三</div></div>
+<div class="bar-wrap"><div class="bar" style="height:120px"></div><div class="bar-label">周四</div></div>
+<div class="bar-wrap"><div class="bar" style="height:100px"></div><div class="bar-label">周五</div></div>
+<div class="bar-wrap"><div class="bar" style="height:70px"></div><div class="bar-label">周六</div></div>
+<div class="bar-wrap"><div class="bar" style="height:60px;background:#f59e0b"></div><div class="bar-label">周日</div></div>
+</div>
+</div>
+<div class="table-card">
+<div class="table-header">
+<h3>实时监控</h3>
+<div class="tabs">
+<button class="tab active">在线</button>
+<button class="tab">故障</button>
+<button class="tab">离线</button>
+</div>
+</div>
+<table>
+<thead><tr><th>路灯编号</th><th>位置</th><th>电流(A)</th><th>功率(W)</th><th>亮度</th><th>状态</th><th>操作</th></tr></thead>
+<tbody>
+<tr><td>DL-001-A1</td><td>中山北路 人民路交叉口</td><td>0.82</td><td>180</td><td>100%</td><td><span class="status online">● 在线</span></td><td><button class="btn btn-outline" style="padding:4px 10px;font-size:11px">调光</button></td></tr>
+<tr><td>DL-002-A1</td><td>中山北路 建设路</td><td>0.78</td><td>165</td><td>80%</td><td><span class="status online">● 在线</span></td><td><button class="btn btn-outline" style="padding:4px 10px;font-size:11px">调光</button></td></tr>
+<tr><td>DL-003-A1</td><td>人民南路 128 号</td><td>0.00</td><td>0</td><td>0%</td><td><span class="status offline">● 离线</span></td><td><button class="btn btn-outline" style="padding:4px 10px;font-size:11px">查看</button></td></tr>
+<tr><td>DL-004-A2</td><td>人民南路 景观灯</td><td>0.65</td><td>142</td><td>60%</td><td><span class="status warn">● 电压异常</span></td><td><button class="btn btn-outline" style="padding:4px 10px;font-size:11px">查看</button></td></tr>
+<tr><td>DL-005-A2</td><td>解放路 步行街口</td><td>0.80</td><td>175</td><td>100%</td><td><span class="status online">● 在线</span></td><td><button class="btn btn-outline" style="padding:4px 10px;font-size:11px">调光</button></td></tr>
+<tr><td>DL-006-A2</td><td>解放路 商业广场</td><td>0.55</td><td>120</td><td>40%</td><td><span class="status online">● 在线</span></td><td><button class="btn btn-outline" style="padding:4px 10px;font-size:11px">调光</button></td></tr>
+<tr><td>DL-007-A3</td><td>新城大道 市政府前</td><td>0.85</td><td>190</td><td>100%</td><td><span class="status online">● 在线</span></td><td><button class="btn btn-outline" style="padding:4px 10px;font-size:11px">调光</button></td></tr>
+<tr><td>DL-008-A3</td><td>新城大道 公园入口</td><td>0.00</td><td>0</td><td>0%</td><td><span class="status offline">● 离线</span></td><td><button class="btn btn-outline" style="padding:4px 10px;font-size:11px">查看</button></td></tr>
+</tbody>
+</table>
+</div>
+<div class="table-card">
+<div class="table-header">
+<h3>故障记录</h3>
+</div>
+<table>
+<thead><tr><th>故障编号</th><th>路灯编号</th><th>位置</th><th>故障类型</th><th>发生时间</th><th>状态</th></tr></thead>
+<tbody>
+<tr><td>FJ-20240615-001</td><td>DL-010-B1</td><td>滨江路 3 号杆</td><td><span class="badge badge-danger">电流过载</span></td><td>2024-06-15 08:23:15</td><td><span class="badge badge-warning">处理中</span></td></tr>
+<tr><td>FJ-20240615-002</td><td>DL-015-B2</td><td>滨江路 8 号杆</td><td><span class="badge badge-warning">通信中断</span></td><td>2024-06-15 07:45:02</td><td><span class="badge badge-success">已处理</span></td></tr>
+<tr><td>FJ-20240614-003</td><td>DL-022-C1</td><td>工业大道 南段</td><td><span class="badge badge-danger">灯具损坏</span></td><td>2024-06-14 22:11:30</td><td><span class="badge badge-success">已处理</span></td></tr>
+<tr><td>FJ-20240614-004</td><td>DL-031-C3</td><td>工业大道 北段</td><td><span class="badge badge-warning">电压偏低</span></td><td>2024-06-14 18:05:44</td><td><span class="badge badge-success">已处理</span></td></tr>
+<tr><td>FJ-20240613-005</td><td>DL-038-D1</td><td>学院路 图书馆旁</td><td><span class="badge badge-warning">控制器故障</span></td><td>2024-06-13 14:30:18</td><td><span class="badge badge-success">已处理</span></td></tr>
+</tbody>
+</table>
+</div>
+<div class="table-card">
+<div class="table-header">
+<h3>调光策略</h3>
+</div>
+<table>
+<thead><tr><th>策略名称</th><th>时段</th><th>目标亮度</th><th>适用区域</th><th>状态</th></tr></thead>
+<tbody>
+<tr><td>夜间经济模式</td><td>18:00 - 22:00</td><td>100%</td><td>商业区主路</td><td><span class="badge badge-success">启用</span></td></tr>
+<tr><td>深夜节能模式</td><td>22:00 - 05:00</td><td>40%</td><td>全路段</td><td><span class="badge badge-success">启用</span></td></tr>
+<tr><td>凌晨渐亮模式</td><td>05:00 - 06:00</td><td>40%→100%</td><td>全路段</td><td><span class="badge badge-success">启用</span></td></tr>
+<tr><td>阴天补偿模式</td><td>全天</td><td>+20%</td><td>全路段</td><td><span class="badge badge-warning">待触发</span></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="modal-overlay" id="controlModal">
+<div class="modal">
+<div class="modal-header">
+<h3>控制策略</h3>
+<span class="modal-close" onclick="hideModal()">×</span>
+</div>
+<div class="modal-body">
+<div class="form-row">
+<div class="form-group"><label>控制类型</label><select class="form-control"><option>全部开灯</option><option>全部关灯</option><option>分批控制</option><option>调光策略</option></select></div>
+<div class="form-group"><label>目标区域</label><select class="form-control"><option>全路段</option><option>中山北路</option><option>人民南路</option><option>解放路</option><option>新城大道</option></select></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>目标亮度</label><select class="form-control"><option>100%</option><option>80%</option><option>60%</option><option>40%</option><option>20%</option></select></div>
+<div class="form-group"><label>执行时间</label><select class="form-control"><option>立即执行</option><option>定时执行</option></select></div>
+</div>
+<div class="form-group"><label>备注说明</label><input class="form-control" placeholder="选填：如节假日特殊调整"></div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-outline" onclick="hideModal()">取消</button>
+<button class="btn btn-primary" onclick="hideModal()">确认执行</button>
+</div>
+</div>
+</div>
+<div class="modal-overlay" id="addModal">
+<div class="modal">
+<div class="modal-header">
+<h3>新建调光策略</h3>
+<span class="modal-close" onclick="hideModal()">×</span>
+</div>
+<div class="modal-body">
+<div class="form-row">
+<div class="form-group" style="flex:1"><label>策略名称</label><input class="form-control" placeholder="如：雨天增强模式"></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>开始时间</label><input type="time" class="form-control" value="18:00"></div>
+<div class="form-group"><label>结束时间</label><input type="time" class="form-control" value="22:00"></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>亮度设置</label><select class="form-control"><option>100%</option><option>80%</option><option>60%</option><option>40%</option></select></div>
+<div class="form-group"><label>适用区域</label><select class="form-control"><option>全路段</option><option>商业区</option><option>住宅区</option><option>工业区</option></select></div>
+</div>
+<div class="form-group"><label>触发条件</label><select class="form-control"><option>定时执行</option><option>光照度低于</option><option>天气为阴雨天</option></select></div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-outline" onclick="hideModal()">取消</button>
+<button class="btn btn-primary" onclick="hideModal()">保存策略</button>
+</div>
+</div>
+</div>
+<script>
+function showModal(id){document.getElementById(id==='control'?'controlModal':'addModal').classList.add('show')}
+function hideModal(){document.querySelectorAll('.modal-overlay').forEach(m=>m.classList.remove('show'))}
+document.querySelectorAll('.nav-item').forEach(item=>{
+item.addEventListener('click',function(){document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));this.classList.add('active');document.querySelector('.main-header h2').textContent=this.textContent.trim()})});
+document.querySelectorAll('.tab').forEach(tab=>{
+tab.addEventListener('click',function(){this.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));this.classList.add('active')})});
+</script>
+</body>
+</html>

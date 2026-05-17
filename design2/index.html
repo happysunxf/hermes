@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小B硬件+软件行业解决方案 - 产品导航</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans SC',system-ui,sans-serif;background:#050a14;color:#c8d8f0;min-height:100vh}
+header{background:linear-gradient(135deg,#050c1f 0%,#081530 100%);padding:60px 20px;text-align:center;border-bottom:1px solid #0f2744}
+header h1{font-size:clamp(28px,5vw,48px);font-weight:800;background:linear-gradient(135deg,#60a5fa,#38bdf8,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:12px}
+header p{color:#5a7a9a;font-size:16px;max-width:700px;margin:0 auto;line-height:1.7}
+.hero-stats{display:flex;justify-content:center;gap:50px;flex-wrap:wrap;margin-top:30px}
+.stat{text-align:center}
+.stat-val{font-size:28px;font-weight:800;color:#7dd3fc}
+.stat-name{font-size:13px;color:#4a6a8a;margin-top:4px}
+main{max-width:1200px;margin:0 auto;padding:40px 20px}
+.filter-bar{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:40px}
+.filter-btn{padding:8px 18px;border-radius:8px;background:#0d1929;color:#5a8ab5;border:1px solid #1a3050;cursor:pointer;font-size:13px;transition:all .3s}
+.filter-btn:hover,.filter-btn.active{background:#1a3a5c;color:#7dd3fc;border-color:#2a5a8c}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.card{background:#0d1929;border:1px solid #132743;border-radius:14px;padding:24px;transition:all .3s;cursor:pointer;text-decoration:none;display:block}
+.card:hover{transform:translateY(-3px);border-color:#2a5a8c;box-shadow:0 12px 40px rgba(96,165,250,0.08)}
+.card-top{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.card-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.card-name{font-size:17px;font-weight:700;color:#e8f2ff}
+.card-tag{font-size:11px;padding:2px 8px;border-radius:10px;background:rgba(96,165,250,0.1);color:#60a5fa;margin-left:auto}
+.card-desc{font-size:13px;color:#5a8ab5;line-height:1.6;margin-bottom:16px}
+.card-features{display:flex;flex-wrap:wrap;gap:6px}
+.card-feat{padding:3px 8px;border-radius:6px;background:#0a1422;font-size:11px;color:#4a7a9a}
+.card-footer{display:flex;gap:10px;margin-top:16px;padding-top:16px;border-top:1px solid #0f2744}
+.card-link{padding:8px 16px;border-radius:8px;background:#0f1e35;text-align:center;font-size:13px;font-weight:600;flex:1;transition:all .3s}
+.card-link.demo{color:#4ade80;border:1px solid rgba(74,222,128,0.25)}
+.card-link.product{color:#7dd3fc;border:1px solid rgba(125,211,252,0.25)}
+.card-link:hover{transform:translateY(-2px)}
+footer{text-align:center;padding:40px 20px;color:#3a5a7a;font-size:13px;border-top:1px solid #0f2744;margin-top:40px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🔌 硬件+软件行业解决方案</h1>
+  <p>25款面向小B的软硬件结合产品，硬件投入小、功能聚焦、现场部署快，年费2-15万</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-val">25</div><div class="stat-name">产品数量</div></div>
+    <div class="stat"><div class="stat-val">25</div><div class="stat-name">配套演示</div></div>
+    <div class="stat"><div class="stat-val">25</div><div class="stat-name">行业覆盖</div></div>
+  </div>
+</header>
+<main>
+<div class="filter-bar">
+  <button class="filter-btn active" data-filter="all">全部</button>
+  <button class="filter-btn" data-filter="农业">🌱 农业</button>
+  <button class="filter-btn" data-filter="工业">🏭 工业</button>
+  <button class="filter-btn" data-filter="商业">🏪 商业</button>
+  <button class="filter-btn" data-filter="生活">🏠 生活</button>
+  <button class="filter-btn" data-filter="公共">🏙️ 公共</button>
+  <button class="filter-btn" data-filter="安全">🔒 安全</button>
+</div>
+<div class="grid" id="productGrid">
+</div>
+</main>
+<script>
+const products=[
+{name:"智秤云",tag:"商业",icon:"⚖️",color:"#2dd4bf",desc:"餐饮AI视觉称重，菜品自动识别，微信自动扣款，生鲜零售降损提效",features:["AI视觉识别","自动计价","库存同步","微信扣款"],product:"product-01-智秤云.html",demo:"demo-01-智秤云.html"},
+{name:"价签通",tag:"商业",icon:"🏷️",color:"#fb923c",desc:"电子价签实时更新，总部统一定价，超市生鲜区改价效率提升10倍",features:["总部定价","实时改价","促销同步","拣货提醒"],product:"product-02-价签通.html",demo:"demo-02-价签通.html"},
+{name:"润土智联",tag:"农业",icon:"🌍",color:"#4ade80",desc:"土壤湿度/温度/pH实时监测，灌溉自动联动，亩均节水40%+",features:["土壤监测","自动灌溉","地块管理","AI建议"],product:"product-03-润土智联.html",demo:"demo-03-润土智联.html"},
+{name:"净塘卫士",tag:"农业",icon:"🐟",color:"#60a5fa",desc:"水产养殖溶解氧/温度/pH实时监控，异常自动报警，增氧机联动",features:["水质监测","溶解氧监控","增氧联动","塘口管理"],product:"product-04-净塘卫士.html",demo:"demo-04-净塘卫士.html"},
+{name:"冷程云",tag:"商业",icon:"❄️",color:"#7dd3fc",desc:"冷链温湿度全程监控，GPS轨迹追踪，数据报告一键生成，货损可追责",features:["温湿度监测","运输轨迹","异常报警","数据溯源"],product:"product-05-冷程云.html",demo:"demo-05-冷程云.html"},
+{name:"药店守望",tag:"安全",icon:"💊",color:"#2dd4bf",desc:"药店温湿度24h监测，GSP认证数据自动记录，超标实时报警",features:["24h监测","GSP报告","超标报警","连锁管理"],product:"product-06-药店守望.html",demo:"demo-06-药店守望.html"},
+{name:"清道云",tag:"公共",icon:"🗑️",color:"#f97316",desc:"垃圾桶满溢实时监测，清理路线优化，环卫车辆调度效率提升",features:["满溢监测","路线优化","车辆调度","数据统计"],product:"product-07-清道云.html",demo:"demo-07-清道云.html"},
+{name:"泊位智控",tag:"公共",icon:"🚗",color:"#60a5fa",desc:"地磁车位锁实时监测，无人值守自动收费，收费跑冒滴漏减少70%+",features:["地磁检测","无人收费","违停检测","收益分析"],product:"product-08-泊位智控.html",demo:"demo-08-泊位智控.html"},
+{name:"明路通",tag:"公共",icon:"💡",color:"#fbbf24",desc:"路灯单灯控制，按需开关灯，故障报警，节能率50%+，路灯运维成本大幅下降",features:["单灯控制","故障报警","节能调光","能耗统计"],product:"product-09-明路通.html",demo:"demo-09-明路通.html"},
+{name:"梯智云",tag:"安全",icon:"🏢",color:"#f87171",desc:"电梯故障实时报警，困人自动呼叫，维保记录数字化，物业安心业主放心",features:["故障报警","困人呼叫","维保管理","数据分析"],product:"product-10-梯智云.html",demo:"demo-10-梯智云.html"},
+{name:"烟感卫士",tag:"安全",icon:"🔥",color:"#ef4444",desc:"烟感燃气探测器实时监测，报警推送自动断阀，餐饮后厨/民宿/商铺安全必备",features:["烟雾监测","燃气报警","自动断阀","报警推送"],product:"product-11-烟感卫士.html",demo:"demo-11-烟感卫士.html"},
+{name:"净润智联",tag:"工业",icon:"💧",color:"#38bdf8",desc:"水质在线监测余氯/浊度/pH，异常报警，数据上报环保平台，二次供水全覆盖",features:["余氯监测","浊度监测","异常报警","数据上报"],product:"product-12-净润智联.html",demo:"demo-12-净润智联.html"},
+{name:"称重卫士",tag:"工业",icon:"🏭",color:"#facc15",desc:"固废危废自动称重，RFID标签打印，转移联单电子化，危废处置厂/医院/实验室",features:["自动称重","RFID标签","联单电子化","监管对接"],product:"product-13-称重卫士.html",demo:"demo-13-称重卫士.html"},
+{name:"客流通",tag:"商业",icon:"👥",color:"#a78bfa",desc:"景区客流实时统计，限流预警，热力图分析，节假日客流管理不再是难题",features:["实时客流","限流预警","热力图","历史分析"],product:"product-14-客流通.html",demo:"demo-14-客流通.html"},
+{name:"门智达",tag:"商业",icon:"🚪",color:"#4ade80",desc:"健身房人脸/二维码智能门禁，储物柜数字化管理，会员签到效率提升",features:["人脸开门","二维码开门","储物柜管理","签到记录"],product:"product-15-门智达.html",demo:"demo-15-门智达.html"},
+{name:"锁控云",tag:"商业",icon:"🔐",color:"#fb923c",desc:"共享设备LoRa锁控，远程开锁，电量监测，租金自动计算，运营成本大幅下降",features:["远程开锁","电量监测","租金计算","防破坏报警"],product:"product-16-锁控云.html",demo:"demo-16-锁控云.html"},
+{name:"智标溯源",tag:"商业",icon:"📦",color:"#a78bfa",desc:"电子货架标签实时显示库存，缺货自动提醒，扫码盘点效率提升5倍",features:["缺货提醒","实时库存","扫码盘点","数据同步"],product:"product-17-智标溯源.html",demo:"demo-17-智标溯源.html"},
+{name:"养殖宝",tag:"农业",icon:"🐠",color:"#2dd4bf",desc:"养殖柜环境监控，自动投料，水循环控制，疾病预警，陆基养殖全覆盖",features:["环境监测","自动投料","水循环控制","疾病预警"],product:"product-18-养殖宝.html",demo:"demo-18-养殖宝.html"},
+{name:"云充行",tag:"生活",icon:"⚡",color:"#4ade80",desc:"电瓶车智能充电桩，充满自停，过载保护，微信支付，物业统一管理",features:["充满自停","过载保护","微信支付","收益统计"],product:"product-19-云充行.html",demo:"demo-19-云充行.html"},
+{name:"厨安卫",tag:"安全",icon:"🍳",color:"#ef4444",desc:"后厨AI监控，老鼠检测、工服检测、违规操作识别，食品安全有据可查",features:["老鼠检测","工服检测","违规识别","报警推送"],product:"product-20-厨安卫.html",demo:"demo-20-厨安卫.html"},
+{name:"尘境卫士",tag:"公共",icon:"🌫️",color:"#fbbf24",desc:"工地扬尘噪声实时监测，超标自动抓拍，喷淋联动，环保整改可闭环",features:["扬尘监测","噪声监测","超标抓拍","喷淋联动"],product:"product-21-尘境卫士.html",demo:"demo-21-尘境卫士.html"},
+{name:"污净通",tag:"工业",icon:"🏭",color:"#60a5fa",desc:"污水在线COD/氨氮/总磷监测，异常报警，数据上报环保平台，排污口全覆盖",features:["COD监测","氨氮监测","异常报警","数据上报"],product:"product-22-污净通.html",demo:"demo-22-污净通.html"},
+{name:"棚智行",tag:"农业",icon:"🌿",color:"#4ade80",desc:"温室大棚温湿度/光照/CO2监测，风机/遮阳/灌溉自动联动，手机远程控制",features:["环境监测","设备联动","手机控制","数据分析"],product:"product-23-棚智行.html",demo:"demo-23-棚智行.html"},
+{name:"牧智养",tag:"农业",icon:"🐄",color:"#2dd4bf",desc:"畜禽养殖环境监测，自动投料，疾病预警，溯源管理，死淘率显著下降",features:["环境监测","自动投料","疾病预警","溯源管理"],product:"product-24-牧智养.html",demo:"demo-24-牧智养.html"},
+{name:"智控云",tag:"生活",icon:"🏠",color:"#818cf8",desc:"LoRa全屋智能控制，灯光/窗帘/空调/安防，手机远程，场景联动，节能18%+",features:["灯光控制","窗帘控制","空调控制","场景联动"],product:"product-25-智控云.html",demo:"demo-25-智控云.html"},
+];
+
+function renderGrid(filter){
+  const grid=document.getElementById('productGrid');
+  grid.innerHTML='';
+  products.filter(p=>filter==='all'||p.tag===filter).forEach(p=>{
+    const card=document.createElement('a');
+    card.className='card';
+    card.href=p.product;
+    card.innerHTML=`<div class="card-top"><div class="card-icon" style="background:${p.color}22;color:${p.color}">${p.icon}</div><div class="card-name">${p.name}</div><span class="card-tag">${p.tag}</span></div><p class="card-desc">${p.desc}</p><div class="card-features">${p.features.map(f=>`<span class="card-feat">${f}</span>`).join('')}</div><div class="card-footer"><a href="${p.demo}" class="card-link demo" target="_blank">🔬 演示</a><a href="${p.product}" class="card-link product" target="_blank">📄 产品页</a></div>`;
+    grid.appendChild(card);
+  });
+}
+document.querySelectorAll('.filter-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderGrid(btn.dataset.filter);
+  });
+});
+renderGrid('all');
+</script>
+<footer>25款硬件+软件行业解决方案 · 全部配有在线演示系统<br>小B市场，年费2-15万，硬件投入占比小</footer>
+</body>
+</html>

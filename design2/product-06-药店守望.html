@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>药店守望 - 药店GSP温湿度监控</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --teal: #2dd4bf;
+            --teal-dark: #0d9488;
+            --teal-light: #5eead4;
+        }
+        body { font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+        .gradient-hero {
+            background: linear-gradient(135deg, #0f766e 0%, #0d9488 50%, #14b8a6 100%);
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(45, 212, 191, 0.15);
+        }
+        .teal-glow {
+            box-shadow: 0 0 30px rgba(45, 212, 191, 0.3);
+        }
+        .feature-icon {
+            background: linear-gradient(135deg, var(--teal) 0%, var(--teal-light) 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl feature-icon flex items-center justify-center">
+                        <i class="fas fa-clinic-medical text-white text-lg"></i>
+                    </div>
+                    <span class="text-xl font-bold text-gray-800">药店守望</span>
+                </div>
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="#features" class="text-gray-600 hover:text-teal-500 transition">功能</a>
+                    <a href="#flow" class="text-gray-600 hover:text-teal-500 transition">流程</a>
+                    <a href="#pricing" class="text-gray-600 hover:text-teal-500 transition">定价</a>
+                    <a href="#contact" class="px-5 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition">联系我们</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="gradient-hero text-white py-24 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-10 left-10 w-72 h-72 rounded-full bg-white blur-3xl"></div>
+            <div class="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-teal-300 blur-3xl"></div>
+        </div>
+        <div class="max-w-7xl mx-auto px-6 relative z-10">
+            <div class="text-center">
+                <div class="inline-flex items-center gap-2 bg-white/20 rounded-full px-4 py-2 mb-6">
+                    <i class="fas fa-shield-alt text-teal-200"></i>
+                    <span class="text-sm">GSP认证合规解决方案</span>
+                </div>
+                <h1 class="text-5xl md:text-6xl font-bold mb-6">药店守望</h1>
+                <p class="text-xl md:text-2xl text-teal-100 mb-4">药店GSP温湿度监控</p>
+                <p class="text-lg text-teal-200 mb-10 max-w-3xl mx-auto">
+                    GSP认证温湿度24h全程监测 · 数据自动记录 · 异常实时报警
+                </p>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <a href="#contact" class="px-8 py-4 bg-white text-teal-600 rounded-xl font-semibold hover:bg-teal-50 transition flex items-center gap-2 teal-glow">
+                        <i class="fas fa-paper-plane"></i> 获取方案
+                    </a>
+                    <a href="#features" class="px-8 py-4 bg-teal-500/30 border-2 border-white/50 text-white rounded-xl font-semibold hover:bg-teal-500/50 transition flex items-center gap-2">
+                        <i class="fas fa-th-large"></i> 查看功能
+                    </a>
+                    <a href="demo-06-药店守望.html" class="px-8 py-4 bg-transparent border-2 border-white/50 text-white rounded-xl font-semibold hover:bg-white/10 transition flex items-center gap-2">
+                        <i class="fas fa-play-circle"></i> 在线演示
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pain Points Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">行业痛点</h2>
+                <p class="text-gray-500">告别传统监控烦恼，迎接智能化管理</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl p-8 card-hover transition-all duration-300 border border-red-100">
+                    <div class="w-16 h-16 rounded-2xl bg-red-500 flex items-center justify-center mb-6">
+                        <i class="fas fa-building text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">连锁药店</h3>
+                    <p class="text-gray-600 mb-4">多门店统一管理难，温湿度数据分散，巡检成本高，异常情况发现滞后</p>
+                    <ul class="text-sm text-gray-500 space-y-2">
+                        <li><i class="fas fa-times text-red-400 mr-2"></i>数据孤岛，无法集中监控</li>
+                        <li><i class="fas fa-times text-red-400 mr-2"></i>人工记录，效率低易出错</li>
+                        <li><i class="fas fa-times text-red-400 mr-2"></i>GSP检查准备周期长</li>
+                    </ul>
+                </div>
+                <!-- Card 2 -->
+                <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 card-hover transition-all duration-300 border border-purple-100">
+                    <div class="w-16 h-16 rounded-2xl bg-purple-500 flex items-center justify-center mb-6">
+                        <i class="fas fa-store text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">单体药店</h3>
+                    <p class="text-gray-600 mb-4">设备维护困难，专业人员不足，监控系统建设投入大，运维成本高</p>
+                    <ul class="text-sm text-gray-500 space-y-2">
+                        <li><i class="fas fa-times text-purple-400 mr-2"></i>设备故障发现不及时</li>
+                        <li><i class="fas fa-times text-purple-400 mr-2"></i>报警响应速度慢</li>
+                        <li><i class="fas fa-times text-purple-400 mr-2"></i>历史数据难以追溯</li>
+                    </ul>
+                </div>
+                <!-- Card 3 -->
+                <div class="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-8 card-hover transition-all duration-300 border border-blue-100">
+                    <div class="w-16 h-16 rounded-2xl bg-blue-500 flex items-center justify-center mb-6">
+                        <i class="fas fa-user-nurse text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-800 mb-3">药剂师</h3>
+                    <p class="text-gray-600 mb-4">药品储存条件要求高，人工监控耗时，报告整理繁琐，责任风险大</p>
+                    <ul class="text-sm text-gray-500 space-y-2">
+                        <li><i class="fas fa-times text-blue-400 mr-2"></i>24小时监控影响正常工作</li>
+                        <li><i class="fas fa-times text-blue-400 mr-2"></i>报告制作耗时费力</li>
+                        <li><i class="fas fa-times text-blue-400 mr-2"></i>温湿度超标责任难以界定</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">核心功能</h2>
+                <p class="text-gray-500">全方位满足GSP认证要求的智能监控系统</p>
+            </div>
+            <div class="grid md:grid-cols-4 gap-6">
+                <!-- Feature 1 -->
+                <div class="bg-white rounded-2xl p-6 card-hover transition-all duration-300 border border-gray-100">
+                    <div class="w-14 h-14 rounded-xl feature-icon flex items-center justify-center mb-5">
+                        <i class="fas fa-thermometer-half text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">温湿度监测</h3>
+                    <p class="text-sm text-gray-500">24小时实时采集，数据自动上报，云端存储分析</p>
+                </div>
+                <!-- Feature 2 -->
+                <div class="bg-white rounded-2xl p-6 card-hover transition-all duration-300 border border-gray-100">
+                    <div class="w-14 h-14 rounded-xl feature-icon flex items-center justify-center mb-5">
+                        <i class="fas fa-cogs text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">设备管理</h3>
+                    <p class="text-sm text-gray-500">设备注册、标定、报废全生命周期管理</p>
+                </div>
+                <!-- Feature 3 -->
+                <div class="bg-white rounded-2xl p-6 card-hover transition-all duration-300 border border-gray-100">
+                    <div class="w-14 h-14 rounded-xl feature-icon flex items-center justify-center mb-5">
+                        <i class="fas fa-bell text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">报警记录</h3>
+                    <p class="text-sm text-gray-500">多渠道实时报警，历史记录可查，闭环处理</p>
+                </div>
+                <!-- Feature 4 -->
+                <div class="bg-white rounded-2xl p-6 card-hover transition-all duration-300 border border-gray-100">
+                    <div class="w-14 h-14 rounded-xl feature-icon flex items-center justify-center mb-5">
+                        <i class="fas fa-file-export text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">报表导出</h3>
+                    <p class="text-sm text-gray-500">自定义报表模板，一键导出Excel/PDF</p>
+                </div>
+                <!-- Feature 5 -->
+                <div class="bg-white rounded-2xl p-6 card-hover transition-all duration-300 border border-gray-100">
+                    <div class="w-14 h-14 rounded-xl feature-icon flex items-center justify-center mb-5">
+                        <i class="fas fa-clipboard-check text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">GSP报告</h3>
+                    <p class="text-sm text-gray-500">符合GSP规范的报告生成，自动归档</p>
+                </div>
+                <!-- Feature 6 -->
+                <div class="bg-white rounded-2xl p-6 card-hover transition-all duration-300 border border-gray-100">
+                    <div class="w-14 h-14 rounded-xl feature-icon flex items-center justify-center mb-5">
+                        <i class="fas fa-store-alt text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">门店管理</h3>
+                    <p class="text-sm text-gray-500">多门店统一管理，权限分级控制</p>
+                </div>
+                <!-- Feature 7 -->
+                <div class="bg-white rounded-2xl p-6 card-hover transition-all duration-300 border border-gray-100">
+                    <div class="w-14 h-14 rounded-xl feature-icon flex items-center justify-center mb-5">
+                        <i class="fas fa-truck text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">供应商管理</h3>
+                    <p class="text-sm text-gray-500">设备供应商档案管理，维保服务跟踪</p>
+                </div>
+                <!-- Feature 8 -->
+                <div class="bg-white rounded-2xl p-6 card-hover transition-all duration-300 border border-gray-100">
+                    <div class="w-14 h-14 rounded-xl feature-icon flex items-center justify-center mb-5">
+                        <i class="fas fa-sliders-h text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mb-2">系统设置</h3>
+                    <p class="text-sm text-gray-500">灵活配置阈值，报警规则自定义</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Flow Section -->
+    <section id="flow" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">操作流程</h2>
+                <p class="text-gray-500">简单四步，快速部署您的监控系统</p>
+            </div>
+            <div class="grid md:grid-cols-4 gap-8">
+                <div class="text-center relative">
+                    <div class="step-number">1</div>
+                    <div class="step-icon">
+                        <i class="fas fa-phone-alt text-3xl text-teal-500"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mt-6 mb-2">需求沟通</h3>
+                    <p class="text-sm text-gray-500">联系我们，专业顾问为您定制方案</p>
+                    <div class="hidden md:block absolute top-16 left-[60%] w-[80%] h-0.5 bg-teal-200"></div>
+                </div>
+                <div class="text-center relative">
+                    <div class="step-number">2</div>
+                    <div class="step-icon">
+                        <i class="fas fa-tools text-3xl text-teal-500"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mt-6 mb-2">设备安装</h3>
+                    <p class="text-sm text-gray-500">专业团队上门安装调试</p>
+                    <div class="hidden md:block absolute top-16 left-[60%] w-[80%] h-0.5 bg-teal-200"></div>
+                </div>
+                <div class="text-center relative">
+                    <div class="step-number">3</div>
+                    <div class="step-icon">
+                        <i class="fas fa-cloud-upload-alt text-3xl text-teal-500"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mt-6 mb-2">系统上线</h3>
+                    <p class="text-sm text-gray-500">云平台一键启用，数据实时同步</p>
+                    <div class="hidden md:block absolute top-16 left-[60%] w-[80%] h-0.5 bg-teal-200"></div>
+                </div>
+                <div class="text-center">
+                    <div class="step-number">4</div>
+                    <div class="step-icon">
+                        <i class="fas fa-shield-alt text-3xl text-teal-500"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800 mt-6 mb-2">GSP认证</h3>
+                    <p class="text-sm text-gray-500">自动生成合规报告，轻松通过认证</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">透明定价</h2>
+                <p class="text-gray-500">根据门店规模灵活选择适合您的方案</p>
+            </div>
+            <div class="max-w-md mx-auto bg-white rounded-3xl p-8 shadow-xl border border-teal-100">
+                <div class="text-center mb-8">
+                    <span class="inline-block px-4 py-1 bg-teal-100 text-teal-600 rounded-full text-sm font-medium mb-4">推荐方案</span>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">标准版</h3>
+                    <div class="flex items-baseline justify-center gap-1">
+                        <span class="text-5xl font-bold text-teal-500">2-4万</span>
+                        <span class="text-gray-500">/店</span>
+                    </div>
+                    <p class="text-sm text-gray-400 mt-2">根据门店实际情况定价</p>
+                </div>
+                <ul class="space-y-4 mb-8">
+                    <li class="flex items-center gap-3">
+                        <i class="fas fa-check-circle text-teal-500"></i>
+                        <span class="text-gray-600">温湿度监测设备（1套）</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i class="fas fa-check-circle text-teal-500"></i>
+                        <span class="text-gray-600">云平台年服务费</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i class="fas fa-check-circle text-teal-500"></i>
+                        <span class="text-gray-600">24小时实时监控</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i class="fas fa-check-circle text-teal-500"></i>
+                        <span class="text-gray-600">GSP报告生成</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <i class="fas fa-check-circle text-teal-500"></i>
+                        <span class="text-gray-600">远程技术支持和维护</span>
+                    </li>
+                </ul>
+                <a href="#contact" class="block w-full py-4 bg-teal-500 text-white text-center rounded-xl font-semibold hover:bg-teal-600 transition">
+                    立即咨询
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer CTA -->
+    <section id="contact" class="gradient-hero py-20">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">准备提升您的药店管理效率？</h2>
+            <p class="text-xl text-teal-100 mb-10">立即联系我们的专家，获取免费咨询和定制方案</p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="tel:400-888-8888" class="px-8 py-4 bg-white text-teal-600 rounded-xl font-semibold hover:bg-teal-50 transition flex items-center gap-2">
+                    <i class="fas fa-phone-alt"></i> 400-888-8888
+                </a>
+                <a href="mailto:sales@example.com" class="px-8 py-4 bg-teal-500/30 border-2 border-white/50 text-white rounded-xl font-semibold hover:bg-teal-500/50 transition flex items-center gap-2">
+                    <i class="fas fa-envelope"></i> 邮件咨询
+                </a>
+            </div>
+            <p class="text-teal-200 mt-8 text-sm">工作时间：周一至周五 9:00-18:00</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-400 py-12">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-teal-500 flex items-center justify-center">
+                        <i class="fas fa-clinic-medical text-white"></i>
+                    </div>
+                    <span class="text-lg font-bold text-white">药店守望</span>
+                </div>
+                <div class="flex gap-6 text-sm">
+                    <a href="#" class="hover:text-teal-400 transition">关于我们</a>
+                    <a href="#" class="hover:text-teal-400 transition">隐私政策</a>
+                    <a href="#" class="hover:text-teal-400 transition">服务条款</a>
+                    <a href="#" class="hover:text-teal-400 transition">联系我们</a>
+                </div>
+                <p class="text-sm">© 2024 药店守望. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <style>
+        .step-number {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 32px;
+            height: 32px;
+            background: var(--teal);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .step-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(45, 212, 191, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            border: 2px solid rgba(45, 212, 191, 0.3);
+        }
+    </style>
+</body>
+</html>

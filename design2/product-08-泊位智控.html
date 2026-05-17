@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>泊位智控 - 地磁车位锁智慧停车系统</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#080f1a;--card:#0d1929;--border:#132743;--a:#60a5fa;--text:#c4d8f0;--muted:#4a6a9a;--bright:#e8f2ff}
+body{font-family:'Noto Sans SC',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.hero{background:linear-gradient(135deg,#040c1a 0%,#081828 50%,#040c1a 100%);padding:80px 20px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(96,165,250,0.12) 0%,transparent 60%),radial-gradient(ellipse at 70% 80%,rgba(96,165,250,0.08) 0%,transparent 50%);pointer-events:none}
+.hero-eyebrow{background:rgba(96,165,250,0.12);border:1px solid rgba(96,165,250,0.25);color:var(--a);padding:6px 16px;border-radius:20px;font-size:12px;display:inline-block;margin-bottom:20px;letter-spacing:2px}
+.hero h1{font-size:clamp(36px,6vw,64px);font-weight:800;background:linear-gradient(135deg,#60a5fa,#3b82f6,#93c5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.1;margin-bottom:16px}
+.hero-sub{font-size:18px;color:var(--muted);max-width:600px;margin:0 auto 40px;line-height:1.7}
+.hero-stats{display:flex;justify-content:center;gap:40px;flex-wrap:wrap;margin-bottom:40px}
+.stat{text-align:center}
+.stat-val{font-size:32px;font-weight:800;color:var(--a)}
+.stat-name{font-size:13px;color:var(--muted);margin-top:4px}
+.hero-cta{display:flex;justify-content:center;gap:14px;flex-wrap:wrap}
+.btn{padding:12px 28px;border-radius:10px;font-weight:600;text-decoration:none;transition:all .3s;font-size:15px}
+.btn-primary{background:var(--a);color:#040c1a}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(96,165,250,0.3)}
+.btn-ghost{background:rgba(96,165,250,0.08);color:var(--a);border:1px solid rgba(96,165,250,0.25)}
+.btn-ghost:hover{background:rgba(96,165,250,0.18);transform:translateY(-2px)}
+.pain-section{padding:80px 20px;background:var(--card)}
+.pain-section h2{font-size:clamp(24px,4vw,36px);font-weight:700;color:var(--bright);margin-bottom:40px;text-align:center}
+.pain-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;max-width:1000px;margin:0 auto}
+.pain-card{background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:24px}
+.pain-icon{font-size:32px;margin-bottom:12px}
+.pain-target{font-size:11px;color:var(--a);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.pain-text{font-size:15px;line-height:1.6;color:var(--text)}
+.feat-section{padding:80px 20px;max-width:1200px;margin:0 auto}
+.section-header{text-align:center;margin-bottom:50px}
+.section-eyebrow{color:var(--a);font-size:12px;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.section-title{font-size:clamp(24px,4vw,36px);font-weight:700;color:var(--bright);margin-bottom:40px}
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.feat-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;transition:all .3s;animation:fadeUp .6s ease both}
+.feat-card:hover{transform:translateY(-4px);border-color:var(--a);box-shadow:0 12px 40px rgba(96,165,250,0.08)}
+.feat-icon{font-size:40px;margin-bottom:16px}
+.feat-card h3{font-size:18px;color:var(--bright);margin-bottom:10px}
+.feat-card p{font-size:14px;line-height:1.7;color:var(--muted)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.flow-section{padding:80px 20px;background:var(--card)}
+.flow-section h2{text-align:center;font-size:clamp(24px,4vw,36px);color:var(--bright);margin-bottom:50px}
+.flow-steps{display:flex;justify-content:center;flex-wrap:wrap;gap:20px;max-width:900px;margin:0 auto}
+.flow-step{display:flex;flex-direction:column;align-items:center;flex:1;min-width:180px}
+.flow-num{width:60px;height:60px;border-radius:50%;background:rgba(96,165,250,0.12);border:2px solid var(--a);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:var(--a);margin-bottom:16px}
+.flow-step h4{font-size:16px;color:var(--bright);margin-bottom:8px}
+.flow-step p{font-size:13px;color:var(--muted);text-align:center;line-height:1.6}
+.pricing-section{padding:80px 20px;max-width:700px;margin:0 auto;text-align:center}
+.pricing-label{color:var(--a);font-size:12px;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.pricing-amount{font-size:64px;font-weight:900;color:var(--bright);line-height:1}
+.pricing-unit{font-size:16px;color:var(--muted);margin-bottom:8px}
+.pricing-note{font-size:14px;color:var(--muted);margin-bottom:40px}
+.cta-section{background:linear-gradient(135deg,#081828,#040c1a);padding:80px 20px;text-align:center}
+.cta-section h2{font-size:clamp(24px,4vw,40px);color:var(--bright);margin-bottom:20px}
+.cta-section p{color:var(--muted);margin-bottom:30px;font-size:16px}
+</style>
+</head>
+<body>
+<section class="hero">
+  <div class="hero-eyebrow">🚗 智慧停车 · 地磁先行</div>
+  <h1>泊位智控</h1>
+  <p class="hero-sub">地磁车位锁实时监测 · 无人值守自动收费 · 停车体验全面升级</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-val">98%</div><div class="stat-name">车位检测准确率</div></div>
+    <div class="stat"><div class="stat-val">70%+</div><div class="stat-name">收费跑冒滴漏减少</div></div>
+    <div class="stat"><div class="stat-val">0.05万</div><div class="stat-name">单设备成本</div></div>
+    <div class="stat"><div class="stat-val">5万+</div><div class="stat-name">接入泊位数</div></div>
+  </div>
+  <div class="hero-cta">
+    <a href="#contact" class="btn btn-primary">获取方案 →</a>
+    <a href="#features" class="btn btn-ghost">查看功能</a>
+    <a href="demo-08-泊位智控.html" class="btn btn-ghost" target="_blank">🔬 在线演示</a>
+  </div>
+</section>
+
+<section class="pain-section">
+  <h2>为什么你需要泊位智控？</h2>
+  <div class="pain-grid">
+    <div class="pain-card"><div class="pain-icon">🚘</div><div class="pain-target">司机</div><div class="pain-text">车位难找，缴费排队久，收费不透明，违停被贴罚单，停车体验差，城市出行幸福感低</div></div>
+    <div class="pain-card"><div class="pain-icon">🏢</div><div class="pain-target">物业/停车场运营方</div><div class="pain-text">人工收费跑冒滴漏严重，收费员监守自盗无法管控，停车费纠纷多，管理成本高</div></div>
+    <div class="pain-card"><div class="pain-icon">👮</div><div class="pain-target">交警/城管</div><div class="pain-text">地锁/锥筒占位屡禁不止，私划车位收费屡见不鲜，车辆乱停影响交通执法</div></div>
+  </div>
+</section>
+
+<section class="feat-section" id="features">
+  <div class="section-header">
+    <div class="section-eyebrow">Core Functions</div>
+    <h2 class="section-title">核心功能全景</h2>
+  </div>
+  <div class="feat-grid">
+    <div class="feat-card"><div class="feat-icon">🔋</div><h3>地磁车位检测</h3><p>埋入式地磁传感器实时检测车位占用状态，准确率≥98%，续航5年无需换电池，安装无需破路</p></div>
+    <div class="feat-card"><div class="feat-icon">🚦</div><h3>智能地锁联动</h3><p>地磁+车位锁联动，车辆驶入自动落锁，扫码支付后自动升锁，支持微信/支付宝/ETC多种支付</p></div>
+    <div class="feat-card"><div class="feat-icon">💳</div><h3>无人值守收费</h3><p>完全替代收费员，车主自助停车/缴费/开票，收费记录自动生成，账目清晰可查，杜绝跑冒滴漏</p></div>
+    <div class="feat-card"><div class="feat-icon">🚨</div><h3>违停实时检测</h3><p>地磁检测超时未缴费车辆，自动抓拍违停照片，推送至巡逻人员APP，支持违停执法联动</p></div>
+    <div class="feat-card"><div class="feat-icon">📊</div><h3>经营数据分析</h3><p>车位周转率、收入统计、高峰时段分析、收入对比报表，为定价策略和运营优化提供数据支撑</p></div>
+    <div class="feat-card"><div class="feat-icon">📱</div><h3>车主小程序</h3><p>附近停车场一键导航、剩余车位实时显示、在线缴费、停车记录查询、电子发票，停车体验流畅</p></div>
+    <div class="feat-card"><div class="feat-icon">🔌</div><h3>设备全生命周期</h3><p>地磁设备批量管理、电量监控、故障自动诊断、离线报警、运维工单自动生成</p></div>
+    <div class="feat-card"><div class="feat-icon">🤖</div><h3>云端集中管控</h3><p>多停车场统一管理，数据大屏实时展示，财务对账自动化，支持ERP/支付系统对接</p></div>
+  </div>
+</section>
+
+<section class="flow-section">
+  <h2>部署流程</h2>
+  <div class="flow-steps">
+    <div class="flow-step"><div class="flow-num">1</div><h4>现场勘测</h4><p>测量停车场面积，确认泊位数量和网络条件，规划地磁点位</p></div>
+    <div class="flow-step"><div class="flow-num">2</div><h4>设备安装</h4><p>地磁打孔埋设，安装车位锁（可选），配置网关和网络</p></div>
+    <div class="flow-step"><div class="flow-num">3</div><h4>系统配置</h4><p>绑定设备、配置收费规则、设置价格体系、联调支付接口</p></div>
+    <div class="flow-step"><div class="flow-num">4</div><h4>运营上线</h4><p>车主引导、运营人员培训、7×24h监控服务启动</p></div>
+  </div>
+</section>
+
+<section class="pricing-section">
+  <div class="pricing-label">Investment Plan</div>
+  <div class="pricing-amount">3-8万</div>
+  <div class="pricing-unit">/停车场 · 含设备+平台+部署调试</div>
+  <div class="pricing-note">硬件成本 500-1500元/泊位 · 软件年费 5000-20000元/年<br>路侧停车/地下停车场均适用</div>
+</section>
+
+<section class="cta-section" id="contact">
+  <h2>🚗 让停车更从容，让收费更透明</h2>
+  <p>免费停车场现状评估，定制化方案设计</p>
+  <a href="#" class="btn btn-primary">立即咨询 →</a>
+</section>
+</body>
+</html>

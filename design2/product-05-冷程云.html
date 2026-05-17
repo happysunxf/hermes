@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>冷程云 - 冷链温湿度监控系统</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#050d18;--card:#0a1628;--border:#0f2744;--a:#7dd3fc;--text:#cce4f7;--muted:#5a8ab5;--bright:#e8f4ff}
+body{font-family:'Noto Sans SC',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.hero{background:linear-gradient(135deg,#020a18 0%,#051830 50%,#020c20 100%);padding:80px 20px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(125,211,252,0.12) 0%,transparent 60%),radial-gradient(ellipse at 70% 80%,rgba(125,211,252,0.08) 0%,transparent 50%);pointer-events:none}
+.hero-eyebrow{background:rgba(125,211,252,0.12);border:1px solid rgba(125,211,252,0.25);color:var(--a);padding:6px 16px;border-radius:20px;font-size:12px;display:inline-block;margin-bottom:20px;letter-spacing:2px}
+.hero h1{font-size:clamp(36px,6vw,64px);font-weight:800;background:linear-gradient(135deg,#7dd3fc,#38bdf8,#0ea5e9);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1.1;margin-bottom:16px}
+.hero-sub{font-size:18px;color:var(--muted);max-width:600px;margin:0 auto 40px;line-height:1.7}
+.hero-stats{display:flex;justify-content:center;gap:40px;flex-wrap:wrap;margin-bottom:40px}
+.stat{text-align:center}
+.stat-val{font-size:32px;font-weight:800;color:var(--a)}
+.stat-name{font-size:13px;color:var(--muted);margin-top:4px}
+.hero-cta{display:flex;justify-content:center;gap:14px;flex-wrap:wrap}
+.btn{padding:12px 28px;border-radius:10px;font-weight:600;text-decoration:none;transition:all .3s;font-size:15px}
+.btn-primary{background:var(--a);color:#051830}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(125,211,252,0.3)}
+.btn-ghost{background:rgba(125,211,252,0.08);color:var(--a);border:1px solid rgba(125,211,252,0.25)}
+.btn-ghost:hover{background:rgba(125,211,252,0.18);transform:translateY(-2px)}
+.pain-section{padding:80px 20px;background:var(--card)}
+.pain-section h2{font-size:clamp(24px,4vw,36px);font-weight:700;color:var(--bright);margin-bottom:40px;text-align:center}
+.pain-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;max-width:1000px;margin:0 auto}
+.pain-card{background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:24px}
+.pain-icon{font-size:32px;margin-bottom:12px}
+.pain-target{font-size:11px;color:var(--a);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.pain-text{font-size:15px;line-height:1.6;color:var(--text)}
+.feat-section{padding:80px 20px;max-width:1200px;margin:0 auto}
+.section-header{text-align:center;margin-bottom:50px}
+.section-eyebrow{color:var(--a);font-size:12px;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.section-title{font-size:clamp(24px,4vw,36px);font-weight:700;color:var(--bright);margin-bottom:40px}
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+.feat-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;transition:all .3s;animation:fadeUp .6s ease both}
+.feat-card:hover{transform:translateY(-4px);border-color:var(--a);box-shadow:0 12px 40px rgba(125,211,252,0.08)}
+.feat-icon{font-size:40px;margin-bottom:16px}
+.feat-card h3{font-size:18px;color:var(--bright);margin-bottom:10px}
+.feat-card p{font-size:14px;line-height:1.7;color:var(--muted)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.flow-section{padding:80px 20px;background:var(--card)}
+.flow-section h2{text-align:center;font-size:clamp(24px,4vw,36px);color:var(--bright);margin-bottom:50px}
+.flow-steps{display:flex;justify-content:center;flex-wrap:wrap;gap:20px;max-width:900px;margin:0 auto}
+.flow-step{display:flex;flex-direction:column;align-items:center;flex:1;min-width:180px}
+.flow-num{width:60px;height:60px;border-radius:50%;background:rgba(125,211,252,0.12);border:2px solid var(--a);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:var(--a);margin-bottom:16px}
+.flow-step h4{font-size:16px;color:var(--bright);margin-bottom:8px}
+.flow-step p{font-size:13px;color:var(--muted);text-align:center;line-height:1.6}
+.pricing-section{padding:80px 20px;max-width:700px;margin:0 auto;text-align:center}
+.pricing-label{color:var(--a);font-size:12px;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.pricing-amount{font-size:64px;font-weight:900;color:var(--bright);line-height:1}
+.pricing-unit{font-size:16px;color:var(--muted);margin-bottom:8px}
+.pricing-note{font-size:14px;color:var(--muted);margin-bottom:40px}
+.cta-section{background:linear-gradient(135deg,#051830,#020a18);padding:80px 20px;text-align:center}
+.cta-section h2{font-size:clamp(24px,4vw,40px);color:var(--bright);margin-bottom:20px}
+.cta-section p{color:var(--muted);margin-bottom:30px;font-size:16px}
+</style>
+</head>
+<body>
+<section class="hero">
+  <div class="hero-eyebrow">❄️ 全程冷链 · 温湿度全景</div>
+  <h1>冷程云</h1>
+  <p class="hero-sub">冷链温湿度全程可视化 · 异常实时报警 · 数据溯源可查</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-val">99.9%</div><div class="stat-name">数据完整率</div></div>
+    <div class="stat"><div class="stat-val">≤2s</div><div class="stat-name">异常响应速度</div></div>
+    <div class="stat"><div class="stat-val">0.05万</div><div class="stat-name">单设备成本</div></div>
+    <div class="stat"><div class="stat-val">1000+</div><div class="stat-name">接入车辆/冷库</div></div>
+  </div>
+  <div class="hero-cta">
+    <a href="#contact" class="btn btn-primary">获取方案 →</a>
+    <a href="#features" class="btn btn-ghost">查看功能</a>
+    <a href="demo-05-冷程云.html" class="btn btn-ghost" target="_blank">🔬 在线演示</a>
+  </div>
+</section>
+
+<section class="pain-section">
+  <h2>为什么你需要冷程云？</h2>
+  <div class="pain-grid">
+    <div class="pain-card"><div class="pain-icon">🚛</div><div class="pain-target">物流公司</div><div class="pain-text">冷藏车温度波动不知道，货主索赔无依据，驾驶员的解释难以核实，货损责任划分不清，运营风险大</div></div>
+    <div class="pain-card"><div class="pain-icon">🏪</div><div class="pain-target">连锁商超</div><div class="pain-text">冷库温湿度人工记录费时费力，监管机构飞行检查时数据不连续，GSP认证难以通过</div></div>
+    <div class="pain-card"><div class="pain-icon">💊</div><div class="pain-target">医药流通</div><div class="pain-text">疫苗/胰岛素等冷链药品温控要求严格，一批次失误损失巨大，监管部门随时飞行检查</div></div>
+  </div>
+</section>
+
+<section class="feat-section" id="features">
+  <div class="section-header">
+    <div class="section-eyebrow">Core Functions</div>
+    <h2 class="section-title">核心功能全景</h2>
+  </div>
+  <div class="feat-grid">
+    <div class="feat-card"><div class="feat-icon">🌡️</div><h3>全程温湿度监测</h3><p>支持冷藏车、冷库、冷藏箱、保温箱多场景，数据5分钟/次自动上报，超阈值1秒内触发报警，24h不间断</p></div>
+    <div class="feat-card"><div class="feat-icon">📍</div><h3>运输轨迹追踪</h3><p>GPS+温湿度双通道，车辆位置、车厢温度、开关门记录实时同步，轨迹数据永久保存，支持回放</p></div>
+    <div class="feat-card"><div class="feat-icon">🚨</div><h3>多级报警体系</h3><p>超温/低温/断电/设备离线分级报警，支持短信/微信/电话/APP推送，报警阈值可按货品/路线自定义</p></div>
+    <div class="feat-card"><div class="feat-icon">📄</div><h3>数据溯源报告</h3><p>一键生成符合药监/食药监要求的数据报告，PDF/Excel格式，时间段/批次/车辆多维度，数据不可篡改</p></div>
+    <div class="feat-card"><div class="feat-icon">📊</div><h3>数据分析看板</h3><p>温湿度曲线、里程统计、报警统计、设备在线率实时大屏，支持对接客户自有系统</p></div>
+    <div class="feat-card"><div class="feat-icon">🔋</div><h3>设备生命周期管理</h3><p>设备绑定/校准/换电池/维修全流程记录，低电量提醒，设备状态一目了然</p></div>
+    <div class="feat-card"><div class="feat-icon">🔌</div><h3>断电报警器</h3><p>冷库断电立即报警，支持UPS联动，短信通知多个责任人，防止温度失控造成重大损失</p></div>
+    <div class="feat-card"><div class="feat-icon">📱</div><h3>微信小程序</h3><p>司机端APP实时查看温度、确认报警；货主端实时查看货物状态；监管端批量查看旗下所有车辆</p></div>
+  </div>
+</section>
+
+<section class="flow-section">
+  <h2>部署流程</h2>
+  <div class="flow-steps">
+    <div class="flow-step"><div class="flow-num">1</div><h4>需求确认</h4><p>确认监测场景（冷藏车/冷库/保温箱）和货品温控要求</p></div>
+    <div class="flow-step"><div class="flow-num">2</div><h4>设备发货</h4><p>设备工厂标定后直发客户，开机即用，GPS和温湿度探头预配置</p></div>
+    <div class="flow-step"><div class="flow-num">3</div><h4>安装绑定</h4><p>粘贴/磁吸安装，微信扫码绑定设备，10分钟完成</p></div>
+    <div class="flow-step"><div class="flow-num">4</div><h4>正式运行</h4><p>数据上云，报警规则激活，7×24h监控开始</p></div>
+  </div>
+</section>
+
+<section class="pricing-section">
+  <div class="pricing-label">Investment Plan</div>
+  <div class="pricing-amount">2-5万</div>
+  <div class="pricing-unit">· 含设备+云平台+一年服务</div>
+  <div class="pricing-note">硬件成本 500-2000元/个 · 软件年费 3000-8000元/年<br>按设备数量收费，20台起接</div>
+</section>
+
+<section class="cta-section" id="contact">
+  <h2>❄️ 全程冷链，滴水不漏</h2>
+  <p>免费提供冷链现状诊断，7×24h异常响应</p>
+  <a href="#" class="btn btn-primary">立即咨询 →</a>
+</section>
+</body>
+</html>

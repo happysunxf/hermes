@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>污净通 - 污水在线监测演示</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:#0a0a14;color:#fff;height:100vh;overflow:hidden}
+.layout{display:flex;height:100vh}
+.sidebar{width:220px;background:#111128;border-right:1px solid rgba(96,165,250,0.2);display:flex;flex-direction:column;flex-shrink:0}
+.sidebar-header{padding:20px;border-bottom:1px solid rgba(255,255,255,0.05)}
+.sidebar-header h2{font-size:18px;color:#60a5fa}
+.sidebar-header p{font-size:12px;color:#888;margin-top:4px}
+.sidebar-nav{flex:1;overflow-y:auto;padding:10px 0}
+.nav-item{display:flex;align-items:center;gap:10px;padding:12px 20px;color:#888;font-size:14px;cursor:pointer;border-left:3px solid transparent}
+.nav-item:hover,.nav-item.active{background:rgba(96,165,250,0.1);color:#60a5fa;border-left-color:#60a5fa}
+.nav-item .icon{font-size:18px}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:#111128;padding:16px 24px;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;justify-content:space-between}
+.topbar h1{font-size:18px}
+.topbar .time{color:#888;font-size:13px}
+.content{flex:1;overflow-y:auto;padding:24px}
+.stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:rgba(96,165,250,0.08);border:1px solid rgba(96,165,250,0.2);border-radius:12px;padding:20px;text-align:center}
+.stat-card .val{font-size:28px;font-weight:700;color:#60a5fa}
+.stat-card .lab{font-size:13px;color:#888;margin-top:4px}
+.charts-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:24px}
+.chart-card{background:#111128;border-radius:12px;padding:20px}
+.chart-card h3{font-size:14px;color:#888;margin-bottom:16px}
+.bar-chart{display:flex;align-items:flex-end;gap:6px;height:100px}
+.bar{background:linear-gradient(to top,#60a5fa,#93c5fd);border-radius:3px 3px 0 0;min-width:20px;flex:1;position:relative}
+.bar span{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:10px;color:#888}
+.bar-label{font-size:11px;text-align:center;color:#888;margin-top:20px}
+.indicator{display:flex;align-items:center;justify-content:center;height:100px}
+.indicator .val{font-size:36px;font-weight:700;color:#60a5fa}
+.indicator .unit{font-size:14px;color:#888;margin-left:8px}
+.indicator .status{font-size:12px;padding:4px 12px;border-radius:20px;margin-top:8px;display:inline-block}
+.status-ok{background:rgba(74,222,128,0.2);color:#4ade80}
+.status-warn{background:rgba(251,191,36,0.2);color:#fbbf24}
+.table-card{background:#111128;border-radius:12px;overflow:hidden;margin-bottom:16px}
+.table-card h3{font-size:14px;color:#888;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.05)}
+table{width:100%;border-collapse:collapse}
+th,td{padding:12px 20px;text-align:left;font-size:13px}
+th{background:rgba(255,255,255,0.03);color:#888;font-weight:500}
+td{border-bottom:1px solid rgba(255,255,255,0.03)}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px}
+.badge-green{background:rgba(74,222,128,0.2);color:#4ade80}
+.badge-yellow{background:rgba(251,191,36,0.2);color:#fbbf24}
+.badge-red{background:rgba(239,68,68,0.2);color:#ef4444}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar-header"><h2>💧 污净通</h2><p>污水在线监测平台</p></div>
+<nav class="sidebar-nav">
+<div class="nav-item active"><span class="icon">📊</span>水质概览</div>
+<div class="nav-item"><span class="icon">📈</span>监测数据</div>
+<div class="nav-item"><span class="icon">🔔</span>报警记录</div>
+<div class="nav-item"><span class="icon">📤</span>数据上报</div>
+<div class="nav-item"><span class="icon">📋</span>报表管理</div>
+<div class="nav-item"><span class="icon">📍</span>站点管理</div>
+<div class="nav-item"><span class="icon">🔧</span>设备运维</div>
+<div class="nav-item"><span class="icon">⚙️</span>系统设置</div>
+</nav>
+</aside>
+<div class="main">
+<div class="topbar"><h1>水质概览</h1><div class="time">2026-05-17 19:22:42</div></div>
+<div class="content">
+<div class="stats-grid">
+<div class="stat-card"><div class="val">8</div><div class="lab">监测站点</div></div>
+<div class="stat-card"><div class="val">28</div><div class="lab">COD均值(mg/L)</div></div>
+<div class="stat-card"><div class="val">1.2</div><div class="lab">氨氮均值(mg/L)</div></div>
+<div class="stat-card"><div class="val">0.15</div><div class="lab">总磷均值(mg/L)</div></div>
+<div class="stat-card"><div class="val">99.2%</div><div class="lab">数据完整率</div></div>
+</div>
+<div class="charts-row">
+<div class="chart-card">
+<h3>COD 24小时趋势</h3>
+<div class="bar-chart">
+<div class="bar" style="height:50%"><span>25</span></div>
+<div class="bar" style="height:55%"><span>28</span></div>
+<div class="bar" style="height:60%"><span>30</span></div>
+<div class="bar" style="height:52%"><span>26</span></div>
+<div class="bar" style="height:58%"><span>29</span></div>
+<div class="bar" style="height:62%"><span>31</span></div>
+<div class="bar" style="height:56%"><span>28</span></div>
+<div class="bar" style="height:50%"><span>25</span></div>
+</div>
+<div class="bar-label">00:00 04:00 08:00 12:00 16:00 20:00 24:00</div>
+</div>
+<div class="chart-card">
+<h3>氨氮 24小时趋势</h3>
+<div class="bar-chart">
+<div class="bar" style="height:40%"><span>0.8</span></div>
+<div class="bar" style="height:50%"><span>1.0</span></div>
+<div class="bar" style="height:60%"><span>1.2</span></div>
+<div class="bar" style="height:55%"><span>1.1</span></div>
+<div class="bar" style="height:65%"><span>1.3</span></div>
+<div class="bar" style="height:70%"><span>1.4</span></div>
+<div class="bar" style="height:55%"><span>1.1</span></div>
+<div class="bar" style="height:45%"><span>0.9</span></div>
+</div>
+<div class="bar-label">00:00 04:00 08:00 12:00 16:00 20:00 24:00</div>
+</div>
+<div class="chart-card">
+<div class="indicator">
+<div>
+<div class="val">28 <span class="unit">mg/L</span></div>
+<div class="status status-ok">✓ 达标</div>
+<div style="margin-top:12px;font-size:13px;color:#888">标准限值: 50mg/L</div>
+</div>
+</div>
+<h3>当前COD状态</h3>
+</div>
+</div>
+<div class="table-card" style="margin-bottom:16px">
+<h3>站点监测详情</h3>
+<table>
+<thead><tr><th>站点名称</th><th>COD(mg/L)</th><th>氨氮(mg/L)</th><th>总磷(mg/L)</th><th>数据完整率</th><th>状态</th></tr></thead>
+<tbody>
+<tr><td>华强电子污水处理站</td><td>32</td><td>1.5</td><td>0.18</td><td>99.8%</td><td><span class="badge badge-green">正常</span></td></tr>
+<tr><td>绿源食品加工污水站</td><td>28</td><td>1.2</td><td>0.15</td><td>100%</td><td><span class="badge badge-green">正常</span></td></tr>
+<tr><td>鑫达化工污水处理厂</td><td>45</td><td>2.8</td><td>0.35</td><td>97.5%</td><td><span class="badge badge-yellow">预警</span></td></tr>
+<tr><td>华润印染废水站</td><td>38</td><td>1.8</td><td>0.22</td><td>99.2%</td><td><span class="badge badge-green">正常</span></td></tr>
+<tr><td>光明乳业污水站</td><td>25</td><td>0.9</td><td>0.12</td><td>100%</td><td><span class="badge badge-green">正常</span></td></tr>
+</tbody>
+</table>
+</div>
+<div class="table-card">
+<h3>最近报警记录</h3>
+<table>
+<thead><tr><th>时间</th><th>站点</th><th>指标</th><th>监测值</th><th>标准限值</th><th>状态</th></tr></thead>
+<tbody>
+<tr><td>05-15 03:22</td><td>鑫达化工污水处理厂</td><td><span class="badge badge-red">氨氮超标</span></td><td>4.2mg/L</td><td>3.0mg/L</td><td><span class="badge badge-green">已处理</span></td></tr>
+<tr><td>05-14 14:30</td><td>华润印染废水站</td><td><span class="badge badge-yellow">COD预警</span></td><td>48mg/L</td><td>50mg/L</td><td><span class="badge badge-green">已处理</span></td></tr>
+<tr><td>05-13 22:15</td><td>鑫达化工污水处理厂</td><td><span class="badge badge-red">总磷超标</span></td><td>0.48mg/L</td><td>0.3mg/L</td><td><span class="badge badge-yellow">处置中</span></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

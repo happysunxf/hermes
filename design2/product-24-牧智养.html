@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>牧智养 - 畜禽智能养殖</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:#0f0f1a;color:#fff;line-height:1.6}
+.container{max-width:1200px;margin:0 auto;padding:0 20px}
+.hero{background:linear-gradient(135deg,#061412 0%,#0d2820 50%,#050e0b 100%);padding:80px 0;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(45,212,191,0.12) 0%,transparent 70%)}
+.hero-badge{display:inline-block;background:rgba(45,212,191,0.2);border:1px solid rgba(45,212,191,0.4);color:#2dd4bf;padding:6px 20px;border-radius:50px;font-size:13px;margin-bottom:20px}
+.hero h1{font-size:52px;font-weight:700;margin-bottom:16px;background:linear-gradient(135deg,#fff 0%,#2dd4bf 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:18px;color:#aaa;max-width:600px;margin:0 auto 30px}
+.ctas{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-block;padding:14px 32px;border-radius:8px;font-weight:600;text-decoration:none;transition:all 0.3s}
+.btn-primary{background:#2dd4bf;color:#000}
+.btn-primary:hover{background:#14b8a6;transform:translateY(-2px)}
+.btn-secondary{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff}
+.btn-secondary:hover{background:rgba(255,255,255,0.2)}
+.section{padding:60px 0}
+.section-title{text-align:center;font-size:32px;font-weight:700;margin-bottom:12px}
+.section-sub{text-align:center;color:#888;margin-bottom:40px}
+.pain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.pain-card{background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid rgba(45,212,191,0.2);border-radius:16px;padding:28px;text-align:center}
+.pain-icon{font-size:40px;margin-bottom:16px}
+.pain-card h3{color:#2dd4bf;margin-bottom:10px;font-size:18px}
+.pain-card p{color:#aaa;font-size:14px}
+.features-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.feature-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:24px;text-align:center}
+.feature-icon{font-size:32px;margin-bottom:12px}
+.feature-card h4{font-size:15px;margin-bottom:8px;color:#fff}
+.feature-card p{font-size:13px;color:#888}
+.flow-steps{display:flex;justify-content:space-between;gap:20px}
+.flow-step{flex:1;text-align:center}
+.flow-num{width:48px;height:48px;background:#2dd4bf;color:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;margin:0 auto 16px}
+.flow-step h4{font-size:16px;margin-bottom:8px}
+.flow-step p{font-size:13px;color:#888}
+.pricing{background:linear-gradient(135deg,#061412,#0d2820);border-radius:20px;padding:40px;text-align:center}
+.pricing h3{font-size:24px;margin-bottom:20px}
+.price{display:flex;gap:40px;justify-content:center;flex-wrap:wrap}
+.price-item{text-align:center}
+.price-val{font-size:36px;font-weight:700;color:#2dd4bf}
+.price-label{color:#888;font-size:14px}
+.footer-cta{background:#2dd4bf;padding:60px 0;text-align:center;border-radius:20px;margin-top:40px;color:#000}
+.footer-cta h2{font-size:28px;margin-bottom:12px}
+.footer-cta p{color:rgba(0,0,0,0.6);margin-bottom:24px}
+.footer-cta .btn{background:#000;color:#2dd4bf;font-weight:700}
+</style>
+</head>
+<body>
+<section class="hero">
+<div class="container">
+<div class="hero-badge">🐖 鑫创+嘉吉战略合作</div>
+<h1>牧智养</h1>
+<p>畜禽智能养殖专家 — 环境监测、自动投料、疾病预警，让养殖更科学</p>
+<div class="ctas">
+<a href="demo-24-牧智养.html" class="btn btn-primary">查看演示</a>
+<a href="#features" class="btn btn-secondary">了解功能</a>
+<a href="#pricing" class="btn btn-secondary">获取报价</a>
+</div>
+</div>
+</section>
+<section class="section" id="pain">
+<div class="container">
+<h2 class="section-title">核心痛点</h2>
+<p class="section-sub">传统养殖面临多重困境</p>
+<div class="pain-grid">
+<div class="pain-card"><div class="pain-icon">👨‍🌾</div><h3>依赖人工经验</h3><p>养殖全靠老师傅经验，新手难以准确判断，养殖效率低</p></div>
+<div class="pain-card"><div class="pain-icon">💀</div><h3>死淘率高</h3><p>疾病发现晚、应激反应大，死淘率居高不下，损失惨重</p></div>
+<div class="pain-card"><div class="pain-icon">💊</div><h3>用药不规范</h3><p>用药全凭经验，休药期难以保障，食品安全风险大</p></div>
+</div>
+</div>
+</section>
+<section class="section" id="features">
+<div class="container">
+<h2 class="section-title">核心功能</h2>
+<p class="section-sub">八大功能模块，智能化养殖管理</p>
+<div class="features-grid">
+<div class="feature-card"><div class="feature-icon">🌡️</div><h4>环境监测</h4><p>温湿度/氨气/光照全天候监测</p></div>
+<div class="feature-card"><div class="feature-icon">🍽️</div><h4>自动投料</h4><p>精准配比、定时定量自动投喂</p></div>
+<div class="feature-card"><div class="feature-icon">🤒</div><h4>疾病预警</h4><p>行为分析+体温监测，提前预警</p></div>
+<div class="feature-card"><div class="feature-icon">🔍</div><h4>溯源管理</h4><p>耳标全程追溯，食品安全有保障</p></div>
+<div class="feature-card"><div class="feature-icon">💰</div><h4>成本核算</h4><p>饲料/药品/人工成本自动统计</p></div>
+<div class="feature-card"><div class="feature-icon">🏷️</div><h4>耳标管理</h4><p>电子耳标身份识别，健康档案</p></div>
+<div class="feature-card"><div class="feature-icon">📊</div><h4>数据分析</h4><p>繁殖率/料肉比/死淘率全分析</p></div>
+<div class="feature-card"><div class="feature-icon">⚙️</div><h4>系统设置</h4><p>阈值配置、告警规则、用户管理</p></div>
+</div>
+</div>
+</section>
+<section class="section">
+<div class="container">
+<h2 class="section-title">工作流程</h2>
+<p class="section-sub">从养殖到出栏全流程管理</p>
+<div class="flow-steps">
+<div class="flow-step"><div class="flow-num">1</div><h4>耳标佩戴</h4><p>电子耳标<br>身份标识</p></div>
+<div class="flow-step"><div class="flow-num">2</div><h4>环境监控</h4><p>实时采集<br>异常预警</p></div>
+<div class="flow-step"><div class="flow-num">3</div><h4>精准饲喂</h4><p>自动投料<br>数据记录</p></div>
+<div class="flow-step"><div class="flow-num">4</div><h4>出栏溯源</h4><p>全程追溯<br>食品安全</p></div>
+</div>
+</div>
+</section>
+<section class="section" id="pricing">
+<div class="container">
+<div class="pricing">
+<h3>方案报价</h3>
+<div class="price">
+<div class="price-item"><div class="price-val">¥0.05-0.15万</div><div class="price-label">耳标设备/套</div></div>
+<div class="price-item"><div class="price-val">¥1-2万</div><div class="price-label">软件平台/年</div></div>
+<div class="price-item"><div class="price-val">¥2-4万</div><div class="price-label">完整方案/场</div></div>
+</div>
+</div>
+</div>
+</section>
+<section class="section">
+<div class="container">
+<div class="footer-cta">
+<h2>让养殖更科学，让食品安全更有保障</h2>
+<p>已服务 300+ 养殖企业，年出栏量 500万头</p>
+<a href="demo-24-牧智养.html" class="btn">进入演示</a>
+</div>
+</div>
+</section>
+</body>
+</html>

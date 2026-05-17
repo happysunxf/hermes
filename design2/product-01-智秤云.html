@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智秤云 - AI智能秤云平台</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5/css/all.min.css">
+<style>
+:root{--teal:#00897B;--teal-dark:#00695C;--teal-light:#4DB6AC;--teal-pale:#E0F2F1;--teal-gradient:linear-gradient(135deg,#00897B 0%,#004D40 100%);--bg:#F5F7FA;--text:#263238;--text-light:#546E7A;--white:#fff;--radius:12px;--shadow:0 4px 24px rgba(0,137,123,.12);--shadow-lg:0 12px 48px rgba(0,137,123,.18);}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Noto Sans SC',sans-serif;color:var(--text);background:var(--bg);line-height:1.6;}
+.container{max-width:1200px;margin:0 auto;padding:0 24px;}
+
+/* Nav */
+.nav{position:fixed;top:0;left:0;right:0;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);z-index:1000;border-bottom:1px solid rgba(0,137,123,.08);padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:64px;}
+.nav-logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:20px;color:var(--teal-dark);}
+.nav-logo i{font-size:24px;}
+.nav-links{display:flex;gap:32px;align-items:center;}
+.nav-links a{text-decoration:none;color:var(--text);font-size:14px;font-weight:500;transition:color .2s;}
+.nav-links a:hover{color:var(--teal);}
+.nav-cta{background:var(--teal-gradient);color:#fff;border:none;padding:10px 24px;border-radius:50px;font-size:14px;font-weight:600;cursor:pointer;transition:transform .2s,box-shadow .2s;}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:var(--shadow);}
+
+/* Hero */
+.hero{padding:140px 0 80px;text-align:center;background:linear-gradient(180deg,#E0F2F1 0%,var(--bg) 100%);}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--teal-pale);color:var(--teal-dark);padding:6px 16px;border-radius:50px;font-size:13px;font-weight:600;margin-bottom:24px;border:1px solid rgba(0,137,123,.15);}
+.hero-badge i{font-size:12px;}
+.hero h1{font-size:clamp(36px,6vw,64px);font-weight:900;color:var(--teal-dark);line-height:1.15;margin-bottom:16px;}
+.hero h1 span{background:var(--teal-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero p{font-size:18px;color:var(--text-light);max-width:640px;margin:0 auto 40px;}
+.hero-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+.btn-primary{background:var(--teal-gradient);color:#fff;border:none;padding:14px 36px;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;transition:all .3s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);}
+.btn-outline{background:transparent;color:var(--teal-dark);border:2px solid var(--teal);padding:14px 36px;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;transition:all .3s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+.btn-outline:hover{background:var(--teal-pale);}
+.hero-stats{display:flex;gap:48px;justify-content:center;margin-top:64px;flex-wrap:wrap;}
+.stat-item{text-align:center;}
+.stat-number{font-size:36px;font-weight:900;color:var(--teal-dark);}
+.stat-label{font-size:14px;color:var(--text-light);}
+
+/* Pain Points */
+.pain{padding:80px 0;}
+.section-title{text-align:center;margin-bottom:48px;}
+.section-title h2{font-size:36px;font-weight:900;color:var(--teal-dark);margin-bottom:12px;}
+.section-title p{font-size:16px;color:var(--text-light);}
+.pain-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;}
+.pain-card{background:#fff;border-radius:var(--radius);padding:32px;box-shadow:var(--shadow);border:1px solid rgba(0,137,123,.06);transition:transform .3s;}
+.pain-card:hover{transform:translateY(-4px);}
+.pain-icon{width:56px;height:56px;border-radius:14px;background:var(--teal-pale);display:flex;align-items:center;justify-content:center;margin-bottom:20px;}
+.pain-icon i{font-size:24px;color:var(--teal);}
+.pain-card h3{font-size:18px;font-weight:700;margin-bottom:10px;color:var(--text);}
+.pain-card p{font-size:14px;color:var(--text-light);line-height:1.7;}
+
+/* Features */
+.features{padding:80px 0;background:#fff;}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:32px;}
+.feature-card{background:var(--bg);border-radius:var(--radius);padding:36px;border:1px solid rgba(0,137,123,.08);transition:all .3s;position:relative;overflow:hidden;}
+.feature-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--teal-light);}
+.feature-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--teal-gradient);transform:scaleX(0);transition:transform .3s;transform-origin:left;}
+.feature-card:hover::before{transform:scaleX(1);}
+.feature-num{font-size:13px;font-weight:700;color:var(--teal-light);margin-bottom:16px;letter-spacing:1px;}
+.feature-card h3{font-size:22px;font-weight:700;margin-bottom:12px;color:var(--text);}
+.feature-card p{font-size:15px;color:var(--text-light);line-height:1.7;margin-bottom:20px;}
+.feature-tags{display:flex;gap:8px;flex-wrap:wrap;}
+.feature-tag{background:rgba(0,137,123,.08);color:var(--teal-dark);padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;}
+
+/* Flow */
+.flow{padding:80px 0;}
+.flow-steps{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;justify-content:center;}
+.flow-step{text-align:center;flex:1;min-width:180px;position:relative;}
+.flow-step::after{content:'';position:absolute;top:40px;right:-12px;width:24px;height:2px;background:var(--teal-light);}
+.flow-step:last-child::after{display:none;}
+.flow-num{width:80px;height:80px;border-radius:50%;background:var(--teal-gradient);color:#fff;font-size:28px;font-weight:900;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 4px 16px rgba(0,137,123,.3);}
+.flow-step h4{font-size:17px;font-weight:700;margin-bottom:8px;}
+.flow-step p{font-size:13px;color:var(--text-light);max-width:160px;margin:0 auto;}
+
+/* Pricing */
+.pricing{padding:80px 0;background:#fff;}
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px;}
+.price-card{background:var(--bg);border-radius:var(--radius);padding:40px 32px;text-align:center;border:2px solid transparent;transition:all .3s;}
+.price-card.featured{border-color:var(--teal);background:#fff;box-shadow:var(--shadow-lg);position:relative;}
+.price-card.featured .popular{background:var(--teal-gradient);color:#fff;padding:4px 20px;border-radius:0 0 12px 12px;position:absolute;top:0;left:50%;transform:translateX(-50%);font-size:12px;font-weight:700;display:inline-block;}
+.price-card h3{font-size:22px;font-weight:700;margin-bottom:8px;}
+.price-card .price{font-size:48px;font-weight:900;color:var(--teal-dark);margin:20px 0;}
+.price-card .price span{font-size:16px;font-weight:400;color:var(--text-light);}
+.price-card ul{list-style:none;text-align:left;margin:24px 0;}
+.price-card ul li{padding:10px 0;font-size:14px;color:var(--text);display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(0,0,0,.05);}
+.price-card ul li i{color:var(--teal);font-size:14px;}
+.price-btn{width:100%;padding:14px;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;transition:all .3s;border:2px solid var(--teal);background:transparent;color:var(--teal);}
+.price-card.featured .price-btn{background:var(--teal-gradient);color:#fff;border:none;}
+.price-btn:hover{transform:translateY(-2px);box-shadow:var(--shadow);}
+
+/* CTA Banner */
+.cta-banner{padding:80px 0;background:var(--teal-gradient);text-align:center;color:#fff;}
+.cta-banner h2{font-size:36px;font-weight:900;margin-bottom:16px;}
+.cta-banner p{font-size:18px;opacity:.85;margin-bottom:32px;}
+.cta-banner .btn-white{background:#fff;color:var(--teal-dark);padding:16px 48px;border-radius:50px;font-size:16px;font-weight:700;border:none;cursor:pointer;transition:all .3s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+.cta-banner .btn-white:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.15);}
+
+/* Footer */
+.footer{padding:40px 0;text-align:center;color:var(--text-light);font-size:14px;border-top:1px solid rgba(0,137,123,.1);}
+.footer a{color:var(--teal);text-decoration:none;}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-logo"><i class="fas fa-scale-balanced"></i> 智秤云</div>
+  <div class="nav-links">
+    <a href="#pain">痛点</a>
+    <a href="#features">功能</a>
+    <a href="#flow">流程</a>
+    <a href="#pricing">定价</a>
+  </div>
+  <a href="demo-01-智秤云.html" class="nav-cta">免费试用</a>
+</nav>
+
+<section class="hero">
+  <div class="container">
+    <div class="hero-badge"><i class="fas fa-robot"></i> AI驱动的智能秤解决方案</div>
+    <h1>让每一克食材<span>都有迹可循</span></h1>
+    <p>智秤云是新一代AI智能秤云平台，集成了实时称重、AI视觉识别、智能库存管理、会员营销和大数据分析，帮助食品零售与餐饮企业实现数字化转型，降低损耗，提升效率。</p>
+    <div class="hero-actions">
+      <a href="demo-01-智秤云.html" class="btn-primary"><i class="fas fa-play"></i> 免费体验演示</a>
+      <a href="#features" class="btn-outline"><i class="fas fa-book-open"></i> 了解更多</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item"><div class="stat-number">98.6%</div><div class="stat-label">AI识别准确率</div></div>
+      <div class="stat-item"><div class="stat-number">60%+</div><div class="stat-label">损耗降低</div></div>
+      <div class="stat-item"><div class="stat-number">5秒</div><div class="stat-label">快速结算</div></div>
+      <div class="stat-item"><div class="stat-number">2万+</div><div class="stat-label">商户信赖</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="pain" id="pain">
+  <div class="container">
+    <div class="section-title">
+      <h2>传统称重方式的困境</h2>
+      <p>您的企业是否正在经历以下挑战？</p>
+    </div>
+    <div class="pain-grid">
+      <div class="pain-card">
+        <div class="pain-icon"><i class="fas fa-balance-scale-right"></i></div>
+        <h3>称重不准，损耗惊人</h3>
+        <p>人工读取数值误差大，熟食、果蔬等品类每日报损难以追溯，每月损失可达数千元。</p>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon"><i class="fas fa-clock"></i></div>
+        <h3>排队拥堵，效率低下</h3>
+        <p>高峰期顾客等待超过3分钟，传统秤操作复杂，员工培训成本高，客户体验差。</p>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon"><i class="fas fa-box-open"></i></div>
+        <h3>库存黑盒，进货盲目</h3>
+        <p>库存数据靠手抄，进货凭经验，爆品断货、滞品积压同时出现，资金占用严重。</p>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon"><i class="fas fa-users-slash"></i></div>
+        <h3>会员流失，复购困难</h3>
+        <p>缺乏用户画像，无法精准营销，促销活动效果差，忠实顾客逐步流失。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="container">
+    <div class="section-title">
+      <h2>智秤云核心功能</h2>
+      <p>一站式解决方案，覆盖经营全链路</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-num">01 / AI识别</div>
+        <h3>秒级识别，精准称重</h3>
+        <p>基于深度学习的视觉识别引擎，500+食材数据库，复杂堆叠商品照样准确识别，称重结算仅需5秒。</p>
+        <div class="feature-tags"><span class="feature-tag">准确率98.6%</span><span class="feature-tag">支持堆叠</span><span class="feature-tag">夜间模式</span></div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-num">02 / 智能库存</div>
+        <h3>实时库存，预警自动</h3>
+        <p>进销存全链路追踪，库存低于安全阈值自动推送补货建议，批次管理支持先进先出，杜绝过期损耗。</p>
+        <div class="feature-tags"><span class="feature-tag">批次追溯</span><span class="feature-tag">智能补货</span><span class="feature-tag">过期预警</span></div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-num">03 / 会员营销</div>
+        <h3>精准画像，忠诚运营</h3>
+        <p>消费行为大数据分析，自动生成用户标签，支持积分、折扣、优惠券、满减等全场景营销策略。</p>
+        <div class="feature-tags"><span class="feature-tag">RFM分析</span><span class="feature-tag">智能推荐</span><span class="feature-tag">沉睡唤醒</span></div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-num">04 / 数据报表</div>
+        <h3>经营可视化，决策数据化</h3>
+        <p>实时销售大屏，商品销售排行、时段销售趋势、毛利分析、损耗分析，自动生成日报周报。</p>
+        <div class="feature-tags"><span class="feature-tag">实时大屏</span><span class="feature-tag">自定义看板</span><span class="feature-tag">数据导出</span></div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-num">05 / 多端协同</div>
+        <h3>总部-门店-设备互联</h3>
+        <p>云端一体化管理，门店数据实时同步，支持总部统一下发价格、促销策略，设备远程运维升级。</p>
+        <div class="feature-tags"><span class="feature-tag">云端管理</span><span class="feature-tag">远程运维</span><span class="feature-tag">多语言</span></div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-num">06 / 预警中心</div>
+        <h3>风险前置，主动防御</h3>
+        <p>设备异常、库存危机、价格违规、账目异常提前预警，支持微信、短信、APP多渠道推送。</p>
+        <div class="feature-tags"><span class="feature-tag">7×24监测</span><span class="feature-tag">多渠道通知</span><span class="feature-tag">自定义规则</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="flow" id="flow">
+  <div class="container">
+    <div class="section-title">
+      <h2>快速上手流程</h2>
+      <p>三步开启智能称重新体验</p>
+    </div>
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="flow-num">1</div>
+        <h4>设备接入</h4>
+        <p>连接智秤云支持的AI智能秤，扫码绑定，3分钟完成</p>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">2</div>
+        <h4>云端配置</h4>
+        <p>在平台配置商品库、价格策略、员工权限，即刻生效</p>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">3</div>
+        <h4>开张营业</h4>
+        <p>开始称重收银，数据自动上报，报表实时查看</p>
+      </div>
+      <div class="flow-step">
+        <div class="flow-num">4</div>
+        <h4>持续优化</h4>
+        <p>AI持续学习优化，营销工具赋能，业绩稳步增长</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="pricing" id="pricing">
+  <div class="container">
+    <div class="section-title">
+      <h2>灵活定价方案</h2>
+      <p>根据规模选择合适的方案，支持按月/年订阅</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <h3>基础版</h3>
+        <p style="color:var(--text-light);font-size:14px;">适合小型门店起步</p>
+        <div class="price">¥299<span>/月</span></div>
+        <ul>
+          <li><i class="fas fa-check"></i> 1台设备接入</li>
+          <li><i class="fas fa-check"></i> 基础AI识别</li>
+          <li><i class="fas fa-check"></i> 库存管理</li>
+          <li><i class="fas fa-check"></i> 销售报表</li>
+          <li><i class="fas fa-check"></i> 会员基础功能</li>
+          <li><i class="fas fa-check"></i> 邮件支持</li>
+        </ul>
+        <button class="price-btn">立即试用</button>
+      </div>
+      <div class="price-card featured">
+        <span class="popular">最受欢迎</span>
+        <h3>专业版</h3>
+        <p style="color:var(--text-light);font-size:14px;">适合成长型门店</p>
+        <div class="price">¥699<span>/月</span></div>
+        <ul>
+          <li><i class="fas fa-check"></i> 5台设备接入</li>
+          <li><i class="fas fa-check"></i> 高级AI识别（含堆叠）</li>
+          <li><i class="fas fa-check"></i> 完整进销存管理</li>
+          <li><i class="fas fa-check"></i> 全维度数据分析</li>
+          <li><i class="fas fa-check"></i> 会员营销工具</li>
+          <li><i class="fas fa-check"></i> 预警中心</li>
+          <li><i class="fas fa-check"></i> 优先技术支持</li>
+        </ul>
+        <button class="price-btn">立即开通</button>
+      </div>
+      <div class="price-card">
+        <h3>企业版</h3>
+        <p style="color:var(--text-light);font-size:14px;">适合多门店连锁</p>
+        <div class="price">¥1999<span>/月</span></div>
+        <ul>
+          <li><i class="fas fa-check"></i> 不限设备数量</li>
+          <li><i class="fas fa-check"></i> 定制AI识别模型</li>
+          <li><i class="fas fa-check"></i> 多门店集中管理</li>
+          <li><i class="fas fa-check"></i> API数据接口</li>
+          <li><i class="fas fa-check"></i> 专属客户成功经理</li>
+          <li><i class="fas fa-check"></i> 7×24专属支持</li>
+        </ul>
+        <button class="price-btn">联系销售</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-banner">
+  <div class="container">
+    <h2>准备好升级您的称重系统了吗？</h2>
+    <p>立即开始14天全功能免费试用，无需绑定信用卡</p>
+    <a href="demo-01-智秤云.html" class="btn-white"><i class="fas fa-rocket"></i> 开启免费试用</a>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <p>© 2026 智秤云 ZhichengCloud · <a href="#">隐私政策</a> · <a href="#">服务条款</a></p>
+  </div>
+</footer>
+<script>
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    const t=document.querySelector(a.getAttribute('href'));
+    if(t)t.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
+</script>
+</body>
+</html>

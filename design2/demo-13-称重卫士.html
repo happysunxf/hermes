@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>称重卫士 - 功能演示</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5/css/all.min.css">
+<style>
+:root{--yellow:#facc15;--yellow-dark:#ca8a04;--yellow-light:#fef08a;--yellow-gradient:linear-gradient(135deg,#facc15 0%,#ca8a04 100%);--bg:#0f172a;--text:#e2e8f0;--text-light:#94a3b8;--white:#fff;--sidebar-w:240px;--radius:12px;--shadow:0 4px 24px rgba(250,204,21,.15);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Noto Sans SC',sans-serif;color:var(--text);background:var(--bg);height:100vh;overflow:hidden;}
+
+.layout{display:flex;height:100vh;}
+.sidebar{width:var(--sidebar-w);background:#1e293b;color:#fff;display:flex;flex-direction:column;flex-shrink:0;position:relative;z-index:10;}
+.sidebar-logo{padding:20px 24px;font-size:20px;font-weight:900;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.08);}
+.sidebar-logo i{font-size:22px;color:var(--yellow);}
+.sidebar-nav{flex:1;overflow-y:auto;padding:12px 0;}
+.nav-item{padding:14px 24px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s;font-size:14px;font-weight:500;border-left:3px solid transparent;}
+.nav-item:hover{background:rgba(250,204,21,.1);}
+.nav-item.active{background:rgba(250,204,21,.15);border-left-color:var(--yellow);color:var(--yellow);}
+.nav-item i{width:20px;text-align:center;font-size:16px;}
+.nav-item .badge{background:var(--yellow);color:#1e293b;padding:2px 8px;border-radius:10px;font-size:11px;margin-left:auto;}
+.sidebar-footer{padding:16px 24px;border-top:1px solid rgba(255,255,255,.08);font-size:12px;color:var(--text-light);}
+.sidebar-footer p{margin-bottom:4px;}
+
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{height:60px;background:#1e293b;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;padding:0 24px;gap:16px;flex-shrink:0;}
+.topbar h1{font-size:20px;font-weight:700;color:var(--yellow);}
+.topbar-right{display:flex;align-items:center;gap:16px;margin-left:auto;}
+.topbar-btn{background:rgba(250,204,21,.1);border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;color:var(--yellow);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;}
+.topbar-btn:hover{background:var(--yellow);color:#1e293b;}
+.user-avatar{width:36px;height:36px;border-radius:50%;background:var(--yellow-gradient);color:#1e293b;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;cursor:pointer;}
+
+.content{flex:1;overflow-y:auto;padding:24px;}
+
+.card{background:#1e293b;border-radius:var(--radius);margin-bottom:20px;overflow:hidden;border:1px solid rgba(255,255,255,.06);}
+.card-header{padding:18px 24px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;}
+.card-header h3{font-size:16px;font-weight:700;color:#fff;}
+.card-header .card-actions{display:flex;gap:8px;}
+.card-header button{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid rgba(250,204,21,.3);background:transparent;color:var(--yellow);transition:all .2s;}
+.card-header button:hover{background:var(--yellow);color:#1e293b;}
+.card-header button.primary{background:var(--yellow);color:#1e293b;border-color:var(--yellow);}
+.card-body{padding:24px;}
+
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.stat-card{background:#1e293b;border-radius:var(--radius);padding:20px;border:1px solid rgba(255,255,255,.06);}
+.stat-card .stat-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.stat-card .stat-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.stat-card .stat-icon.yellow{background:rgba(250,204,21,.15);color:var(--yellow);}
+.stat-card .stat-icon.green{background:rgba(74,222,128,.15);color:#4ade80;}
+.stat-card .stat-icon.blue{background:rgba(56,189,248,.15);color:#38bdf8;}
+.stat-card .stat-icon.purple{background:rgba(167,139,250,.15);color:#a78bfa;}
+.stat-card .stat-num{font-size:28px;font-weight:900;color:#fff;}
+.stat-card .stat-label{font-size:13px;color:var(--text-light);margin-top:4px;}
+
+.data-table{width:100%;border-collapse:collapse;font-size:14px;}
+.data-table th{background:rgba(250,204,21,.1);color:var(--yellow);font-weight:600;padding:12px 16px;text-align:left;font-size:13px;}
+.data-table td{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--text);}
+.data-table tr:hover td{background:rgba(250,204,21,.05);}
+.data-table .tag{padding:3px 10px;border-radius:4px;font-size:12px;font-weight:500;}
+.data-table .tag.green{background:rgba(74,222,128,.15);color:#4ade80;}
+.data-table .tag.yellow{background:rgba(250,204,21,.15);color:#facc15;}
+.data-table .tag.red{background:rgba(248,113,113,.15);color:#f87171;}
+.data-table .tag.blue{background:rgba(56,189,248,.15);color:#38bdf8;}
+.data-table .actions{display:flex;gap:6px;}
+.data-table .actions button{width:28px;height:28px;border-radius:6px;border:none;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .2s;background:rgba(250,204,21,.1);color:var(--yellow);}
+.data-table .actions button:hover{background:var(--yellow);color:#1e293b;}
+
+.form-row{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:16px;}
+.form-group{margin-bottom:16px;}
+.form-group label{display:block;font-size:13px;font-weight:500;color:var(--text-light);margin-bottom:6px;}
+.form-group input,.form-group select{width:100%;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:#0f172a;color:#fff;font-size:14px;outline:none;transition:border-color .2s;}
+.form-group input:focus,.form-group select:focus{border-color:var(--yellow);}
+.form-group input::placeholder{color:#475569;}
+
+.btn{ padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .2s;}
+.btn-primary{background:var(--yellow);color:#1e293b;}
+.btn-primary:hover{background:var(--yellow-dark);}
+.btn-outline{background:transparent;border:1px solid rgba(250,204,21,.3);color:var(--yellow);}
+.btn-outline:hover{background:var(--yellow);color:#1e293b;}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:1000;}
+.modal-overlay.show{display:flex;}
+.modal{background:#1e293b;border-radius:var(--radius);width:560px;max-width:95vw;border:1px solid rgba(255,255,255,.1);}
+.modal-header{padding:20px 24px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;}
+.modal-header h3{font-size:18px;font-weight:700;color:#fff;}
+.modal-header .close{width:32px;height:32px;border-radius:8px;border:none;background:rgba(255,255,255,.06);color:#fff;cursor:pointer;font-size:16px;}
+.modal-body{padding:24px;}
+.modal-footer{padding:16px 24px;border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:flex-end;gap:12px;}
+
+.bar-chart{display:flex;align-items:flex-end;gap:12px;height:160px;padding:20px 0;}
+.bar-chart .bar{width:40px;background:var(--yellow);border-radius:6px 6px 0 0;position:relative;transition:height 1s ease;}
+.bar-chart .bar span{position:absolute;bottom:-24px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--text-light);}
+.bar-chart .bar::after{content:attr(data-val);position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:600;color:var(--yellow);}
+
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
+.live-dot{width:8px;height:8px;background:#4ade80;border-radius:50%;animation:pulse 2s infinite;}
+</style>
+</head>
+<body>
+<div class="layout">
+<div class="sidebar">
+<div class="sidebar-logo"><i class="fas fa-weight-scale"></i> 称重卫士</div>
+<nav class="sidebar-nav">
+<div class="nav-item active"><i class="fas fa-chart-pie"></i> 称重管理</div>
+<div class="nav-item"><i class="fas fa-book"></i> 危废台账</div>
+<div class="nav-item"><i class="fas fa-tags"></i> RFID管理</div>
+<div class="nav-item"><i class="fas fa-file-contract"></i> 转移联单</div>
+<div class="nav-item"><i class="fas fa-truck"></i> 车辆管理</div>
+<div class="nav-item"><i class="fas fa-chart-bar"></i> 数据报表</div>
+<div class="nav-item"><i class="fas fa-tools"></i> 设备管理</div>
+<div class="nav-item"><i class="fas fa-cog"></i> 系统设置</div>
+</nav>
+<div class="sidebar-footer">
+<p><i class="fas fa-microchip"></i> 地磅在线: 4/4</p>
+<p><i class="fas fa-signal"></i> 系统正常</p>
+</div>
+</div>
+
+<div class="main">
+<div class="topbar">
+<h1>称重管理</h1>
+<span class="live-dot"></span>
+<span style="font-size:13px;color:var(--text-light)">实时数据</span>
+<div class="topbar-right">
+<button class="topbar-btn"><i class="fas fa-download"></i> 导出台账</button>
+<button class="topbar-btn" onclick="openModal('addModal')"><i class="fas fa-plus"></i> 新增称重</button>
+<div class="user-avatar">王</div>
+</div>
+</div>
+
+<div class="content">
+<div class="stats-grid">
+<div class="stat-card">
+<div class="stat-top">
+<div class="stat-icon yellow"><i class="fas fa-truck"></i></div>
+</div>
+<div class="stat-num">156</div>
+<div class="stat-label">今日称重</div>
+</div>
+<div class="stat-card">
+<div class="stat-top">
+<div class="stat-icon green"><i class="fas fa-coins"></i></div>
+</div>
+<div class="stat-num">¥8.6万</div>
+<div class="stat-label">月称重收益</div>
+</div>
+<div class="stat-card">
+<div class="stat-top">
+<div class="stat-icon blue"><i class="fas fa-tags"></i></div>
+</div>
+<div class="stat-num">1240</div>
+<div class="stat-label">RFID标签</div>
+</div>
+<div class="stat-card">
+<div class="stat-top">
+<div class="stat-icon purple"><i class="fas fa-file"></i></div>
+</div>
+<div class="stat-num">89</div>
+<div class="stat-label">待处理联单</div>
+</div>
+</div>
+
+<div class="card">
+<div class="card-header">
+<h3>今日称重记录</h3>
+<div class="card-actions"><button>刷新</button></div>
+</div>
+<div class="card-body">
+<table class="data-table">
+<thead><tr><th>车牌号</th><th>危废类型</th><th>毛重(kg)</th><th>皮重(kg)</th><th>净重(kg)</th><th>联单号</th><th>状态</th><th>操作</th></tr></thead>
+<tbody>
+<tr><td>苏A88888</td><td>废酸 HW12</td><td>15820</td><td>12570</td><td>3250</td><td>WF202406001</td><td><span class="tag green">已完成</span></td><td><div class="actions"><button class="edit" onclick="openModal('editModal')"><i class="fas fa-pen"></i></button><button><i class="fas fa-eye"></i></button></div></td></tr>
+<tr><td>苏B12345</td><td>废碱 HW35</td><td>12300</td><td>8500</td><td>3800</td><td>WF202406002</td><td><span class="tag yellow">进行中</span></td><td><div class="actions"><button class="edit" onclick="openModal('editModal')"><i class="fas fa-pen"></i></button><button><i class="fas fa-eye"></i></button></div></td></tr>
+<tr><td>苏C66666</td><td>废矿物油 HW08</td><td>9800</td><td>6200</td><td>3600</td><td>WF202406003</td><td><span class="tag green">已完成</span></td><td><div class="actions"><button class="edit" onclick="openModal('editModal')"><i class="fas fa-pen"></i></button><button><i class="fas fa-eye"></i></button></div></td></tr>
+<tr><td>苏D98765</td><td>废漆渣 HW12</td><td>7500</td><td>5100</td><td>2400</td><td>WF202406004</td><td><span class="tag blue">待称重</span></td><td><div class="actions"><button class="edit" onclick="openModal('editModal')"><i class="fas fa-pen"></i></button><button><i class="fas fa-eye"></i></button></div></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div class="card">
+<div class="card-header">
+<h3>月称重趋势 (吨)</h3>
+</div>
+<div class="card-body">
+<div class="bar-chart">
+<div class="bar" style="height:45%" data-val="128"><span>1月</span></div>
+<div class="bar" style="height:55%" data-val="156"><span>2月</span></div>
+<div class="bar" style="height:40%" data-val="112"><span>3月</span></div>
+<div class="bar" style="height:65%" data-val="185"><span>4月</span></div>
+<div class="bar" style="height:75%" data-val="215"><span>5月</span></div>
+<div class="bar" style="height:85%" data-val="242"><span>6月</span></div>
+</div>
+</div>
+</div>
+
+<div class="card">
+<div class="card-header">
+<h3>危废台账</h3>
+<div class="card-actions"><button>全部</button></div>
+</div>
+<div class="card-body">
+<table class="data-table">
+<thead><tr><th>日期</th><th>单位</th><th>危废类型</th><th>重量</th><th>处置方</th><th>联单号</th><th>状态</th></tr></thead>
+<tbody>
+<tr><td>2024-06-15</td><td>江苏化工有限公司</td><td>废酸 HW12</td><td>3.25吨</td><td>南京处置中心</td><td>WF202406001</td><td><span class="tag green">已处置</span></td></tr>
+<tr><td>2024-06-14</td><td>苏州电镀厂</td><td>废碱 HW35</td><td>3.8吨</td><td>苏州处置中心</td><td>WF202406002</td><td><span class="tag yellow">运输中</span></td></tr>
+<tr><td>2024-06-13</td><td>无锡印染厂</td><td>废矿物油 HW08</td><td>3.6吨</td><td>无锡处置中心</td><td>WF202406003</td><td><span class="tag green">已处置</span></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 新增称重弹窗 -->
+<div class="modal-overlay" id="addModal">
+<div class="modal">
+<div class="modal-header">
+<h3>新增称重记录</h3>
+<button class="close" onclick="closeModal('addModal')">✕</button>
+</div>
+<div class="modal-body">
+<div class="form-row">
+<div class="form-group">
+<label>车牌号</label>
+<input type="text" placeholder="输入车牌号">
+</div>
+<div class="form-group">
+<label>危废类型</label>
+<select><option>请选择</option><option>废酸 HW12</option><option>废碱 HW35</option><option>废矿物油 HW08</option><option>废漆渣 HW12</option></select>
+</div>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label>毛重(kg)</label>
+<input type="number" placeholder="输入毛重">
+</div>
+<div class="form-group">
+<label>皮重(kg)</label>
+<input type="number" placeholder="输入皮重">
+</div>
+</div>
+<div class="form-group">
+<label>RFID标签号</label>
+<input type="text" placeholder="扫描或输入标签号">
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-outline" onclick="closeModal('addModal')">取消</button>
+<button class="btn btn-primary">确认称重</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 编辑称重弹窗 -->
+<div class="modal-overlay" id="editModal">
+<div class="modal">
+<div class="modal-header">
+<h3>编辑称重记录</h3>
+<button class="close" onclick="closeModal('editModal')">✕</button>
+</div>
+<div class="modal-body">
+<div class="form-row">
+<div class="form-group">
+<label>车牌号</label>
+<input type="text" value="苏A88888">
+</div>
+<div class="form-group">
+<label>危废类型</label>
+<select><option>废酸 HW12</option><option>废碱 HW35</option><option>废矿物油 HW08</option></select>
+</div>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label>净重(kg)</label>
+<input type="number" value="3250">
+</div>
+<div class="form-group">
+<label>联单号</label>
+<input type="text" value="WF202406001">
+</div>
+</div>
+<div class="form-group">
+<label>状态</label>
+<select><option>已完成</option><option>进行中</option><option>待处理</option></select>
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-outline" onclick="closeModal('editModal')">取消</button>
+<button class="btn btn-primary">保存修改</button>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+function openModal(id){document.getElementById(id).classList.add('show');}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+document.querySelectorAll('.nav-item').forEach(item=>{
+item.addEventListener('click',function(){
+document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+this.classList.add('active');
+});
+});
+</script>
+</body>
+</html>

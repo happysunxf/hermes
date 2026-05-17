@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>清道云 - 垃圾站满溢监控解决方案</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        :root {
+            --primary: #f97316;
+            --primary-light: #fb923c;
+            --primary-dark: #ea580c;
+            --primary-bg: #fff7ed;
+            --text-dark: #1f2937;
+            --text-gray: #6b7280;
+            --bg-light: #f9fafb;
+            --white: #ffffff;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+        }
+        body {
+            font-family: 'Noto Sans SC', 'Inter', sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+            background: var(--white);
+        }
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        /* Header */
+        header {
+            background: var(--white);
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+        nav {
+            display: flex;
+            gap: 32px;
+        }
+        nav a {
+            text-decoration: none;
+            color: var(--text-gray);
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        nav a:hover {
+            color: var(--primary);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            padding: 12px 28px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(249, 115, 22, 0.35);
+        }
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+            padding: 80px 0;
+            position: overflow: hidden;
+        }
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--primary-bg);
+            border: 1px solid #fed7aa;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--primary-dark);
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--text-dark), var(--primary-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero-desc {
+            font-size: 18px;
+            color: var(--text-gray);
+            margin-bottom: 32px;
+            line-height: 1.8;
+        }
+        .hero-btns {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+        .btn-secondary {
+            background: var(--white);
+            color: var(--primary);
+            padding: 12px 28px;
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .btn-secondary:hover {
+            background: var(--primary-bg);
+        }
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+        .stat-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-gray);
+        }
+        .hero-visual {
+            position: relative;
+        }
+        .hero-img {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-img::before {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: var(--primary);
+            opacity: 0.2;
+            border-radius: 50%;
+            top: -50px;
+            right: -50px;
+        }
+        .hero-img::after {
+            content: '';
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background: var(--primary-light);
+            opacity: 0.3;
+            border-radius: 50%;
+            bottom: -30px;
+            left: -30px;
+        }
+        .hero-icon {
+            font-size: 120px;
+            z-index: 1;
+            opacity: 0.8;
+        }
+        /* Pain Points */
+        .pain-points {
+            padding: 80px 0;
+            background: var(--bg-light);
+        }
+        .section-title {
+            text-align: center;
+            margin-bottom: 16px;
+            font-size: 32px;
+            font-weight: 700;
+        }
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-gray);
+            font-size: 16px;
+            margin-bottom: 48px;
+        }
+        .pain-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        .pain-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .pain-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+        }
+        .pain-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary-bg), #ffedd5);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        .pain-card h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        .pain-card p {
+            color: var(--text-gray);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+        /* Features */
+        .features {
+            padding: 80px 0;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+        .feature-card {
+            background: var(--white);
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 28px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+        .feature-card:hover {
+            border-color: var(--primary-light);
+            box-shadow: var(--shadow-lg);
+        }
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-bg);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+        .feature-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .feature-card p {
+            color: var(--text-gray);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        /* Process */
+        .process {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+        }
+        .process-steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            position: relative;
+        }
+        .process-steps::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 12.5%;
+            right: 12.5%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            z-index: 0;
+        }
+        .step-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 32px 24px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            box-shadow: var(--shadow);
+        }
+        .step-num {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: 700;
+            margin: 0 auto 20px;
+        }
+        .step-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .step-card p {
+            color: var(--text-gray);
+            font-size: 13px;
+        }
+        /* Pricing */
+        .pricing {
+            padding: 80px 0;
+        }
+        .pricing-card {
+            max-width: 600px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 24px;
+            padding: 48px;
+            text-align: center;
+            color: white;
+        }
+        .pricing-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .pricing-subtitle {
+            opacity: 0.9;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+        .pricing-amount {
+            font-size: 56px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        .pricing-amount span {
+            font-size: 24px;
+            font-weight: 500;
+        }
+        .pricing-unit {
+            opacity: 0.9;
+            margin-bottom: 32px;
+            font-size: 14px;
+        }
+        .pricing-features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 32px;
+            text-align: left;
+        }
+        .pricing-feature {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+        .pricing-feature::before {
+            content: '✓';
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .btn-white {
+            background: var(--white);
+            color: var(--primary);
+            padding: 16px 40px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-white:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        }
+        /* Footer */
+        footer {
+            background: var(--text-dark);
+            color: white;
+            padding: 48px 0 24px;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 48px;
+            margin-bottom: 32px;
+        }
+        .footer-brand p {
+            color: #9ca3af;
+            font-size: 14px;
+            margin-top: 12px;
+            line-height: 1.7;
+        }
+        .footer-col h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        .footer-col a {
+            display: block;
+            color: #9ca3af;
+            font-size: 13px;
+            text-decoration: none;
+            margin-bottom: 8px;
+            transition: color 0.2s;
+        }
+        .footer-col a:hover {
+            color: var(--primary-light);
+        }
+        .footer-bottom {
+            border-top: 1px solid #374151;
+            padding-top: 24px;
+            text-align: center;
+            color: #9ca3af;
+            font-size: 13px;
+        }
+        @media (max-width: 1024px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+            }
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .process-steps {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .process-steps::before {
+                display: none;
+            }
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 768px) {
+            nav {
+                display: none;
+            }
+            .hero h1 {
+                font-size: 32px;
+            }
+            .hero-stats {
+                grid-template-columns: 1fr;
+            }
+            .pain-grid {
+                grid-template-columns: 1fr;
+            }
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            .process-steps {
+                grid-template-columns: 1fr;
+            }
+            .pricing-card {
+                padding: 32px 24px;
+            }
+            .pricing-amount {
+                font-size: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-inner">
+                <div class="logo">
+                    <div class="logo-icon">🚮</div>
+                    <span>清道云</span>
+                </div>
+                <nav>
+                    <a href="#">首页</a>
+                    <a href="#">产品介绍</a>
+                    <a href="#">解决方案</a>
+                    <a href="#">案例中心</a>
+                    <a href="#">关于我们</a>
+                </nav>
+                <a href="demo-07-清道云.html" class="btn-primary">免费试用 →</a>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-grid">
+                <div class="hero-content">
+                    <div class="hero-badge">🏆 智慧环卫行业领导者</div>
+                    <h1>垃圾站满溢监控解决方案</h1>
+                    <p class="hero-desc">
+                        基于超声波传感器的智能监测系统，实时感知垃圾站满溢状态，智能优化清理路线，
+                        大幅提升环卫效率，降低运营成本，让城市环境更清洁。
+                    </p>
+                    <div class="hero-btns">
+                        <a href="demo-07-清道云.html" class="btn-primary">体验Demo →</a>
+                        <a href="#" class="btn-secondary">了解更多</a>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">99%</div>
+                            <div class="stat-label">满溢检出率</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">80%</div>
+                            <div class="stat-label">清理效率提升</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">24h</div>
+                            <div class="stat-label">全天候监测</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="hero-img">
+                        <span class="hero-icon">🗑️</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="pain-points">
+        <div class="container">
+            <h2 class="section-title">您是否面临这些困扰？</h2>
+            <p class="section-subtitle">传统垃圾站管理效率低下，各方利益难以协调</p>
+            <div class="pain-grid">
+                <div class="pain-card">
+                    <div class="pain-icon">🧑‍🔧</div>
+                    <h3>环卫工人</h3>
+                    <p>无法提前知晓哪个垃圾站已满溢，经常白跑一趟；清理路线不合理，经常绕远路；夜间满溢无法及时发现，工作被动。</p>
+                </div>
+                <div class="pain-card">
+                    <div class="pain-icon">🏢</div>
+                    <h3>物业管理者</h3>
+                    <p>垃圾站分布广，难以及时掌握运营状态；投诉率高，环境卫生难以保障；人员调度效率低，运营成本居高不下。</p>
+                </div>
+                <div class="pain-card">
+                    <div class="pain-icon">🏠</div>
+                    <h3>社区居民</h3>
+                    <p>垃圾站满溢无人清理，臭气熏天；蚊蝇滋生，疾病传播风险大；居住环境恶劣，生活质量严重下降。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">核心功能特性</h2>
+            <p class="section-subtitle">八大功能模块，全方位提升垃圾站智能化管理水平</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📡</div>
+                    <h3>满溢监测</h3>
+                    <p>超声波传感器实时监测垃圾高度，精准识别满溢状态，检出率高达99%</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🗺️</div>
+                    <h3>路线优化</h3>
+                    <p>智能算法综合距离、路况、满溢程度等因素，计算最优清理路线</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🚛</div>
+                    <h3>车辆调度</h3>
+                    <p>实时监控车辆位置与状态，智能分配清理任务，提高车辆利用率</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>数据统计</h3>
+                    <p>多维度数据分析，生成可视化报表，辅助管理决策</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3>微信推送</h3>
+                    <p>满溢报警实时推送至相关人员微信，第一时间知晓异常情况</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>设备管理</h3>
+                    <p>传感器全生命周期管理，远程配置与升级，故障自动告警</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📑</div>
+                    <h3>报表分析</h3>
+                    <p>自定义报表模板，自动生成日报、周报、月报，提升工作效率</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚙️</div>
+                    <h3>系统设置</h3>
+                    <p>灵活配置报警阈值、推送人员、作业规则，满足个性化需求</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="process">
+        <div class="container">
+            <h2 class="section-title">工作流程</h2>
+            <p class="section-subtitle">四步实现垃圾站智能化管理</p>
+            <div class="process-steps">
+                <div class="step-card">
+                    <div class="step-num">1</div>
+                    <h3>设备部署</h3>
+                    <p>在垃圾站安装超声波传感器和通信模块</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">2</div>
+                    <h3>数据采集</h3>
+                    <p>传感器实时采集垃圾高度数据并上传云平台</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">3</div>
+                    <h3>智能分析</h3>
+                    <p>云端算法分析数据，识别满溢并计算最优路线</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-num">4</div>
+                    <h3>任务执行</h3>
+                    <p>调度中心下发任务，环卫车辆按最优路线清理</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="pricing">
+        <div class="container">
+            <h2 class="section-title">透明定价</h2>
+            <p class="section-subtitle">根据垃圾站规模灵活选择方案</p>
+            <div class="pricing-card">
+                <div class="pricing-title">清道云基础版</div>
+                <div class="pricing-subtitle">包含完整功能模块</div>
+                <div class="pricing-amount">2-5<span>万</span></div>
+                <div class="pricing-unit">元/站（根据站点数量阶梯定价）</div>
+                <div class="pricing-features">
+                    <div class="pricing-feature">超声波传感器硬件</div>
+                    <div class="pricing-feature">云平台SaaS服务</div>
+                    <div class="pricing-feature">微信报警推送</div>
+                    <div class="pricing-feature">路线优化算法</div>
+                    <div class="pricing-feature">车辆调度系统</div>
+                    <div class="pricing-feature">数据报表功能</div>
+                    <div class="pricing-feature">设备远程管理</div>
+                    <div class="pricing-feature">7×24小时运维</div>
+                </div>
+                <a href="demo-07-清道云.html" class="btn-white">立即体验 Demo →</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="logo" style="color: white;">
+                        <div class="logo-icon">🚮</div>
+                        <span>清道云</span>
+                    </div>
+                    <p>清道云是领先的智慧环卫解决方案提供商，致力于用物联网和AI技术提升城市环境卫生管理水平。</p>
+                </div>
+                <div class="footer-col">
+                    <h4>产品中心</h4>
+                    <a href="#">垃圾满溢监测</a>
+                    <a href="#">路线优化系统</a>
+                    <a href="#">车辆调度平台</a>
+                    <a href="#">数据报表中心</a>
+                </div>
+                <div class="footer-col">
+                    <h4>解决方案</h4>
+                    <a href="#">城市环卫</a>
+                    <a href="#">社区物业</a>
+                    <a href="#">工业园区</a>
+                    <a href="#">校园景区</a>
+                </div>
+                <div class="footer-col">
+                    <h4>联系我们</h4>
+                    <a href="#">商务合作</a>
+                    <a href="#">技术支持</a>
+                    <a href="#">400-888-8888</a>
+                    <a href="#">info@qingdaoyun.cn</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                © 2024 清道云科技有限公司 保留所有权利 | 隐私政策 | 服务条款
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

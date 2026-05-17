@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>净润智联 - 水质供水监控平台</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5/css/all.min.css">
+<style>
+:root{--blue:#38bdf8;--blue-dark:#0284c7;--blue-light:#7dd3fc;--blue-pale:#f0f9ff;--blue-gradient:linear-gradient(135deg,#38bdf8 0%,#0284c7 100%);--bg:#F5F7FA;--text:#1e293b;--text-light:#64748b;--white:#fff;--radius:12px;--shadow:0 4px 24px rgba(56,189,248,.12);--shadow-lg:0 12px 48px rgba(56,189,248,.18);}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Noto Sans SC',sans-serif;color:var(--text);background:var(--bg);line-height:1.6;}
+
+/* Nav */
+.nav{position:fixed;top:0;left:0;right:0;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);z-index:1000;border-bottom:1px solid rgba(56,189,248,.08);padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:64px;}
+.nav-logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:20px;color:var(--blue-dark);}
+.nav-logo i{font-size:24px;}
+.nav-links{display:flex;gap:32px;align-items:center;}
+.nav-links a{text-decoration:none;color:var(--text);font-size:14px;font-weight:500;transition:color .2s;}
+.nav-links a:hover{color:var(--blue);}
+.nav-cta{background:var(--blue-gradient);color:#fff;border:none;padding:10px 24px;border-radius:50px;font-size:14px;font-weight:600;cursor:pointer;transition:transform .2s,box-shadow .2s;}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:var(--shadow);}
+
+/* Hero */
+.hero{padding:140px 0 80px;text-align:center;background:linear-gradient(180deg,#f0f9ff 0%,var(--bg) 100%);}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--blue-pale);color:var(--blue-dark);padding:6px 16px;border-radius:50px;font-size:13px;font-weight:600;margin-bottom:24px;border:1px solid rgba(56,189,248,.15);}
+.hero h1{font-size:clamp(36px,6vw,60px);font-weight:900;color:var(--blue-dark);line-height:1.15;margin-bottom:16px;}
+.hero h1 span{background:var(--blue-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero p{font-size:18px;color:var(--text-light);max-width:640px;margin:0 auto 40px;}
+.hero-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+.btn-primary{background:var(--blue-gradient);color:#fff;border:none;padding:14px 36px;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;transition:all .3s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);}
+.btn-outline{background:transparent;color:var(--blue-dark);border:2px solid var(--blue);padding:14px 36px;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;transition:all .3s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+.btn-outline:hover{background:var(--blue-pale);}
+
+/* Features */
+.features{padding:80px 0;}
+.section-title{text-align:center;margin-bottom:48px;}
+.section-title h2{font-size:36px;font-weight:900;color:var(--blue-dark);margin-bottom:12px;}
+.section-title p{font-size:16px;color:var(--text-light);}
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;}
+.feature-card{background:#fff;border-radius:var(--radius);padding:32px;box-shadow:var(--shadow);border:1px solid rgba(56,189,248,.06);transition:transform .3s;}
+.feature-card:hover{transform:translateY(-4px);}
+.feature-icon{width:56px;height:56px;border-radius:14px;background:var(--blue-pale);display:flex;align-items:center;justify-content:center;margin-bottom:20px;}
+.feature-icon i{font-size:24px;color:var(--blue);}
+.feature-card h3{font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.feature-card p{font-size:14px;color:var(--text-light);}
+
+/* Hash */
+.hash-section{padding:80px 0;background:linear-gradient(135deg,#0c1a2e 0%,#1a2744 100%);color:#fff;}
+.hash-content{max-width:1200px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;}
+.hash-section h2{font-size:36px;font-weight:900;margin-bottom:20px;}
+.hash-section p{font-size:16px;color:rgba(255,255,255,.7);margin-bottom:32px;line-height:1.8;}
+.hash-stats{display:flex;gap:32px;}
+.hash-stat{}
+.hash-stat .num{font-size:32px;font-weight:900;color:var(--blue-light);}
+.hash-stat .lbl{font-size:13px;color:rgba(255,255,255,.5);}
+.hash-devices{background:rgba(56,189,248,.08);border-radius:16px;padding:32px;border:1px solid rgba(56,189,248,.15);}
+.hash-devices h3{font-size:18px;font-weight:700;margin-bottom:20px;color:var(--blue-light);}
+.device-item{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06);}
+.device-item:last-child{border:none;}
+.device-name{font-size:14px;color:rgba(255,255,255,.8);}
+.device-val{font-size:14px;font-weight:600;color:var(--blue-light);}
+
+/* Parameter Table */
+.param-section{padding:80px 0;}
+.param-table{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;}
+.param-table table{width:100%;border-collapse:collapse;}
+.param-table th{background:var(--blue-dark);color:#fff;padding:16px 24px;text-align:left;font-size:14px;font-weight:600;}
+.param-table td{padding:14px 24px;font-size:14px;border-bottom:1px solid #f1f5f9;}
+.param-table tr:last-child td{border:none;}
+.param-table tr:hover{background:#f8fafc;}
+.param-badge{display:inline-block;padding:4px 12px;border-radius:50px;font-size:12px;font-weight:600;}
+.param-badge.green{background:#dcfce7;color:#166534;}
+.param-badge.yellow{background:#fef9c3;color:#713f12;}
+.param-badge.red{background:#fee2e2;color:#991b1b;}
+
+/* CTA */
+.cta-section{padding:80px 0;background:var(--blue-gradient);text-align:center;color:#fff;}
+.cta-section h2{font-size:36px;font-weight:900;margin-bottom:16px;}
+.cta-section p{font-size:18px;opacity:.85;margin-bottom:32px;}
+.cta-section .btn-white{background:#fff;color:var(--blue-dark);border:none;padding:14px 36px;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;transition:all .3s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+.cta-section .btn-white:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.2);}
+
+/* Footer */
+.footer{padding:40px 0;background:#1e293b;color:#94a3b8;font-size:14px;text-align:center;}
+.footer a{color:var(--blue-light);text-decoration:none;}
+
+@media(max-width:768px){
+.hash-content{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<nav class="nav">
+<div class="nav-logo"><i class="fas fa-water"></i> 净润智联</div>
+<div class="nav-links">
+<a href="#">产品</a><a href="#">方案</a><a href="#">案例</a><a href="#">关于</a>
+</div>
+<button class="nav-cta">预约演示</button>
+</nav>
+
+<section class="hero">
+<div class="container">
+<div class="hero-badge"><i class="fas fa-shield-halved"></i> 哈希水质监测合作</div>
+<h1>水质供水<span>智能监控</span>平台</h1>
+<p>集成哈希水质监测设备，实时采集余氯、浊度、pH等关键指标，AI智能预警保障饮水安全</p>
+<div class="hero-actions">
+<button class="btn-primary"><i class="fas fa-play"></i> 立即体验</button>
+<button class="btn-outline"><i class="fas fa-file-alt"></i> 下载方案</button>
+</div>
+<div class="hero-stats">
+<div class="stat-item"><div class="stat-number">500+</div><div class="stat-label">接入监测点</div></div>
+<div class="stat-item"><div class="stat-number">99.7%</div><div class="stat-label">数据准确率</div></div>
+<div class="stat-item"><div class="stat-number">24/7</div><div class="stat-label">全天候监控</div></div>
+</div>
+</div>
+</section>
+
+<section class="features">
+<div class="container">
+<div class="section-title">
+<h2>核心监测能力</h2>
+<p>多参数协同监测，全链路保障供水安全</p>
+</div>
+<div class="feature-grid">
+<div class="feature-card">
+<div class="feature-icon"><i class="fas fa-flask"></i></div>
+<h3>余氯在线监测</h3>
+<p>实时监测水中余氯含量，确保消毒效果达标，自动预警低值异常</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon"><i class="fas fa-tint"></i></div>
+<h3>浊度检测</h3>
+<p>高灵敏度浊度传感器，检测微小颗粒物变化，保障水质透明度</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+<h3>pH值监测</h3>
+<p>精密pH传感器全天候监测酸碱度，防止腐蚀和结垢风险</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon"><i class="fas fa-bell"></i></div>
+<h3>智能预警</h3>
+<p>AI算法综合分析多参数，提前识别水质异常，微信/短信及时通知</p>
+</div>
+</div>
+</div>
+</section>
+
+<section class="hash-section">
+<div class="hash-content">
+<div>
+<h2>哈希水质监测设备</h2>
+<p>净润智联深度集成哈希（HACH）水质分析仪表，覆盖从取水、制水到输配的全流程监测，支持多种通讯协议无缝对接IoT平台。</p>
+<div class="hash-stats">
+<div class="hash-stat"><div class="num">18+</div><div class="lbl">监测参数</div></div>
+<div class="hash-stat"><div class="num">0.01</div><div class="lbl">检测精度 mg/L</div></div>
+<div class="hash-stat"><div class="num">IP68</div><div class="lbl">防护等级</div></div>
+</div>
+</div>
+<div class="hash-devices">
+<h3>主流监测设备</h3>
+<div class="device-item"><span class="device-name">CL17 余氯分析仪</span><span class="device-val">余氯</span></div>
+<div class="device-item"><span class="device-name">1720E 浊度仪</span><span class="device-val">浊度</span></div>
+<div class="device-item"><span class="device-name">pH难度分析仪</span><span class="device-val">pH值</span></div>
+<div class="device-item"><span class="device-name">Polymetron 控制器</span><span class="device-val">数据集成</span></div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="param-section">
+<div class="container">
+<div class="section-title">
+<h2>监测参数标准</h2>
+<p>参照《生活饮用水卫生标准》GB 5749-2022</p>
+</div>
+<div class="param-table">
+<table>
+<thead><tr><th>参数</th><th>单位</th><th>标准限值</th><th>报警阈值</th><th>状态</th></tr></thead>
+<tbody>
+<tr><td>余氯</td><td>mg/L</td><td>≥0.3</td><td>&lt;0.2 预警</td><td><span class="param-badge green">正常 0.35</span></td></tr>
+<tr><td>浊度</td><td>NTU</td><td>≤1.0</td><td>&gt;1.5 预警</td><td><span class="param-badge green">正常 0.8</span></td></tr>
+<tr><td>pH值</td><td>-</td><td>6.5~8.5</td><td>&lt;6.0 / &gt;9.0 预警</td><td><span class="param-badge green">正常 7.2</span></td></tr>
+<tr><td>电导率</td><td>μS/cm</td><td>≤1500</td><td>&gt;1800 预警</td><td><span class="param-badge green">正常 520</span></td></tr>
+<tr><td>CODMn</td><td>mg/L</td><td>≤3</td><td>&gt;4 预警</td><td><span class="param-badge green">正常 1.2</span></td></tr>
+<tr><td>氨氮</td><td>mg/L</td><td>≤0.5</td><td>&gt;1.0 预警</td><td><span class="param-badge green">正常 0.15</span></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+
+<section class="cta-section">
+<div class="container">
+<h2>开启水质智能监控新时代</h2>
+<p>联系我们获取免费水质监测方案设计和报价</p>
+<a href="#" class="btn-white"><i class="fas fa-phone"></i> 立即咨询</a>
+</div>
+</section>
+
+<footer class="footer">
+<p>© 2024 净润智联 版权所有 | <a href="#">隐私政策</a> | <a href="#">使用条款</a></p>
+</footer>
+</body>
+</html>

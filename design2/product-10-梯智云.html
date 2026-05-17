@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>梯智云 - 电梯故障监控专家</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:#0a0a0f;color:#e5e5e5;line-height:1.6}
+.container{max-width:1200px;margin:0 auto;padding:0 20px}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,10,15,.95);border-bottom:1px solid rgba(248,113,113,.2);padding:0 20px}
+nav .inner{display:flex;align-items:center;justify-content:space-between;height:64px;max-width:1200px;margin:0 auto}
+.logo{font-size:20px;font-weight:700;color:#f87171}
+.menu{display:flex;gap:32px}
+.menu a{color:#999;text-decoration:none;font-size:14px;transition:color .3s}
+.menu a:hover{color:#f87171}
+.btn-nav{background:#f87171;color:#fff;padding:8px 20px;border-radius:6px;font-weight:600;text-decoration:none;font-size:14px}
+.hero{padding:160px 0 100px;text-align:center;background:linear-gradient(180deg,#111118 0%,#0a0a0f 100%)}
+.hero h1{font-size:52px;font-weight:800;margin-bottom:16px}
+.hero h1 .accent{color:#f87171}
+.hero p{font-size:20px;color:#999;max-width:700px;margin:0 auto 40px}
+.stats{display:flex;justify-content:center;gap:60px;margin-bottom:50px;flex-wrap:wrap}
+.stat{text-align:center}
+.stat .num{font-size:48px;font-weight:800;color:#f87171}
+.stat .label{font-size:14px;color:#888}
+.ctas{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:8px;font-weight:600;font-size:16px;text-decoration:none;transition:all .3s}
+.btn-primary{background:#f87171;color:#fff}
+.btn-primary:hover{background:#ef4444}
+.btn-outline{background:transparent;border:2px solid #f87171;color:#f87171}
+.btn-outline:hover{background:rgba(248,113,113,.1)}
+.pain{padding:80px 0;background:#0f0f16}
+.section-title{text-align:center;font-size:36px;font-weight:700;margin-bottom:16px}
+.section-sub{text-align:center;color:#888;margin-bottom:50px;font-size:16px}
+.pain-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+.pain-card{background:#1a1a24;border-radius:12px;padding:32px;border:1px solid rgba(248,113,113,.15)}
+.pain-card h3{color:#f87171;font-size:20px;margin-bottom:12px}
+.pain-card p{color:#999;font-size:14px}
+.features{padding:80px 0}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.feature-card{background:#141420;border-radius:10px;padding:28px;border:1px solid rgba(255,255,255,.06)}
+.feature-card .icon{font-size:32px;margin-bottom:16px}
+.feature-card h3{font-size:18px;font-weight:600;margin-bottom:10px;color:#fff}
+.feature-card p{font-size:13px;color:#888;line-height:1.7}
+.pricing{padding:80px 0}
+.pricing-cards{display:grid;template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;max-width:900px;margin:0 auto}
+.price-card{background:#141420;border-radius:12px;padding:40px 32px;text-align:center;border:1px solid rgba(248,113,113,.2)}
+.price-card.popular{border-color:#f87171;position:relative}
+.price-card.popular::before{content:'推荐';position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#f87171;color:#fff;padding:4px 16px;border-radius:20px;font-size:12px;font-weight:700}
+.price-card h3{font-size:22px;margin-bottom:8px}
+.price-card .price{font-size:36px;font-weight:800;color:#f87171;margin:16px 0}
+.price-card .price span{font-size:14px;color:#888;font-weight:400}
+.price-card ul{list-style:none;text-align:left;margin:20px 0}
+.price-card li{padding:8px 0;color:#aaa;font-size:14px;border-bottom:1px solid rgba(255,255,255,.05)}
+.price-card li::before{content:'✓ ';color:#f87171;margin-right:8px}
+.cta-footer{padding:100px 0;text-align:center;background:linear-gradient(180deg,#0a0a0f 0%,#1a1a24 100%)}
+.cta-footer h2{font-size:40px;font-weight:700;margin-bottom:16px}
+.cta-footer p{color:#888;margin-bottom:32px;font-size:18px}
+footer{background:#0a0a0f;border-top:1px solid rgba(255,255,255,.06);padding:40px 0;text-align:center;color:#555;font-size:13px}
+</style>
+</head>
+<body>
+<nav>
+<div class="inner">
+<div class="logo">智慧城市<span style="color:#f87171">方案</span></div>
+<div class="menu">
+<a href="#">产品</a>
+<a href="#">方案</a>
+<a href="#">案例</a>
+<a href="#">资讯</a>
+</div>
+<a href="#" class="btn-nav">获取方案</a>
+</div>
+</nav>
+<section class="hero">
+<div class="container">
+<h1>梯智云 <span class="accent">电梯故障监控专家</span></h1>
+<p>电梯黑匣子实时监测、故障报警、困人呼叫、维保记录全流程管理，守护电梯安全最后一百米</p>
+<div class="stats">
+<div class="stat"><div class="num">99.5%</div><div class="label">设备在线率</div></div>
+<div class="stat"><div class="num">30s</div><div class="label">困人响应时间</div></div>
+<div class="stat"><div class="num">7×24h</div><div class="label">全天候监控</div></div>
+</div>
+<div class="ctas">
+<a href="#" class="btn btn-primary">获取方案报价</a>
+<a href="#" class="btn btn-outline">查看功能详情</a>
+<a href="#" class="btn btn-outline">在线演示</a>
+</div>
+</div>
+</section>
+<section class="pain">
+<div class="container">
+<h2 class="section-title">面临的挑战</h2>
+<p class="section-sub">物业、业主、维保单位共同关注的电梯安全难题</p>
+<div class="pain-grid">
+<div class="pain-card">
+<h3>物业管理单位</h3>
+<p>电梯品牌型号众多，分布分散，故障响应慢、维保记录不透明，物业承担安全责任压力大</p>
+</div>
+<div class="pain-card">
+<h3>业主委员会</h3>
+<p>对电梯运行状态不知情，困人事件频发却无应急保障，电梯维修费用不透明，业主信任度低</p>
+</div>
+<div class="pain-card">
+<h3>电梯维保单位</h3>
+<p>维保记录手工填写容易造假，纸质档案难管理，无法提前预判故障，困人救援效率低</p>
+</div>
+</div>
+</div>
+</section>
+<section class="features">
+<div class="container">
+<h2 class="section-title">核心功能</h2>
+<p class="section-sub">8大核心功能模块，覆盖电梯安全监管全场景</p>
+<div class="features-grid">
+<div class="feature-card">
+<div class="icon">📦</div>
+<h3>电梯黑匣子</h3>
+<p>采集电梯运行数据、开关门次数、楼层信息、运行时间，真实还原电梯运行状态</p>
+</div>
+<div class="feature-card">
+<div class="icon">⚡</div>
+<h3>故障实时报警</h3>
+<p>24项故障代码全覆盖，5秒内触发多渠道报警：APP推送、短信、电话语音自动呼叫</p>
+</div>
+<div class="feature-card">
+<div class="icon">📞</div>
+<h3>困人自动呼叫</h3>
+<p>困人故障发生时，自动拨打预设应急联系人，支持双向语音对讲，30秒内启动救援流程</p>
+</div>
+<div class="feature-card">
+<div class="icon">🛠️</div>
+<h3>维保记录管理</h3>
+<p>扫码签到、电子工单、维保照片上传，告别纸质记录，支持维保计划自动提醒与考核</p>
+</div>
+<div class="feature-card">
+<div class="icon">📊</div>
+<h3>数据分析报表</h3>
+<p>故障统计、维保合规率、电梯健康度评分、用梯习惯分析，为管理决策提供数据支撑</p>
+</div>
+<div class="feature-card">
+<div class="icon">📱</div>
+<h3>移动端管理</h3>
+<p>物业APP实时查看电梯状态、故障处理全流程跟踪，维保人员APP完成签到、工单处理</p>
+</div>
+<div class="feature-card">
+<div class="icon">🔔</div>
+<h3>智能预警提醒</h3>
+<p>基于运行数据分析，提前预警钢丝绳磨损、导靴磨损等隐患，变被动维修为主动预防</p>
+</div>
+<div class="feature-card">
+<div class="icon">🏢</div>
+<h3>多项目管理</h3>
+<p>支持集团化多项目、跨区域统一管理，权限分级配置，数据报表一键汇总导出</p>
+</div>
+</div>
+</div>
+</section>
+<section class="pricing">
+<div class="container">
+<h2 class="section-title">灵活定价方案</h2>
+<p class="section-sub">按电梯数量灵活计费，适合不同规模项目</p>
+<div class="pricing-cards">
+<div class="price-card">
+<h3>基础版</h3>
+<div class="price">3万<span>/部</span></div>
+<p>单台电梯基础监控，适合单个项目</p>
+<ul>
+<li>电梯黑匣子接入</li>
+<li>故障实时报警</li>
+<li>APP移动查看</li>
+<li>历史数据存储</li>
+<li>月度报表</li>
+</ul>
+<a href="#" class="btn btn-outline" style="width:100%;margin-top:20px">了解更多</a>
+</div>
+<div class="price-card popular">
+<h3>标准版</h3>
+<div class="price">4.5万<span>/部</span></div>
+<p>含困人救援与维保管理，适合物业</p>
+<ul>
+<li>全部基础功能</li>
+<li>困人自动呼叫</li>
+<li>维保记录管理</li>
+<li>故障分析预警</li>
+<li>季度报表</li>
+</ul>
+<a href="#" class="btn btn-primary" style="width:100%;margin-top:20px">获取报价</a>
+</div>
+<div class="price-card">
+<h3>高级版</h3>
+<div class="price">6万<span>/部</span></div>
+<p>含健康度评估与预测性维护</p>
+<ul>
+<li>全部标准功能</li>
+<li>电梯健康度评分</li>
+<li>预测性维护预警</li>
+<li>开放API接口</li>
+<li>专属运维服务</li>
+</ul>
+<a href="#" class="btn btn-outline" style="width:100%;margin-top:20px">联系我们</a>
+</div>
+</div>
+</div>
+</section>
+<section class="cta-footer">
+<div class="container">
+<h2>让每一次乘梯都安全无忧</h2>
+<p>立即申请免费演示，体验智慧电梯监管平台</p>
+<div class="ctas">
+<a href="#" class="btn btn-primary">预约产品演示</a>
+<a href="#" class="btn btn-outline">下载产品资料</a>
+</div>
+</div>
+</section>
+<footer>
+<div class="container">
+<p>© 2024 梯智云电梯安全管理系统 | 智慧电梯解决方案供应商</p>
+</div>
+</footer>
+</body>
+</html>

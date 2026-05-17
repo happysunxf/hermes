@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>净塘卫士 — 水产养殖智能监控系统</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5/css/all.min.css">
+<style>
+:root{--blue:#2563eb;--blue-dark:#1d4ed8;--blue-light:#60a5fa;--blue-pale:#eff6ff;--blue-gradient:linear-gradient(135deg,#1e3a5f 0%,#2563eb 100%);--bg:#f0f4f8;--text:#1e293b;--text-light:#64748b;--white:#fff;--sidebar-w:240px;--radius:12px;--shadow:0 4px 24px rgba(37,99,235,.12);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Noto Sans SC',sans-serif;color:var(--text);background:var(--bg);height:100vh;overflow:hidden;}
+::selection{background:var(--blue-light);color:#fff;}
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--blue-light);border-radius:3px;}
+
+.layout{display:flex;height:100vh;}
+.sidebar{width:var(--sidebar-w);background:var(--blue-gradient);color:#fff;display:flex;flex-direction:column;flex-shrink:0;position:relative;z-index:10;}
+.sidebar-logo{padding:20px 24px;font-size:20px;font-weight:900;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.12);}
+.sidebar-logo i{font-size:22px;}
+.sidebar-nav{flex:1;overflow-y:auto;padding:12px 0;}
+.nav-item{padding:14px 24px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s;font-size:14px;font-weight:500;border-left:3px solid transparent;}
+.nav-item:hover{background:rgba(255,255,255,.1);}
+.nav-item.active{background:rgba(255,255,255,.15);border-left-color:#fff;}
+.nav-item i{width:20px;text-align:center;font-size:16px;}
+.nav-item .badge{background:rgba(255,255,255,.2);padding:2px 8px;border-radius:10px;font-size:11px;margin-left:auto;}
+.nav-item .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.5);margin-left:auto;}
+.sidebar-footer{padding:16px 24px;border-top:1px solid rgba(255,255,255,.12);font-size:12px;opacity:.7;}
+
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{height:60px;background:#fff;border-bottom:1px solid rgba(37,99,235,.1);display:flex;align-items:center;padding:0 24px;gap:16px;flex-shrink:0;}
+.topbar h1{font-size:20px;font-weight:700;color:var(--blue-dark);}
+.topbar-right{display:flex;align-items:center;gap:16px;margin-left:auto;}
+.topbar-btn{background:rgba(37,99,235,.08);border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;color:var(--blue-dark);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;}
+.topbar-btn:hover{background:var(--blue-pale);}
+.topbar-btn i{font-size:14px;}
+.notif-btn{width:36px;height:36px;border-radius:8px;background:rgba(37,99,235,.08);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative;color:var(--blue-dark);}
+.notif-btn i{font-size:16px;}
+.notif-btn .notif-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;background:#ef4444;border-radius:50%;border:2px solid #fff;}
+.user-avatar{width:36px;height:36px;border-radius:50%;background:var(--blue-gradient);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;cursor:pointer;}
+
+.content{flex:1;overflow-y:auto;padding:24px;}
+
+.card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:20px;overflow:hidden;}
+.card-header{padding:18px 24px;border-bottom:1px solid rgba(0,0,0,.05);display:flex;align-items:center;justify-content:space-between;}
+.card-header h3{font-size:16px;font-weight:700;color:var(--text);}
+.card-header .card-actions{display:flex;gap:8px;}
+.card-header button{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid rgba(37,99,235,.2);background:transparent;color:var(--blue-dark);transition:all .2s;}
+.card-header button:hover{background:var(--blue-pale);}
+.card-header button.primary{background:var(--blue);color:#fff;border-color:var(--blue);}
+.card-header button.primary:hover{background:var(--blue-dark);}
+.card-body{padding:24px;}
+
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.stat-card{background:#fff;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);}
+.stat-card .stat-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.stat-card .stat-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.stat-card .stat-icon.blue{background:var(--blue-pale);color:var(--blue);}
+.stat-card .stat-icon.cyan{background:#e0f7fa;color:#00acc1;}
+.stat-card .stat-icon.orange{background:#fff3e0;color:#ff7043;}
+.stat-card .stat-icon.green{background:#e8f5e9;color:#43a047;}
+.stat-card .stat-icon.purple{background:#f3e5f5;color:#ab47bc;}
+.stat-card .stat-trend{font-size:12px;font-weight:600;padding:2px 8px;border-radius:4px;}
+.stat-card .stat-trend.up{background:#e8f5e9;color:#43a047;}
+.stat-card .stat-trend.down{background:#ffebee;color:#e53935;}
+.stat-card .stat-num{font-size:28px;font-weight:900;color:var(--text);}
+.stat-card .stat-label{font-size:13px;color:var(--text-light);margin-top:4px;}
+.stat-card .stat-comp{font-size:12px;color:var(--text-light);margin-top:8px;}
+
+.data-table{width:100%;border-collapse:collapse;font-size:14px;}
+.data-table th{background:var(--blue-pale);color:var(--blue-dark);font-weight:600;padding:12px 16px;text-align:left;font-size:13px;}
+.data-table td{padding:12px 16px;border-bottom:1px solid rgba(0,0,0,.04);color:var(--text);}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:hover td{background:#fafafa;}
+.data-table .tag{padding:3px 10px;border-radius:4px;font-size:12px;font-weight:500;}
+.data-table .tag.green{background:#e8f5e9;color:#2e7d32;}
+.data-table .tag.orange{background:#fff3e0;color:#e65100;}
+.data-table .tag.red{background:#ffebee;color:#c62828;}
+.data-table .tag.blue{background:#e3f2fd;color:#1565c0;}
+.data-table .actions{display:flex;gap:6px;}
+.data-table .actions button{width:28px;height:28px;border-radius:6px;border:none;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.data-table .actions .edit{background:var(--blue-pale);color:var(--blue);}
+.data-table .actions .del{background:#ffebee;color:#e53935;}
+.data-table .actions .view{background:#e3f2fd;color:#1565c0;}
+
+.form-row{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:16px;}
+.form-group{margin-bottom:16px;}
+.form-group label{font-size:13px;font-weight:600;color:var(--text);display:block;margin-bottom:6px;}
+.form-control{width:100%;padding:10px 14px;border-radius:8px;border:1px solid rgba(0,0,0,.12);font-size:14px;font-family:inherit;transition:border-color .2s;background:#fff;}
+.form-control:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+select.form-control{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23546E7A' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;}
+
+.btn{padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .2s;font-family:inherit;display:inline-flex;align-items:center;gap:6px;}
+.btn-primary{background:var(--blue);color:#fff;}
+.btn-primary:hover{background:var(--blue-dark);}
+.btn-outline{background:transparent;border:1px solid var(--blue);color:var(--blue);}
+.btn-outline:hover{background:var(--blue-pale);}
+.btn-danger{background:#ef4444;color:#fff;}
+.btn-danger:hover{background:#dc2626;}
+.btn-sm{padding:6px 12px;font-size:12px;}
+.btn-lg{padding:14px 28px;font-size:16px;}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(4px);}
+.modal-overlay.show{display:flex;}
+.modal{background:#fff;border-radius:var(--radius);width:90%;max-width:560px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;animation:modalIn .3s ease;}
+@keyframes modalIn{from{opacity:0;transform:scale(.95);}to{opacity:1;transform:scale(1);}}
+.modal-lg{max-width:800px;}
+.modal-header{padding:20px 24px;border-bottom:1px solid rgba(0,0,0,.05);display:flex;align-items:center;justify-content:space-between;}
+.modal-header h3{font-size:18px;font-weight:700;color:var(--text);}
+.modal-close{width:32px;height:32px;border-radius:8px;border:none;background:rgba(0,0,0,.05);cursor:pointer;font-size:16px;color:var(--text-light);display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.modal-close:hover{background:rgba(0,0,0,.1);}
+.modal-body{padding:24px;overflow-y:auto;flex:1;}
+.modal-footer{padding:16px 24px;border-top:1px solid rgba(0,0,0,.05);display:flex;gap:12px;justify-content:flex-end;}
+
+.chart-container{position:relative;height:260px;}
+.chart-container.tall{height:340px;}
+
+.tabs{display:flex;gap:4px;background:var(--bg);padding:4px;border-radius:8px;margin-bottom:20px;}
+.tab{padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;color:var(--text-light);cursor:pointer;transition:all .2s;border:none;background:transparent;}
+.tab.active{background:#fff;color:var(--blue-dark);box-shadow:0 1px 4px rgba(0,0,0,.08);}
+.tab:hover:not(.active){color:var(--blue);}
+
+.section{display:none;}
+.section.active{display:block;}
+
+.kpi-row{display:flex;gap:16px;margin-bottom:20px;flex-wrap:wrap;}
+.kpi-box{flex:1;min-width:180px;background:#fff;border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);}
+.kpi-box .kpi-label{font-size:13px;color:var(--text-light);margin-bottom:6px;}
+.kpi-box .kpi-value{font-size:26px;font-weight:900;color:var(--blue-dark);}
+.kpi-box .kpi-change{font-size:12px;margin-top:4px;}
+.kpi-box .kpi-change.up{color:#43a047;}
+.kpi-box .kpi-change.down{color:#e53935;}
+
+.status-dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+.status-dot.online{background:#22c55e;box-shadow:0 0 0 2px rgba(34,197,94,.2);}
+.status-dot.offline{background:#94a3b8;}
+.status-dot.warning{background:#f59e0b;box-shadow:0 0 0 2px rgba(245,158,11,.2);}
+
+.progress-bar{height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden;}
+.progress-bar .fill{height:100%;border-radius:4px;transition:width .5s ease;}
+.progress-bar .fill.blue{background:linear-gradient(90deg,#2563eb,#60a5fa);}
+.progress-bar .fill.green{background:linear-gradient(90deg,#22c55e,#86efac);}
+.progress-bar .fill.orange{background:linear-gradient(90deg,#f59e0b,#fbbf24);}
+.progress-bar .fill.red{background:linear-gradient(90deg,#ef4444,#f87171);}
+
+.sensor-card{background:#fff;border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);border-left:4px solid var(--blue);}
+.sensor-card.warning{border-left-color:#f59e0b;}
+.sensor-card.danger{border-left-color:#ef4444;}
+.sensor-card .sensor-name{font-weight:600;color:var(--text);margin-bottom:8px;}
+.sensor-card .sensor-value{font-size:24px;font-weight:900;color:var(--blue-dark);}
+.sensor-card.warning .sensor-value{color:#f59e0b;}
+.sensor-card.danger .sensor-value{color:#ef4444;}
+.sensor-card .sensor-meta{display:flex;justify-content:space-between;margin-top:8px;font-size:12px;color:var(--text-light);}
+
+.tank-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;}
+.tank-card{background:#fff;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);text-align:center;}
+.tank-card .tank-icon{width:64px;height:64px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:28px;}
+.tank-card .tank-icon.healthy{background:#e0f7fa;color:#00acc1;}
+.tank-card .tank-icon.warning{background:#fff3e0;color:#ff7043;}
+.tank-card .tank-icon.danger{background:#ffebee;color:#ef4444;}
+.tank-card h4{font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.tank-card p{font-size:13px;color:var(--text-light);margin-bottom:12px;}
+.tank-card .tank-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;text-align:left;font-size:12px;}
+.tank-card .tank-stats span{color:var(--text-light);}
+.tank-card .tank-stats strong{color:var(--text);}
+
+.alert-list{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;}
+.alert-item{padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(0,0,0,.04);}
+.alert-item:last-child{border-bottom:none;}
+.alert-item .alert-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.alert-item.critical .alert-icon{background:#ffebee;color:#ef4444;}
+.alert-item.warning .alert-icon{background:#fff3e0;color:#ff7043;}
+.alert-item.info .alert-icon{background:#e3f2fd;color:#2563eb;}
+.alert-item .alert-content{flex:1;}
+.alert-item .alert-content h4{font-size:14px;font-weight:600;color:var(--text);}
+.alert-item .alert-content p{font-size:12px;color:var(--text-light);}
+.alert-item .alert-time{font-size:12px;color:var(--text-light);white-space:nowrap;}
+.alert-item .alert-action{background:#eff6ff;color:#2563eb;border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;}
+</style>
+</head>
+<body>
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <i class="fas fa-water"></i>
+      <span>净塘卫士</span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" data-section="overview"><i class="fas fa-chart-line"></i><span>水质概览</span><span class="badge">3</span></div>
+      <div class="nav-item" data-section="probes"><i class="fas fa-microchip"></i><span>探头管理</span></div>
+      <div class="nav-item" data-section="aeration"><i class="fas fa-wind"></i><span>增氧联动</span></div>
+      <div class="nav-item" data-section="feeding"><i class="fas fa-utensils"></i><span>投喂管理</span></div>
+      <div class="nav-item" data-section="alerts"><i class="fas fa-bell"></i><span>预警中心</span><span class="dot"></span></div>
+      <div class="nav-item" data-section="history"><i class="fas fa-history"></i><span>历史数据</span></div>
+      <div class="nav-item" data-section="ponds"><i class="fas fa-border-all"></i><span>塘口管理</span></div>
+      <div class="nav-item" data-section="settings"><i class="fas fa-cog"></i><span>系统设置</span></div>
+    </nav>
+    <div class="sidebar-footer">
+      <p><i class="fas fa-shield-halved"></i> 系统正常</p>
+      <p>v2.4.1 · 在线</p>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <header class="topbar">
+      <h1>水质概览</h1>
+      <div class="topbar-right">
+        <button class="topbar-btn"><i class="fas fa-download"></i> 导出报表</button>
+        <button class="topbar-btn" onclick="openModal('addPondModal')"><i class="fas fa-plus"></i> 新塘口</button>
+        <button class="notif-btn"><i class="fas fa-bell"></i><span class="notif-dot"></span></button>
+        <div class="user-avatar">张</div>
+      </div>
+    </header>
+
+    <div class="content">
+      <!-- Overview Section -->
+      <div id="section-overview" class="section active">
+        <div class="kpi-row">
+          <div class="kpi-box">
+            <div class="kpi-label">溶解氧 (DO)</div>
+            <div class="kpi-value">7.2 <span style="font-size:14px;font-weight:400;color:#22c55e">mg/L</span></div>
+            <div class="kpi-change up"><i class="fas fa-arrow-up"></i> 正常范围</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">水温</div>
+            <div class="kpi-value">26.4 <span style="font-size:14px;font-weight:400;color:#22c55e">°C</span></div>
+            <div class="kpi-change up"><i class="fas fa-check"></i> 适宜</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">pH 值</div>
+            <div class="kpi-value">7.3</div>
+            <div class="kpi-change up"><i class="fas fa-check"></i> 正常</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">氨氮</div>
+            <div class="kpi-value">0.12 <span style="font-size:14px;font-weight:400;color:#22c55e">mg/L</span></div>
+            <div class="kpi-change up"><i class="fas fa-check"></i> 安全</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px">
+          <div class="card">
+            <div class="card-header">
+              <h3>24小时水质趋势</h3>
+              <div class="card-actions">
+                <button class="btn-sm">溶解氧</button>
+                <button class="btn-sm">水温</button>
+                <button class="btn-sm">pH</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="chart-container"><canvas id="trendChart"></canvas></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>塘口状态</h3>
+              <button class="btn-sm primary"><i class="fas fa-plus"></i> 添加</button>
+            </div>
+            <div class="card-body">
+              <div class="tank-grid" style="grid-template-columns:1fr;">
+                <div class="tank-card">
+                  <div class="tank-icon healthy"><i class="fas fa-water"></i></div>
+                  <h4>1号塘 · 草鱼</h4>
+                  <p>面积 5 亩 · 水深 2m</p>
+                  <div class="tank-stats">
+                    <div><span>溶解氧</span><br><strong class="text-green-600">7.2 mg/L</strong></div>
+                    <div><span>温度</span><br><strong>26.4°C</strong></div>
+                    <div><span>pH</span><br><strong>7.3</strong></div>
+                    <div><span>增氧机</span><br><strong class="text-green-600">运行中</strong></div>
+                  </div>
+                </div>
+                <div class="tank-card" style="margin-top:12px">
+                  <div class="tank-icon warning"><i class="fas fa-water"></i></div>
+                  <h4>2号塘 · 罗非鱼</h4>
+                  <p>面积 3 亩 · 水深 1.8m</p>
+                  <div class="tank-stats">
+                    <div><span>溶解氧</span><br><strong class="text-orange-500">4.1 mg/L</strong></div>
+                    <div><span>温度</span><br><strong>27.8°C</strong></div>
+                    <div><span>pH</span><br><strong>6.9</strong></div>
+                    <div><span>增氧机</span><br><strong class="text-orange-500">待开启</strong></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:20px">
+          <div class="card-header">
+            <h3>实时告警</h3>
+            <button class="btn-sm">查看全部</button>
+          </div>
+          <div class="alert-list">
+            <div class="alert-item warning">
+              <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+              <div class="alert-content">
+                <h4>溶解氧偏低 - 2号塘</h4>
+                <p>当前 DO 值 4.1 mg/L，低于阈值 5.0 mg/L，持续 15 分钟</p>
+              </div>
+              <span class="alert-time">10分钟前</span>
+              <button class="alert-action">处理</button>
+            </div>
+            <div class="alert-item info">
+              <div class="alert-icon"><i class="fas fa-info-circle"></i></div>
+              <div class="alert-content">
+                <h4>增氧机联动已触发 - 2号塘</h4>
+                <p>系统自动开启 2号塘 1号增氧机，当前功率 80%</p>
+              </div>
+              <span class="alert-time">8分钟前</span>
+              <button class="alert-action">确认</button>
+            </div>
+            <div class="alert-item critical">
+              <div class="alert-icon"><i class="fas fa-times-circle"></i></div>
+              <div class="alert-content">
+                <h4>pH 值异常 - 3号塘</h4>
+                <p>当前 pH 5.8，低于安全阈值 6.0，请检查</p>
+              </div>
+              <span class="alert-time">25分钟前</span>
+              <button class="alert-action">处理</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Probes Section -->
+      <div id="section-probes" class="section">
+        <div class="kpi-row">
+          <div class="kpi-box">
+            <div class="kpi-label">在线探头</div>
+            <div class="kpi-value">12 <span style="font-size:14px;font-weight:400">个</span></div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">离线探头</div>
+            <div class="kpi-value" style="color:#ef4444">1</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">本月采集</div>
+            <div class="kpi-value">86万 <span style="font-size:14px;font-weight:400">条</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3>探头列表</h3>
+            <button class="btn-sm primary"><i class="fas fa-plus"></i> 添加探头</button>
+          </div>
+          <div class="card-body" style="padding:0">
+            <table class="data-table">
+              <thead><tr><th>探头编号</th><th>所属塘口</th><th>参数类型</th><th>最新数值</th><th>状态</th><th>最后更新</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>PRB-001</td><td>1号塘</td><td><span class="tag blue">溶解氧</span></td><td>7.2 mg/L</td><td><span class="status-dot online"></span> 在线</td><td>刚刚</td><td><div class="actions"><button class="view"><i class="fas fa-eye"></i></button><button class="edit"><i class="fas fa-cog"></i></button></div></td></tr>
+                <tr><td>PRB-002</td><td>1号塘</td><td><span class="tag green">水温</span></td><td>26.4°C</td><td><span class="status-dot online"></span> 在线</td><td>刚刚</td><td><div class="actions"><button class="view"><i class="fas fa-eye"></i></button><button class="edit"><i class="fas fa-cog"></i></button></div></td></tr>
+                <tr><td>PRB-003</td><td>1号塘</td><td><span class="tag orange">pH</span></td><td>7.3</td><td><span class="status-dot online"></span> 在线</td><td>刚刚</td><td><div class="actions"><button class="view"><i class="fas fa-eye"></i></button><button class="edit"><i class="fas fa-cog"></i></button></div></td></tr>
+                <tr><td>PRB-004</td><td>2号塘</td><td><span class="tag blue">溶解氧</span></td><td>4.1 mg/L</td><td><span class="status-dot warning"></span> 告警</td><td>10分钟前</td><td><div class="actions"><button class="view"><i class="fas fa-eye"></i></button><button class="edit"><i class="fas fa-cog"></i></button></div></td></tr>
+                <tr><td>PRB-005</td><td>2号塘</td><td><span class="tag green">水温</span></td><td>27.8°C</td><td><span class="status-dot online"></span> 在线</td><td>刚刚</td><td><div class="actions"><button class="view"><i class="fas fa-eye"></i></button><button class="edit"><i class="fas fa-cog"></i></button></div></td></tr>
+                <tr><td>PRB-006</td><td>3号塘</td><td><span class="tag red">离线</span></td><td>--</td><td><span class="status-dot offline"></span> 离线</td><td>2小时前</td><td><div class="actions"><button class="view"><i class="fas fa-eye"></i></button><button class="edit"><i class="fas fa-cog"></i></button></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Aeration Section -->
+      <div id="section-aeration" class="section">
+        <div class="kpi-row">
+          <div class="kpi-box">
+            <div class="kpi-label">增氧机在线</div>
+            <div class="kpi-value">4 <span style="font-size:14px;font-weight:400">台</span></div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">本月节能</div>
+            <div class="kpi-value">1,240 <span style="font-size:14px;font-weight:400">kWh</span></div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">自动联动次数</div>
+            <div class="kpi-value">86</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3>增氧机控制</h3>
+            <button class="btn-sm primary"><i class="fas fa-plus"></i> 添加设备</button>
+          </div>
+          <div class="card-body">
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px">
+              <div class="sensor-card">
+                <div class="sensor-name"><i class="fas fa-wind"></i> 1号塘 增氧机#1</div>
+                <div class="sensor-value" style="color:#22c55e">运行中</div>
+                <div class="sensor-meta"><span>功率 80%</span><span>运行时长 4.2h</span></div>
+                <div style="margin-top:12px;display:flex;gap:8px">
+                  <button class="btn-sm btn-outline" style="flex:1">关闭</button>
+                  <button class="btn-sm btn-primary" style="flex:1">调速</button>
+                </div>
+              </div>
+              <div class="sensor-card">
+                <div class="sensor-name"><i class="fas fa-wind"></i> 1号塘 增氧机#2</div>
+                <div class="sensor-value" style="color:#22c55e">运行中</div>
+                <div class="sensor-meta"><span>功率 60%</span><span>运行时长 4.2h</span></div>
+                <div style="margin-top:12px;display:flex;gap:8px">
+                  <button class="btn-sm btn-outline" style="flex:1">关闭</button>
+                  <button class="btn-sm btn-primary" style="flex:1">调速</button>
+                </div>
+              </div>
+              <div class="sensor-card warning">
+                <div class="sensor-name"><i class="fas fa-wind"></i> 2号塘 增氧机#1</div>
+                <div class="sensor-value" style="color:#f59e0b">待开启</div>
+                <div class="sensor-meta"><span>功率 0%</span><span>待机</span></div>
+                <div style="margin-top:12px;display:flex;gap:8px">
+                  <button class="btn-sm btn-primary" style="flex:1">开启</button>
+                  <button class="btn-sm btn-outline" style="flex:1">定时</button>
+                </div>
+              </div>
+              <div class="sensor-card">
+                <div class="sensor-name"><i class="fas fa-wind"></i> 3号塘 增氧机#1</div>
+                <div class="sensor-value" style="color:#94a3b8">已关闭</div>
+                <div class="sensor-meta"><span>功率 0%</span><span>待机</span></div>
+                <div style="margin-top:12px;display:flex;gap:8px">
+                  <button class="btn-sm btn-primary" style="flex:1">开启</button>
+                  <button class="btn-sm btn-outline" style="flex:1">定时</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:20px">
+          <div class="card-header"><h3>联动规则</h3><button class="btn-sm primary"><i class="fas fa-plus"></i> 添加规则</button></div>
+          <div class="card-body" style="padding:0">
+            <table class="data-table">
+              <thead><tr><th>规则名称</th><th>触发条件</th><th>执行动作</th><th>状态</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>低溶氧自动增氧</td><td>DO &lt; 5.0 mg/L</td><td>开启增氧机 #1</td><td><span class="tag green">启用</span></td><td><div class="actions"><button class="edit"><i class="fas fa-edit"></i></button></div></td></tr>
+                <tr><td>高温时段增氧</td><td>水温 &gt; 32°C</td><td>开启全部增氧机</td><td><span class="tag green">启用</span></td><td><div class="actions"><button class="edit"><i class="fas fa-edit"></i></button></div></td></tr>
+                <tr><td>夜间加强增氧</td><td>22:00-06:00</td><td>功率提升至 100%</td><td><span class="tag gray">停用</span></td><td><div class="actions"><button class="edit"><i class="fas fa-edit"></i></button></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feeding Section -->
+      <div id="section-feeding" class="section">
+        <div class="kpi-row">
+          <div class="kpi-box"><div class="kpi-label">今日投喂</div><div class="kpi-value">3次</div></div>
+          <div class="kpi-box"><div class="kpi-label">本月饲料</div><div class="kpi-value">12.4 <span style="font-size:14px;font-weight:400">吨</span></div></div>
+          <div class="kpi-box"><div class="kpi-label">饵料系数</div><div class="kpi-value">1.8</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>投喂记录</h3><button class="btn-sm primary"><i class="fas fa-plus"></i> 新增投喂</button></div>
+          <div class="card-body" style="padding:0">
+            <table class="data-table">
+              <thead><tr><th>时间</th><th>塘口</th><th>饲料类型</th><th>投喂量</th><th>方式</th><th>操作人</th></tr></thead>
+              <tbody>
+                <tr><td>2026-05-17 08:30</td><td>1号塘</td><td>沉性料 2号</td><td>120 kg</td><td><span class="tag blue">自动</span></td><td>系统</td></tr>
+                <tr><td>2026-05-17 14:00</td><td>1号塘</td><td>浮性料 3号</td><td>80 kg</td><td><span class="tag green">手动</span></td><td>张师傅</td></tr>
+                <tr><td>2026-05-16 08:30</td><td>2号塘</td><td>沉性料 2号</td><td>90 kg</td><td><span class="tag blue">自动</span></td><td>系统</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alerts Section -->
+      <div id="section-alerts" class="section">
+        <div class="kpi-row">
+          <div class="kpi-box"><div class="kpi-label">今日告警</div><div class="kpi-value" style="color:#f59e0b">3</div></div>
+          <div class="kpi-box"><div class="kpi-label">待处理</div><div class="kpi-value" style="color:#ef4444">1</div></div>
+          <div class="kpi-box"><div class="kpi-label">本月告警</div><div class="kpi-value">28</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>预警中心</h3><button class="btn-sm">历史记录</button></div>
+          <div class="alert-list">
+            <div class="alert-item warning">
+              <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+              <div class="alert-content"><h4>溶解氧偏低 - 2号塘</h4><p>当前 DO 值 4.1 mg/L，已持续 15 分钟</p></div>
+              <span class="alert-time">10分钟前</span>
+              <button class="alert-action">处理</button>
+            </div>
+            <div class="alert-item critical">
+              <div class="alert-icon"><i class="fas fa-times-circle"></i></div>
+              <div class="alert-content"><h4>pH 值异常 - 3号塘</h4><p>pH 5.8，低于安全阈值 6.0</p></div>
+              <span class="alert-time">25分钟前</span>
+              <button class="alert-action">处理</button>
+            </div>
+            <div class="alert-item info">
+              <div class="alert-icon"><i class="fas fa-info-circle"></i></div>
+              <div class="alert-content"><h4>探头离线 - 3号塘 PRB-006</h4><p>探头已离线超过 2 小时</p></div>
+              <span class="alert-time">2小时前</span>
+              <button class="alert-action">确认</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- History Section -->
+      <div id="section-history" class="section">
+        <div class="card">
+          <div class="card-header">
+            <h3>历史数据</h3>
+            <div class="card-actions">
+              <button class="btn-sm"><i class="fas fa-download"></i> 导出</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="chart-container tall"><canvas id="historyChart"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ponds Section -->
+      <div id="section-ponds" class="section">
+        <div class="card">
+          <div class="card-header">
+            <h3>塘口管理</h3>
+            <button class="btn-sm primary"><i class="fas fa-plus"></i> 新塘口</button>
+          </div>
+          <div class="card-body" style="padding:0">
+            <table class="data-table">
+              <thead><tr><th>塘口编号</th><th>面积</th><th>水深</th><th>养殖品种</th><th>养殖密度</th><th>探头数</th><th>状态</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>1号塘</td><td>5 亩</td><td>2.0 m</td><td>草鱼</td><td>1500 尾/亩</td><td>3</td><td><span class="tag green">正常</span></td><td><div class="actions"><button class="view"><i class="fas fa-eye"></i></button><button class="edit"><i class="fas fa-edit"></i></button></div></td></tr>
+                <tr><td>2号塘</td><td>3 亩</td><td>1.8 m</td><td>罗非鱼</td><td>2000 尾/亩</td><td>2</td><td><span class="tag orange">告警</span></td><td><div class="actions"><button class="view"><i class="fas fa-eye"></i></button><button class="edit"><i class="fas fa-edit"></i></button></div></td></tr>
+                <tr><td>3号塘</td><td>4 亩</td><td>2.2 m</td><td>鲫鱼</td><td>1800 尾/亩</td><td>2</td><td><span class="tag gray">维保</span></td><td><div class="actions"><button class="view"><i class="fas fa-eye"></i></button><button class="edit"><i class="fas fa-edit"></i></button></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Section -->
+      <div id="section-settings" class="section">
+        <div class="card">
+          <div class="card-header"><h3>系统设置</h3></div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-group"><label>阈值: 溶解氧下限 (mg/L)</label><input type="number" class="form-control" value="5.0"></div>
+              <div class="form-group"><label>阈值: pH 下限</label><input type="number" class="form-control" value="6.0"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>阈值: 水温上限 (°C)</label><input type="number" class="form-control" value="34"></div>
+              <div class="form-group"><label>阈值: 氨氮上限 (mg/L)</label><input type="number" class="form-control" value="0.5"></div>
+            </div>
+            <button class="btn btn-primary"><i class="fas fa-save"></i> 保存设置</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Add Pond Modal -->
+<div id="addPondModal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>添加塘口</h3>
+      <button class="modal-close" onclick="closeModal('addPondModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label>塘口名称</label><input type="text" class="form-control" placeholder="如：1号塘"></div>
+      <div class="form-row">
+        <div class="form-group"><label>面积（亩）</label><input type="number" class="form-control" placeholder="5"></div>
+        <div class="form-group"><label>水深（米）</label><input type="number" class="form-control" placeholder="2.0"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>养殖品种</label><select class="form-control"><option>草鱼</option><option>罗非鱼</option><option>鲫鱼</option><option>小龙虾</option></select></div>
+        <div class="form-group"><label>养殖密度</label><input type="text" class="form-control" placeholder="1500 尾/亩"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('addPondModal')">取消</button>
+      <button class="btn btn-primary">确认添加</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+    const section = item.dataset.section;
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('section-' + section).classList.add('active');
+    document.querySelector('.topbar h1').textContent = item.querySelector('span').textContent;
+  });
+});
+
+function openModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+// Trend Chart
+const trendCtx = document.getElementById('trendChart').getContext('2d');
+new Chart(trendCtx, {
+  type: 'line',
+  data: {
+    labels: ['00:00','02:00','04:00','06:00','08:00','10:00','12:00','14:00','16:00','18:00','20:00','22:00'],
+    datasets: [
+      {label:'溶解氧(mg/L)',data:[5.2,4.8,4.5,4.8,5.8,6.5,6.8,7.0,7.2,6.9,6.5,5.8],borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,0.1)',fill:true,tension:0.4},
+      {label:'水温(°C)',data:[24.1,23.8,23.5,23.8,24.5,25.2,26.0,26.8,27.2,27.4,27.0,26.5],borderColor:'#06b6d4',backgroundColor:'transparent',fill:false,tension:0.4}
+    ]
+  },
+  options: {responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{y:{beginAtZero:false}}}
+});
+
+// History Chart
+const histCtx = document.getElementById('historyChart').getContext('2d');
+new Chart(histCtx, {
+  type: 'line',
+  data: {
+    labels: Array.from({length:30},(_,i)=>`5月${i+1}`),
+    datasets: [
+      {label:'溶解氧',data:Array.from({length:30},()=>(Math.random()*3+4).toFixed(1)),borderColor:'#2563eb',tension:0.4},
+      {label:'水温',data:Array.from({length:30},()=>(Math.random()*8+22).toFixed(1)),borderColor:'#06b6d4',tension:0.4}
+    ]
+  },
+  options: {responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}}}
+});
+</script>
+</body>
+</html>

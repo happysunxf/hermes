@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>锁控云 - 共享设备锁控平台</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5/css/all.min.css">
+<style>
+:root{--orange:#fb923c;--orange-dark:#ea580c;--orange-light:#fdba74;--orange-pale:#fff7ed;--orange-gradient:linear-gradient(135deg,#fb923c 0%,#ea580c 100%);--bg:#F5F7FA;--text:#1e293b;--text-light:#64748b;--white:#fff;--radius:12px;--shadow:0 4px 24px rgba(251,146,60,.12);--shadow-lg:0 12px 48px rgba(251,146,60,.18);}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Noto Sans SC',sans-serif;color:var(--text);background:var(--bg);line-height:1.6;}
+
+.nav{position:fixed;top:0;left:0;right:0;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);z-index:1000;border-bottom:1px solid rgba(251,146,60,.08);padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:64px;}
+.nav-logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:20px;color:var(--orange-dark);}
+.nav-logo i{font-size:24px;}
+.nav-links{display:flex;gap:32px;align-items:center;}
+.nav-links a{text-decoration:none;color:var(--text);font-size:14px;font-weight:500;transition:color .2s;}
+.nav-links a:hover{color:var(--orange);}
+.nav-cta{background:var(--orange-gradient);color:#fff;border:none;padding:10px 24px;border-radius:50px;font-size:14px;font-weight:600;cursor:pointer;transition:transform .2s,box-shadow .2s;}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:var(--shadow);}
+
+.hero{padding:140px 0 80px;text-align:center;background:linear-gradient(180deg,#fff7ed 0%,var(--bg) 100%);}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--orange-pale);color:var(--orange-dark);padding:6px 16px;border-radius:50px;font-size:13px;font-weight:600;margin-bottom:24px;border:1px solid rgba(251,146,60,.15);}
+.hero h1{font-size:clamp(36px,6vw,60px);font-weight:900;color:var(--orange-dark);line-height:1.15;margin-bottom:16px;}
+.hero h1 span{background:var(--orange-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero p{font-size:18px;color:var(--text-light);max-width:640px;margin:0 auto 40px;}
+.hero-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+.btn-primary{background:var(--orange-gradient);color:#fff;border:none;padding:14px 36px;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;transition:all .3s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);}
+.btn-outline{background:transparent;color:var(--orange-dark);border:2px solid var(--orange);padding:14px 36px;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;transition:all .3s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+.btn-outline:hover{background:var(--orange-pale);}
+
+.stats-bar{display:flex;justify-content:center;gap:64px;margin-top:60px;padding-top:40px;border-top:1px solid rgba(251,146,60,.1);}
+.stat-item{text-align:center;}
+.stat-item .num{font-size:40px;font-weight:900;color:var(--orange-dark);}
+.stat-item .label{font-size:14px;color:var(--text-light);margin-top:4px;}
+
+.section{padding:80px 0;}
+.section-title{text-align:center;margin-bottom:48px;}
+.section-title h2{font-size:36px;font-weight:900;color:var(--orange-dark);margin-bottom:12px;}
+.section-title p{font-size:16px;color:var(--text-light);}
+.container{max-width:1200px;margin:0 auto;padding:0 24px;}
+
+.pain-section{background:#fff;}
+.pain-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;}
+.pain-card{background:var(--bg);border-radius:var(--radius);padding:28px;border-left:4px solid #f87171;text-align:center;}
+.pain-card .icon{font-size:32px;margin-bottom:16px;}
+.pain-card h3{font-size:16px;font-weight:700;margin-bottom:8px;}
+.pain-card p{font-size:14px;color:var(--text-light);}
+
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;}
+.feature-card{background:#fff;border-radius:var(--radius);padding:32px;box-shadow:var(--shadow);border:1px solid rgba(251,146,60,.06);transition:transform .3s;}
+.feature-card:hover{transform:translateY(-4px);}
+.feature-icon{width:56px;height:56px;border-radius:14px;background:var(--orange-pale);display:flex;align-items:center;justify-content:center;margin-bottom:20px;}
+.feature-icon i{font-size:24px;color:var(--orange);}
+.feature-card h3{font-size:18px;font-weight:700;margin-bottom:8px;}
+.feature-card p{font-size:14px;color:var(--text-light);}
+
+.flow-section{background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);color:#fff;}
+.flow-section .section-title h2{color:#fff;}
+.flow-section .section-title p{color:rgba(255,255,255,.6);}
+.flow-steps{display:flex;gap:32px;justify-content:center;flex-wrap:wrap;}
+.flow-step{background:rgba(251,146,60,.08);border-radius:16px;padding:28px;text-align:center;flex:1;min-width:200px;border:1px solid rgba(251,146,60,.15);}
+.flow-step .step-num{width:36px;height:36px;border-radius:50%;background:var(--orange);color:#fff;font-weight:900;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:16px;}
+.flow-step h4{font-size:16px;font-weight:700;margin-bottom:8px;color:var(--orange-light);}
+.flow-step p{font-size:13px;color:rgba(255,255,255,.6);}
+
+.pricing-section{background:#fff;}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:960px;margin:0 auto;}
+.pricing-card{background:var(--bg);border-radius:16px;padding:36px;text-align:center;border:2px solid transparent;transition:all .3s;}
+.pricing-card.popular{border-color:var(--orange);transform:scale(1.05);background:#fff;box-shadow:var(--shadow-lg);}
+.pricing-card .name{font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.pricing-card .price{font-size:32px;font-weight:900;color:var(--orange-dark);margin-bottom:4px;}
+.pricing-card .price span{font-size:14px;font-weight:400;color:var(--text-light);}
+.pricing-card .desc{font-size:13px;color:var(--text-light);margin-bottom:20px;}
+.pricing-card ul{list-style:none;text-align:left;margin-bottom:24px;}
+.pricing-card ul li{padding:8px 0;font-size:14px;color:var(--text);border-bottom:1px solid rgba(0,0,0,.05);}
+.pricing-card ul li:last-child{border:none;}
+.pricing-card ul li i{color:var(--orange);margin-right:8px;}
+.pricing-card .btn-pricing{width:100%;padding:12px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .2s;}
+.pricing-card.popular .btn-pricing{background:var(--orange-gradient);color:#fff;}
+.pricing-card:not(.popular) .btn-pricing{background:transparent;border:1px solid var(--orange);color:var(--orange);}
+.pricing-card .btn-pricing:hover{transform:translateY(-1px);}
+
+.cta-section{padding:80px 0;background:var(--orange-gradient);text-align:center;color:#fff;}
+.cta-section h2{font-size:36px;font-weight:900;margin-bottom:16px;}
+.cta-section p{font-size:18px;opacity:.85;margin-bottom:32px;}
+.cta-section .btn-dark{background:#1e293b;color:#fff;border:none;padding:14px 36px;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;transition:all .3s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+.cta-section .btn-dark:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.2);}
+
+.footer{padding:40px 0;background:#1e293b;color:#94a3b8;font-size:14px;text-align:center;}
+.footer a{color:var(--orange-light);text-decoration:none;}
+
+@media(max-width:768px){
+.pain-grid,.feature-grid{grid-template-columns:1fr;}
+.pricing-grid{grid-template-columns:1fr;}
+.stats-bar{gap:32px;flex-wrap:wrap;}
+}
+</style>
+</head>
+<body>
+<nav class="nav">
+<div class="nav-logo"><i class="fas fa-lock"></i> 锁控云</div>
+<div class="nav-links">
+<a href="#">产品</a><a href="#">方案</a><a href="#">案例</a><a href="#">关于</a>
+</div>
+<button class="nav-cta">预约演示</button>
+</nav>
+
+<section class="hero">
+<div class="container">
+<div class="hero-badge"><i class="fas fa-bolt"></i> 深圳智轩锁控技术</div>
+<h1>共享设备<span>智能锁控</span>平台</h1>
+<p>远程开锁、电量监测、租金计算一体化管理，助您轻松管理共享设备资产</p>
+<div class="hero-actions">
+<button class="btn-primary"><i class="fas fa-play"></i> 立即体验</button>
+<button class="btn-outline"><i class="fas fa-file-alt"></i> 下载方案</button>
+</div>
+<div class="stats-bar">
+<div class="stat-item"><div class="num">320+</div><div class="label">接入设备</div></div>
+<div class="stat-item"><div class="num">98.5%</div><div class="label">在线率</div></div>
+<div class="stat-item"><div class="num">0.3s</div><div class="label">开锁响应</div></div>
+<div class="stat-item"><div class="num">24/7</div><div class="label">智能监控</div></div>
+</div>
+</div>
+</section>
+
+<section class="section pain-section">
+<div class="container">
+<div class="section-title">
+<h2>共享设备管理痛点</h2>
+<p>传统锁控方式难以满足规模化运营需求</p>
+</div>
+<div class="pain-grid">
+<div class="pain-card">
+<div class="icon">🔑</div>
+<h3>机械钥匙难管理</h3>
+<p>设备分散各地，钥匙回收困难，丢失风险高，运营成本居高不下</p>
+</div>
+<div class="pain-card">
+<div class="icon">⏰</div>
+<h3>租金计费不透明</h3>
+<p>手工记录容易出错，租户质疑收费不合理，催租纠纷频发</p>
+</div>
+<div class="pain-card">
+<div class="icon">🔋</div>
+<h3>设备电量不可知</h3>
+<p>设备没电后无法开锁，租户投诉激增，运维人员疲于奔命</p>
+</div>
+<div class="pain-card">
+<div class="icon">📍</div>
+<h3>设备位置不清晰</h3>
+<p>设备分布广泛，人工巡检效率低，故障发现滞后，资产流失难追回</p>
+</div>
+</div>
+</div>
+</section>
+
+<section class="section">
+<div class="container">
+<div class="section-title">
+<h2>核心功能</h2>
+<p>一站式解决共享设备锁控所有难题</p>
+</div>
+<div class="feature-grid">
+<div class="feature-card">
+<div class="feature-icon"><i class="fas fa-wifi"></i></div>
+<h3>远程开锁</h3>
+<p>通过4G/NB-IoT网络实时下发开锁指令，0.3秒响应，支持定时开锁、批量开锁</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon"><i class="fas fa-battery-three-quarters"></i></div>
+<h3>电量监测</h3>
+<p>实时监测设备电池电压和电量，低电量提前预警，避免设备断电导致无法使用</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon"><i class="fas fa-yen-sign"></i></div>
+<h3>租金计算</h3>
+<p>按时间/按次/包月多种计费模式，费用自动结算，账目清晰透明</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon"><i class="fas fa-map-location-dot"></i></div>
+<h3>设备追踪</h3>
+<p>GPS/基站多源定位，设备位置实时可见，移动报警，历史轨迹回放</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon"><i class="fas fa-plug"></i></div>
+<h3>设备接入</h3>
+<p>支持BLE、4G、NB-IoT、LoRa多种通信模组，兼容主流锁控模块，即插即用</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon"><i class="fas fa-shield-halved"></i></div>
+<h3>权限管理</h3>
+<p>多级权限控制，操作日志全记录，数据加密传输，保障系统安全</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon"><i class="fas fa-bell"></i></div>
+<h3>智能预警</h3>
+<p>电量低、位移异常、长时间未使用等异常情况自动推送告警</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+<h3>数据报表</h3>
+<p>设备使用率、租金收入、故障率等多维度统计报表，辅助运营决策</p>
+</div>
+</div>
+</div>
+</section>
+
+<section class="section flow-section">
+<div class="container">
+<div class="section-title">
+<h2>使用流程</h2>
+<p>三步即可完成设备接入和运营</p>
+</div>
+<div class="flow-steps">
+<div class="flow-step">
+<div class="step-num">1</div>
+<h4>设备接入</h4>
+<p>在设备上安装锁控模块，配置网络参数，接入平台</p>
+</div>
+<div class="flow-step">
+<div class="step-num">2</div>
+<h4>配置规则</h4>
+<p>设置计费模式、权限分组、预警规则</p>
+</div>
+<div class="flow-step">
+<div class="step-num">3</div>
+<h4>运营管理</h4>
+<p>远程开锁、监控设备、结算租金</p>
+</div>
+</div>
+</div>
+</section>
+
+<section class="section pricing-section">
+<div class="container">
+<div class="section-title">
+<h2>灵活定价</h2>
+<p>按需选择适合您规模的服务方案</p>
+</div>
+<div class="pricing-grid">
+<div class="pricing-card">
+<div class="name">基础版</div>
+<div class="price">¥3万<span>/年</span></div>
+<div class="desc">适合50台以内设备</div>
+<ul>
+<li><i class="fas fa-check"></i> 远程开锁</li>
+<li><i class="fas fa-check"></i> 电量监测</li>
+<li><i class="fas fa-check"></i> 基础报表</li>
+<li><i class="fas fa-check"></i> 7×8客服支持</li>
+</ul>
+<button class="btn-pricing">立即购买</button>
+</div>
+<div class="pricing-card popular">
+<div class="name">标准版</div>
+<div class="price">¥5万<span>/年</span></div>
+<div class="desc">适合50-200台设备</div>
+<ul>
+<li><i class="fas fa-check"></i> 全部基础功能</li>
+<li><i class="fas fa-check"></i> 租金自动计算</li>
+<li><i class="fas fa-check"></i> 设备GPS定位</li>
+<li><i class="fas fa-check"></i> 智能预警推送</li>
+<li><i class="fas fa-check"></i> 7×24客服支持</li>
+</ul>
+<button class="btn-pricing">立即购买</button>
+</div>
+<div class="pricing-card">
+<div class="name">企业版</div>
+<div class="price">¥8万<span>/年</span></div>
+<div class="desc">适合200台以上设备</div>
+<ul>
+<li><i class="fas fa-check"></i> 全部标准功能</li>
+<li><i class="fas fa-check"></i> 私有化部署</li>
+<li><i class="fas fa-check"></i> API接口开放</li>
+<li><i class="fas fa-check"></i> 专属运维支持</li>
+<li><i class="fas fa-check"></i> 定制开发服务</li>
+</ul>
+<button class="btn-pricing">联系我们</button>
+</div>
+</div>
+</div>
+</section>
+
+<section class="cta-section">
+<div class="container">
+<h2>开启智能锁控新时代</h2>
+<p>获取免费锁控解决方案和设备配置方案</p>
+<a href="#" class="btn-dark"><i class="fas fa-phone"></i> 立即咨询</a>
+</div>
+</section>
+
+<footer class="footer">
+<p>© 2024 锁控云 版权所有 | 深圳智轩锁控技术有限公司 | <a href="#">隐私政策</a> | <a href="#">使用条款</a></p>
+</footer>
+</body>
+</html>

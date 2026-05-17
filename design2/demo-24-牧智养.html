@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>牧智养 - 畜禽智能养殖演示</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:#0a0a14;color:#fff;height:100vh;overflow:hidden}
+.layout{display:flex;height:100vh}
+.sidebar{width:220px;background:#111128;border-right:1px solid rgba(45,212,191,0.2);display:flex;flex-direction:column;flex-shrink:0}
+.sidebar-header{padding:20px;border-bottom:1px solid rgba(255,255,255,0.05)}
+.sidebar-header h2{font-size:18px;color:#2dd4bf}
+.sidebar-header p{font-size:12px;color:#888;margin-top:4px}
+.sidebar-nav{flex:1;overflow-y:auto;padding:10px 0}
+.nav-item{display:flex;align-items:center;gap:10px;padding:12px 20px;color:#888;font-size:14px;cursor:pointer;border-left:3px solid transparent}
+.nav-item:hover,.nav-item.active{background:rgba(45,212,191,0.1);color:#2dd4bf;border-left-color:#2dd4bf}
+.nav-item .icon{font-size:18px}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:#111128;padding:16px 24px;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;justify-content:space-between}
+.topbar h1{font-size:18px}
+.topbar .time{color:#888;font-size:13px}
+.content{flex:1;overflow-y:auto;padding:24px}
+.stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:rgba(45,212,191,0.08);border:1px solid rgba(45,212,191,0.2);border-radius:12px;padding:20px;text-align:center}
+.stat-card .val{font-size:28px;font-weight:700;color:#2dd4bf}
+.stat-card .lab{font-size:13px;color:#888;margin-top:4px}
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.chart-card{background:#111128;border-radius:12px;padding:20px}
+.chart-card h3{font-size:14px;color:#888;margin-bottom:16px}
+.bar-chart{display:flex;align-items:flex-end;gap:8px;height:120px}
+.bar{background:linear-gradient(to top,#2dd4bf,#5eead4);border-radius:4px 4px 0 0;min-width:30px;flex:1;position:relative}
+.bar span{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:11px;color:#888}
+.bar-label{font-size:11px;text-align:center;color:#888;margin-top:24px}
+.progress-list{display:flex;flex-direction:column;gap:12px}
+.progress-item{display:flex;align-items:center;gap:12px}
+.progress-label{width:80px;font-size:13px;color:#888}
+.progress-bar{flex:1;height:8px;background:#222;border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;border-radius:4px}
+.fill-green{background:#2dd4bf}
+.progress-val{font-size:13px;color:#2dd4bf;width:50px;text-align:right}
+.table-card{background:#111128;border-radius:12px;overflow:hidden;margin-bottom:16px}
+.table-card h3{font-size:14px;color:#888;padding:16px 20px;border-bottom:1px solid rgba(255,255,255,0.05)}
+table{width:100%;border-collapse:collapse}
+th,td{padding:12px 20px;text-align:left;font-size:13px}
+th{background:rgba(255,255,255,0.03);color:#888;font-weight:500}
+td{border-bottom:1px solid rgba(255,255,255,0.03)}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px}
+.badge-green{background:rgba(74,222,128,0.2);color:#4ade80}
+.badge-yellow{background:rgba(251,191,36,0.2);color:#fbbf24}
+.badge-red{background:rgba(239,68,68,0.2);color:#ef4444}
+.badge-teal{background:rgba(45,212,191,0.2);color:#2dd4bf}
+.summary-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px}
+.summary-card{background:#111128;border-radius:12px;padding:20px;text-align:center}
+.summary-card .icon{font-size:32px;margin-bottom:8px}
+.summary-card .val{font-size:24px;font-weight:700;color:#2dd4bf}
+.summary-card .lab{font-size:13px;color:#888}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar-header"><h2>🐖 牧智养</h2><p>畜禽智能养殖平台</p></div>
+<nav class="sidebar-nav">
+<div class="nav-item active"><span class="icon">📊</span>养殖概览</div>
+<div class="nav-item"><span class="icon">🌡️</span>环境监测</div>
+<div class="nav-item"><span class="icon">🍽️</span>投喂管理</div>
+<div class="nav-item"><span class="icon">🤒</span>疾病预警</div>
+<div class="nav-item"><span class="icon">🏷️</span>耳标管理</div>
+<div class="nav-item"><span class="icon">🔍</span>溯源查询</div>
+<div class="nav-item"><span class="icon">📈</span>数据报表</div>
+<div class="nav-item"><span class="icon">⚙️</span>系统设置</div>
+</nav>
+</aside>
+<div class="main">
+<div class="topbar"><h1>养殖概览</h1><div class="time">2026-05-17 19:22:48</div></div>
+<div class="content">
+<div class="stats-grid">
+<div class="stat-card"><div class="val">12,450</div><div class="lab">在养畜禽(头)</div></div>
+<div class="stat-card"><div class="val">↓35%</div><div class="lab">死淘率下降</div></div>
+<div class="stat-card"><div class="val">95%</div><div class="lab">投料精准度</div></div>
+<div class="stat-card"><div class="val">3</div><div class="lab">疾病预警(次/月)</div></div>
+<div class="stat-card"><div class="val">2,850</div><div class="lab">今日投料(kg)</div></div>
+</div>
+<div class="summary-row">
+<div class="summary-card"><div class="icon">🐖</div><div class="val">8,200</div><div class="lab">养猪(头)</div></div>
+<div class="summary-card"><div class="icon">🐔</div><div class="val">3,800</div><div class="lab">养鸡(只)</div></div>
+<div class="summary-card"><div class="icon">🐄</div><div class="val">450</div><div class="lab">养牛(头)</div></div>
+</div>
+<div class="charts-row">
+<div class="chart-card">
+<h3>本月死淘率趋势</h3>
+<div class="bar-chart">
+<div class="bar" style="height:70%"><span>8.2%</span></div>
+<div class="bar" style="height:60%"><span>7.0%</span></div>
+<div class="bar" style="height:50%"><span>5.8%</span></div>
+<div class="bar" style="height:45%"><span>5.2%</span></div>
+<div class="bar" style="height:40%"><span>4.6%</span></div>
+<div class="bar" style="height:35%"><span>4.0%</span></div>
+<div class="bar" style="height:30%"><span>3.5%</span></div>
+</div>
+<div class="bar-label">第1周 第2周 第3周 第4周 第5周 第6周 本周</div>
+</div>
+<div class="chart-card">
+<h3>养殖指标达成</h3>
+<div class="progress-list" style="margin-top:10px">
+<div class="progress-item"><span class="progress-label">料肉比</span><div class="progress-bar"><div class="progress-fill fill-green" style="width:85%"></div></div><span class="progress-val">2.8:1</span></div>
+<div class="progress-item"><span class="progress-label">成活率</span><div class="progress-bar"><div class="progress-fill fill-green" style="width:96%"></div></div><span class="progress-val">96%</span></div>
+<div class="progress-item"><span class="progress-label">出栏率</span><div class="progress-bar"><div class="progress-fill fill-green" style="width:78%"></div></div><span class="progress-val">78%</span></div>
+<div class="progress-item"><span class="progress-label">用药规范</span><div class="progress-bar"><div class="progress-fill fill-green" style="width:92%"></div></div><span class="progress-val">92%</span></div>
+</div>
+</div>
+</div>
+<div class="table-card" style="margin-bottom:16px">
+<h3>栋舍状态</h3>
+<table>
+<thead><tr><th>栋舍</th><th>类型</th><th>存栏(头)</th><th>均重(kg)</th><th>温度(°C)</th><th>氨气(ppm)</th><th>状态</th></tr></thead>
+<tbody>
+<tr><td>1号猪舍</td><td><span class="badge badge-teal">养猪</span></td><td>1,200</td><td>85</td><td>24.5</td><td>12</td><td><span class="badge badge-green">正常</span></td></tr>
+<tr><td>2号猪舍</td><td><span class="badge badge-teal">养猪</span></td><td>1,150</td><td>92</td><td>25.2</td><td>15</td><td><span class="badge badge-green">正常</span></td></tr>
+<tr><td>3号鸡舍</td><td><span class="badge badge-yellow">养鸡</span></td><td>3,800</td><td>2.5</td><td>28.0</td><td>8</td><td><span class="badge badge-green">正常</span></td></tr>
+<tr><td>1号牛舍</td><td><span class="badge badge-red">养牛</span></td><td>450</td><td>450</td><td>18.0</td><td>5</td><td><span class="badge badge-green">正常</span></td></tr>
+</tbody>
+</table>
+</div>
+<div class="table-card">
+<h3>最近疾病预警</h3>
+<table>
+<thead><tr><th>时间</th><th>栋舍</th><th>预警类型</th><th>描述</th><th>状态</th></tr></thead>
+<tbody>
+<tr><td>05-16 08:30</td><td>2号猪舍</td><td><span class="badge badge-yellow">体温异常</span></td><td>5头猪体温>39.5°C，疑似早期感染</td><td><span class="badge badge-green">已处理</span></td></tr>
+<tr><td>05-14 14:22</td><td>3号鸡舍</td><td><span class="badge badge-yellow">行为异常</span></td><td>12只鸡采食量下降，呆立不动</td><td><span class="badge badge-green">已处理</span></td></tr>
+<tr><td>05-10 09:15</td><td>1号猪舍</td><td><span class="badge badge-red">呼吸道预警</span></td><td>氨气浓度超标，已自动通风</td><td><span class="badge badge-green">已处理</span></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

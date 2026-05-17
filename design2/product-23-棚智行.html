@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>棚智行 - 温室大棚智控</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:#0f0f1a;color:#fff;line-height:1.6}
+.container{max-width:1200px;margin:0 auto;padding:0 20px}
+.hero{background:linear-gradient(135deg,#061208 0%,#0d2818 50%,#050e07 100%);padding:80px 0;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(74,222,128,0.12) 0%,transparent 70%)}
+.hero-badge{display:inline-block;background:rgba(74,222,128,0.2);border:1px solid rgba(74,222,128,0.4);color:#4ade80;padding:6px 20px;border-radius:50px;font-size:13px;margin-bottom:20px}
+.hero h1{font-size:52px;font-weight:700;margin-bottom:16px;background:linear-gradient(135deg,#fff 0%,#4ade80 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:18px;color:#aaa;max-width:600px;margin:0 auto 30px}
+.ctas{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-block;padding:14px 32px;border-radius:8px;font-weight:600;text-decoration:none;transition:all 0.3s}
+.btn-primary{background:#4ade80;color:#000}
+.btn-primary:hover{background:#22c55e;transform:translateY(-2px)}
+.btn-secondary{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff}
+.btn-secondary:hover{background:rgba(255,255,255,0.2)}
+.section{padding:60px 0}
+.section-title{text-align:center;font-size:32px;font-weight:700;margin-bottom:12px}
+.section-sub{text-align:center;color:#888;margin-bottom:40px}
+.pain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.pain-card{background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid rgba(74,222,128,0.2);border-radius:16px;padding:28px;text-align:center}
+.pain-icon{font-size:40px;margin-bottom:16px}
+.pain-card h3{color:#4ade80;margin-bottom:10px;font-size:18px}
+.pain-card p{color:#aaa;font-size:14px}
+.features-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.feature-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:24px;text-align:center}
+.feature-icon{font-size:32px;margin-bottom:12px}
+.feature-card h4{font-size:15px;margin-bottom:8px;color:#fff}
+.feature-card p{font-size:13px;color:#888}
+.flow-steps{display:flex;justify-content:space-between;gap:20px}
+.flow-step{flex:1;text-align:center}
+.flow-num{width:48px;height:48px;background:#4ade80;color:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;margin:0 auto 16px}
+.flow-step h4{font-size:16px;margin-bottom:8px}
+.flow-step p{font-size:13px;color:#888}
+.pricing{background:linear-gradient(135deg,#061208,#0d2818);border-radius:20px;padding:40px;text-align:center}
+.pricing h3{font-size:24px;margin-bottom:20px}
+.price{display:flex;gap:40px;justify-content:center;flex-wrap:wrap}
+.price-item{text-align:center}
+.price-val{font-size:36px;font-weight:700;color:#4ade80}
+.price-label{color:#888;font-size:14px}
+.footer-cta{background:#4ade80;padding:60px 0;text-align:center;border-radius:20px;margin-top:40px;color:#000}
+.footer-cta h2{font-size:28px;margin-bottom:12px}
+.footer-cta p{color:rgba(0,0,0,0.6);margin-bottom:24px}
+.footer-cta .btn{background:#000;color:#4ade80;font-weight:700}
+</style>
+</head>
+<body>
+<section class="hero">
+<div class="container">
+<div class="hero-badge">🌱 托普+慧农战略合作</div>
+<h1>棚智行</h1>
+<p>温室大棚智能控制专家 — 温湿度/光照监测、风机/遮阳/灌溉联动，让种植更轻松</p>
+<div class="ctas">
+<a href="demo-23-棚智行.html" class="btn btn-primary">查看演示</a>
+<a href="#features" class="btn btn-secondary">了解功能</a>
+<a href="#pricing" class="btn btn-secondary">获取报价</a>
+</div>
+</div>
+</section>
+<section class="section" id="pain">
+<div class="container">
+<h2 class="section-title">核心痛点</h2>
+<p class="section-sub">大棚种植面临多重挑战</p>
+<div class="pain-grid">
+<div class="pain-card"><div class="pain-icon">🌡️</div><h3>温湿度靠人工</h3><p>大棚温湿度依赖人工监测，费时费力，响应滞后</p></div>
+<div class="pain-card"><div class="pain-icon">🌱</div><h3>作物生长不稳定</h3><p>环境波动大，作物产量品质难以保证，经济效益受损</p></div>
+<div class="pain-card"><div class="pain-icon">💪</div><h3>劳动强度大</h3><p>人工开关设备、浇水施肥，效率低且容易出错</p></div>
+</div>
+</div>
+</section>
+<section class="section" id="features">
+<div class="container">
+<h2 class="section-title">核心功能</h2>
+<p class="section-sub">八大功能模块，智能化大棚管理</p>
+<div class="features-grid">
+<div class="feature-card"><div class="feature-icon">🌡️</div><h4>温湿度监测</h4><p>高精度传感器，实时监测大棚环境</p></div>
+<div class="feature-card"><div class="feature-icon">☀️</div><h4>光照监测</h4><p>光照强度实时监测，遮阳精准控制</p></div>
+<div class="feature-card"><div class="feature-icon">🌬️</div><h4>CO2监测</h4><p>CO2浓度监测，保障作物光合作用</p></div>
+<div class="feature-card"><div class="feature-icon">🌀</div><h4>风机联动</h4><p>温度超标自动启停风机，节能高效</p></div>
+<div class="feature-card"><div class="feature-icon">🎋</div><h4>遮阳联动</h4><p>光照过强自动展开遮阳网，保护作物</p></div>
+<div class="feature-card"><div class="feature-icon">💧</div><h4>灌溉联动</h4><p>土壤湿度联动灌溉，精准节水</p></div>
+<div class="feature-card"><div class="feature-icon">📱</div><h4>手机控制</h4><p>APP远程控制，随时随地管理大棚</p></div>
+<div class="feature-card"><div class="feature-icon">📊</div><h4>数据分析</h4><p>历史数据曲线，优化种植策略</p></div>
+</div>
+</div>
+</section>
+<section class="section">
+<div class="container">
+<h2 class="section-title">工作流程</h2>
+<p class="section-sub">环境感知到自动控制全闭环</p>
+<div class="flow-steps">
+<div class="flow-step"><div class="flow-num">1</div><h4>传感器部署</h4><p>温湿度/光照/CO2<br>全方位采集</p></div>
+<div class="flow-step"><div class="flow-num">2</div><h4>智能分析</h4><p>边缘计算<br>本地决策</p></div>
+<div class="flow-step"><div class="flow-num">3</div><h4>设备联动</h4><p>风机/遮阳/灌溉<br>自动执行</p></div>
+<div class="flow-step"><div class="flow-num">4</div><h4>数据分析</h4><p>报表分析<br>优化建议</p></div>
+</div>
+</div>
+</section>
+<section class="section" id="pricing">
+<div class="container">
+<div class="pricing">
+<h3>方案报价</h3>
+<div class="price">
+<div class="price-item"><div class="price-val">¥0.5-1.5万</div><div class="price-label">传感设备/套</div></div>
+<div class="price-item"><div class="price-val">¥0.8-1.5万</div><div class="price-label">控制设备/套</div></div>
+<div class="price-item"><div class="price-val">¥2-5万</div><div class="price-label">完整方案/棚</div></div>
+</div>
+</div>
+</div>
+</section>
+<section class="section">
+<div class="container">
+<div class="footer-cta">
+<h2>让大棚种植更智能，让农户更轻松</h2>
+<p>已服务 1000+ 农业大棚，作物产量提升 20%</p>
+<a href="demo-23-棚智行.html" class="btn">进入演示</a>
+</div>
+</div>
+</section>
+</body>
+</html>

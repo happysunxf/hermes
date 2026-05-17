@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智秤云 - 功能演示</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{--teal:#00897B;--teal-dark:#00695C;--teal-light:#4DB6AC;--teal-pale:#E0F2F1;--teal-gradient:linear-gradient(135deg,#00897B 0%,#004D40 100%);--bg:#F5F7FA;--text:#263238;--text-light:#546E7A;--white:#fff;--sidebar-w:240px;--radius:12px;--shadow:0 4px 24px rgba(0,137,123,.12);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Noto Sans SC',sans-serif;color:var(--text);background:var(--bg);height:100vh;overflow:hidden;}
+::selection{background:var(--teal-light);color:#fff;}
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--teal-light);border-radius:3px;}
+
+/* Layout */
+.layout{display:flex;height:100vh;}
+.sidebar{width:var(--sidebar-w);background:var(--teal-gradient);color:#fff;display:flex;flex-direction:column;flex-shrink:0;position:relative;z-index:10;}
+.sidebar-logo{padding:20px 24px;font-size:20px;font-weight:900;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.12);}
+.sidebar-logo i{font-size:22px;}
+.sidebar-nav{flex:1;overflow-y:auto;padding:12px 0;}
+.nav-item{padding:14px 24px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s;font-size:14px;font-weight:500;border-left:3px solid transparent;}
+.nav-item:hover{background:rgba(255,255,255,.1);}
+.nav-item.active{background:rgba(255,255,255,.15);border-left-color:#fff;}
+.nav-item i{width:20px;text-align:center;font-size:16px;}
+.nav-item .badge{background:rgba(255,255,255,.2);padding:2px 8px;border-radius:10px;font-size:11px;margin-left:auto;}
+.nav-item .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.5);margin-left:auto;}
+.sidebar-footer{padding:16px 24px;border-top:1px solid rgba(255,255,255,.12);font-size:12px;opacity:.7;}
+.sidebar-footer p{margin-bottom:4px;}
+
+/* Main */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{height:60px;background:#fff;border-bottom:1px solid rgba(0,137,123,.1);display:flex;align-items:center;padding:0 24px;gap:16px;flex-shrink:0;}
+.topbar h1{font-size:20px;font-weight:700;color:var(--teal-dark);}
+.topbar-right{display:flex;align-items:center;gap:16px;margin-left:auto;}
+.topbar-btn{background:rgba(0,137,123,.08);border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;color:var(--teal-dark);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;}
+.topbar-btn:hover{background:var(--teal-pale);}
+.topbar-btn i{font-size:14px;}
+.notif-btn{width:36px;height:36px;border-radius:8px;background:rgba(0,137,123,.08);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative;color:var(--teal-dark);}
+.notif-btn i{font-size:16px;}
+.notif-btn .notif-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;background:#EF5350;border-radius:50%;border:2px solid #fff;}
+.user-avatar{width:36px;height:36px;border-radius:50%;background:var(--teal-gradient);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;cursor:pointer;}
+
+/* Content */
+.content{flex:1;overflow-y:auto;padding:24px;}
+
+/* Cards */
+.card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:20px;overflow:hidden;}
+.card-header{padding:18px 24px;border-bottom:1px solid rgba(0,0,0,.05);display:flex;align-items:center;justify-content:space-between;}
+.card-header h3{font-size:16px;font-weight:700;color:var(--text);}
+.card-header .card-actions{display:flex;gap:8px;}
+.card-header button{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid rgba(0,137,123,.2);background:transparent;color:var(--teal-dark);transition:all .2s;}
+.card-header button:hover{background:var(--teal-pale);}
+.card-header button.primary{background:var(--teal);color:#fff;border-color:var(--teal);}
+.card-header button.primary:hover{background:var(--teal-dark);}
+.card-body{padding:24px;}
+
+/* Stats Grid */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.stat-card{background:#fff;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);}
+.stat-card .stat-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.stat-card .stat-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.stat-card .stat-icon.teal{background:var(--teal-pale);color:var(--teal);}
+.stat-card .stat-icon.orange{background:#FFF3E0;color:#FF7043;}
+.stat-card .stat-icon.blue{background:#E3F2FD;color:#42A5F5;}
+.stat-card .stat-icon.green{background:#E8F5E9;color:#66BB6A;}
+.stat-card .stat-icon.purple{background:#F3E5F5;color:#AB47BC;}
+.stat-card .stat-trend{font-size:12px;font-weight:600;padding:2px 8px;border-radius:4px;}
+.stat-card .stat-trend.up{background:#E8F5E9;color:#43A047;}
+.stat-card .stat-trend.down{background:#FFEBEE;color:#E53935;}
+.stat-card .stat-num{font-size:28px;font-weight:900;color:var(--text);}
+.stat-card .stat-label{font-size:13px;color:var(--text-light);margin-top:4px;}
+.stat-card .stat-comp{font-size:12px;color:var(--text-light);margin-top:8px;}
+
+/* Tables */
+.data-table{width:100%;border-collapse:collapse;font-size:14px;}
+.data-table th{background:var(--teal-pale);color:var(--teal-dark);font-weight:600;padding:12px 16px;text-align:left;font-size:13px;}
+.data-table td{padding:12px 16px;border-bottom:1px solid rgba(0,0,0,.04);color:var(--text);}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:hover td{background:#FAFAFA;}
+.data-table .img-cell{display:flex;align-items:center;gap:10px;}
+.data-table .img-cell .thumb{width:40px;height:40px;border-radius:8px;object-fit:cover;background:var(--teal-pale);display:flex;align-items:center;justify-content:center;color:var(--teal);font-size:18px;}
+.data-table .tag{padding:3px 10px;border-radius:4px;font-size:12px;font-weight:500;}
+.data-table .tag.green{background:#E8F5E9;color:#2E7D32;}
+.data-table .tag.orange{background:#FFF3E0;color:#E65100;}
+.data-table .tag.red{background:#FFEBEE;color:#C62828;}
+.data-table .tag.blue{background:#E3F2FD;color:#1565C0;}
+.data-table .tag.gray{background:#F5F5F5;color:#616161;}
+.data-table .actions{display:flex;gap:6px;}
+.data-table .actions button{width:28px;height:28px;border-radius:6px;border:none;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.data-table .actions .edit{background:var(--teal-pale);color:var(--teal);}
+.data-table .actions .del{background:#FFEBEE;color:#E53935;}
+.data-table .actions .view{background:#E3F2FD;color:#1565C0;}
+
+/* Forms */
+.form-row{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:16px;}
+.form-group{margin-bottom:16px;}
+.form-group label{font-size:13px;font-weight:600;color:var(--text);display:block;margin-bottom:6px;}
+.form-control{width:100%;padding:10px 14px;border-radius:8px;border:1px solid rgba(0,0,0,.12);font-size:14px;font-family:inherit;transition:border-color .2s;background:#fff;}
+.form-control:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,137,123,.1);}
+select.form-control{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23546E7A' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;}
+.form-hint{font-size:12px;color:var(--text-light);margin-top:4px;}
+
+/* Buttons */
+.btn{ padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .2s;font-family:inherit;display:inline-flex;align-items:center;gap:6px;}
+.btn-primary{background:var(--teal);color:#fff;}
+.btn-primary:hover{background:var(--teal-dark);}
+.btn-outline{background:transparent;border:1px solid var(--teal);color:var(--teal);}
+.btn-outline:hover{background:var(--teal-pale);}
+.btn-danger{background:#EF5350;color:#fff;}
+.btn-danger:hover{background:#D32F2F;}
+.btn-sm{padding:6px 12px;font-size:12px;}
+.btn-lg{padding:14px 28px;font-size:16px;}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(4px);}
+.modal-overlay.show{display:flex;}
+.modal{background:#fff;border-radius:var(--radius);width:90%;max-width:560px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;animation:modalIn .3s ease;}
+@keyframes modalIn{from{opacity:0;transform:scale(.95);} to{opacity:1;transform:scale(1);}}
+.modal-lg{max-width:800px;}
+.modal-header{padding:20px 24px;border-bottom:1px solid rgba(0,0,0,.05);display:flex;align-items:center;justify-content:space-between;}
+.modal-header h3{font-size:18px;font-weight:700;color:var(--text);}
+.modal-close{width:32px;height:32px;border-radius:8px;border:none;background:rgba(0,0,0,.05);cursor:pointer;font-size:16px;color:var(--text-light);display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.modal-close:hover{background:rgba(0,0,0,.1);}
+.modal-body{padding:24px;overflow-y:auto;flex:1;}
+.modal-footer{padding:16px 24px;border-top:1px solid rgba(0,0,0,.05);display:flex;gap:12px;justify-content:flex-end;}
+
+/* Charts */
+.chart-container{position:relative;height:260px;}
+.chart-container.tall{height:340px;}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;background:var(--bg);padding:4px;border-radius:8px;margin-bottom:20px;}
+.tab{padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;color:var(--text-light);cursor:pointer;transition:all .2s;border:none;background:transparent;}
+.tab.active{background:#fff;color:var(--teal-dark);box-shadow:0 1px 4px rgba(0,0,0,.08);}
+.tab:hover:not(.active){color:var(--teal);}
+
+/* Section-specific */
+.section{display:none;}
+.section.active{display:block;}
+
+.kpi-row{display:flex;gap:16px;margin-bottom:20px;flex-wrap:wrap;}
+.kpi-box{flex:1;min-width:180px;background:#fff;border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);}
+.kpi-box .kpi-label{font-size:13px;color:var(--text-light);margin-bottom:6px;}
+.kpi-box .kpi-value{font-size:26px;font-weight:900;color:var(--teal-dark);}
+.kpi-box .kpi-change{font-size:12px;margin-top:4px;}
+.kpi-box .kpi-change.up{color:#43A047;}
+.kpi-box .kpi-change.down{color:#E53935;}
+
+.inline-flex{display:inline-flex;align-items:center;gap:6px;}
+.progress-bar{height:8px;background:#E0E0E0;border-radius:4px;overflow:hidden;margin-top:6px;}
+.progress-bar .fill{height:100%;background:var(--teal-gradient);border-radius:4px;transition:width .5s;}
+
+.list-item{display:flex;align-items:center;padding:12px 0;border-bottom:1px solid rgba(0,0,0,.04);gap:12px;}
+.list-item:last-child{border-bottom:none;}
+.list-item .item-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.list-item .item-info{flex:1;}
+.list-item .item-name{font-weight:600;font-size:14px;}
+.list-item .item-meta{font-size:12px;color:var(--text-light);}
+.list-item .item-value{text-align:right;font-weight:600;font-size:14px;}
+
+.alert-row{display:flex;align-items:center;gap:12px;padding:14px 16px;background:#fff;border-radius:8px;margin-bottom:10px;border-left:3px solid var(--teal);box-shadow:0 2px 8px rgba(0,0,0,.05);}
+.alert-row.critical{border-left-color:#EF5350;}
+.alert-row.warning{border-left-color:#FF9800;}
+.alert-row.info{border-left-color:#2196F3;}
+.alert-row .alert-icon{font-size:18px;flex-shrink:0;}
+.alert-row .alert-info{flex:1;}
+.alert-row .alert-title{font-weight:600;font-size:13px;}
+.alert-row .alert-desc{font-size:12px;color:var(--text-light);}
+.alert-row .alert-time{font-size:11px;color:var(--text-light);}
+
+/* Grid layouts */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.flex-center{display:flex;align-items:center;justify-content:center;}
+
+/* Equipment status */
+.eq-card{background:#fff;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);display:flex;align-items:center;gap:16px;}
+.eq-status{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+.eq-status.online{background:#4CAF50;box-shadow:0 0 0 4px rgba(76,175,80,.2);}
+.eq-status.offline{background:#9E9E9E;}
+.eq-status.error{background:#EF5350;box-shadow:0 0 0 4px rgba(239,83,80,.2);}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--teal-dark);color:#fff;padding:14px 20px;border-radius:10px;font-size:14px;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.2);display:none;z-index:2000;align-items:center;gap:10px;animation:toastIn .3s ease;}
+.toast.show{display:flex;}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+/* Empty state */
+.empty-state{padding:48px;text-align:center;color:var(--text-light);}
+.empty-state i{font-size:48px;margin-bottom:16px;opacity:.4;}
+.empty-state p{font-size:14px;}
+
+/* Scrollable body */
+body.modal-open{overflow:hidden;}
+</style>
+</head>
+<body>
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <i class="fas fa-scale-balanced"></i> 智秤云
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" data-section="weighing"><i class="fas fa-weight"></i> 实时称重<span class="dot"></span></div>
+      <div class="nav-item" data-section="ai"><i class="fas fa-robot"></i> AI识别</div>
+      <div class="nav-item" data-section="menu"><i class="fas fa-utensils"></i> 菜品管理</div>
+      <div class="nav-item" data-section="inventory"><i class="fas fa-boxes-stacked"></i> 库存管理<span class="badge">3</span></div>
+      <div class="nav-item" data-section="sales"><i class="fas fa-chart-line"></i> 销售报表</div>
+      <div class="nav-item" data-section="member"><i class="fas fa-users"></i> 会员管理</div>
+      <div class="nav-item" data-section="device"><i class="fas fa-desktop"></i> 设备管理</div>
+      <div class="nav-item" data-section="alert"><i class="fas fa-bell"></i> 预警中心<span class="badge" style="background:#EF5350;">5</span></div>
+    </nav>
+    <div class="sidebar-footer">
+      <p><i class="fas fa-database"></i> v2.4.1 在线</p>
+      <p><i class="fas fa-shield-halved"></i> 数据加密传输</p>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <h1 id="sectionTitle">实时称重</h1>
+      <div class="topbar-right">
+        <button class="topbar-btn"><i class="fas fa-search"></i> 搜索...</button>
+        <button class="topbar-btn"><i class="fas fa-download"></i> 导出</button>
+        <button class="notif-btn"><i class="fas fa-bell"></i><span class="notif-dot"></span></button>
+        <div class="user-avatar">李</div>
+      </div>
+    </div>
+
+    <div class="content" id="mainContent">
+      <!-- Section: 实时称重 -->
+      <div class="section active" id="sec-weighing">
+        <div class="stats-grid" style="margin-bottom:20px;">
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon teal"><i class="fas fa-weight"></i></div>
+              <span class="stat-trend up"><i class="fas fa-arrow-up"></i> +12.3%</span>
+            </div>
+            <div class="stat-num">¥28,540</div>
+            <div class="stat-label">今日销售额</div>
+            <div class="stat-comp">昨日 ¥25,390</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon blue"><i class="fas fa-receipt"></i></div>
+              <span class="stat-trend up"><i class="fas fa-arrow-up"></i> +8.7%</span>
+            </div>
+            <div class="stat-num">1,284</div>
+            <div class="stat-label">今日订单数</div>
+            <div class="stat-comp">客单价 ¥22.2</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon orange"><i class="fas fa-clock"></i></div>
+              <span class="stat-trend down"><i class="fas fa-arrow-down"></i> -2.1%</span>
+            </div>
+            <div class="stat-num">5.2秒</div>
+            <div class="stat-label">平均结算时长</div>
+            <div class="stat-comp">目标 ≤6秒</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon green"><i class="fas fa-leaf"></i></div>
+              <span class="stat-trend up"><i class="fas fa-arrow-up"></i> +18.5%</span>
+            </div>
+            <div class="stat-num">3.2%</div>
+            <div class="stat-label">损耗率</div>
+            <div class="stat-comp">上周 3.9%</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fas fa-chart-area" style="color:var(--teal);margin-right:8px;"></i>实时销售趋势</h3>
+              <div class="card-actions">
+                <button>今天</button><button class="primary">本周</button><button>本月</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="chart-container"><canvas id="salesTrendChart"></canvas></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fas fa-fire" style="color:#FF7043;margin-right:8px;"></i>热销商品排行</h3>
+              <button class="primary btn-sm"><i class="fas fa-plus"></i> 查看全部</button>
+            </div>
+            <div class="card-body">
+              <div id="topProducts"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:20px;">
+          <div class="card-header">
+            <h3><i class="fas fa-list" style="color:var(--teal);margin-right:8px;"></i>实时交易记录</h3>
+            <div class="card-actions">
+              <button><i class="fas fa-filter"></i> 筛选</button>
+              <button><i class="fas fa-sync"></i> 刷新</button>
+            </div>
+          </div>
+          <div class="card-body" style="overflow-x:auto;">
+            <table class="data-table">
+              <thead><tr><th>订单号</th><th>时间</th><th>商品</th><th>重量</th><th>金额</th><th>支付方式</th><th>操作员</th><th>状态</th></tr></thead>
+              <tbody id="tradeTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: AI识别 -->
+      <div class="section" id="sec-ai">
+        <div class="stats-grid" style="margin-bottom:20px;">
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon teal"><i class="fas fa-brain"></i></div>
+              <span class="stat-trend up">准确率</span>
+            </div>
+            <div class="stat-num">98.6%</div>
+            <div class="stat-label">AI识别准确率</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon blue"><i class="fas fa-database"></i></div>
+            </div>
+            <div class="stat-num">512</div>
+            <div class="stat-label">已训练品类数</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon orange"><i class="fas fa-question-circle"></i></div>
+              <span class="stat-trend down">需审核</span>
+            </div>
+            <div class="stat-num">12</div>
+            <div class="stat-label">待人工复核</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-top">
+              <div class="stat-icon green"><i class="fas fa-clock"></i></div>
+            </div>
+            <div class="stat-num">0.8秒</div>
+            <div class="stat-label">平均识别耗时</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fas fa-camera" style="color:var(--teal);margin-right:8px;"></i>识别模拟</h3>
+              <button class="primary" onclick="openModal('modal-ai-demo')"><i class="fas fa-play"></i> 发起识别</button>
+            </div>
+            <div class="card-body">
+              <div style="background:var(--teal-pale);border-radius:12px;padding:32px;text-align:center;margin-bottom:20px;">
+                <i class="fas fa-camera" style="font-size:64px;color:var(--teal);opacity:.5;"></i>
+                <p style="margin-top:12px;font-size:14px;color:var(--text-light);">点击按钮模拟一次AI视觉识别流程</p>
+              </div>
+              <div class="kpi-row">
+                <div class="kpi-box">
+                  <div class="kpi-label">今日识别次数</div>
+                  <div class="kpi-value">4,218</div>
+                  <div class="kpi-change up"><i class="fas fa-arrow-up"></i> 较昨日 +15%</div>
+                </div>
+                <div class="kpi-box">
+                  <div class="kpi-label">自助结算率</div>
+                  <div class="kpi-value">87.3%</div>
+                  <div class="kpi-change up"><i class="fas fa-arrow-up"></i> +2.1%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fas fa-chart-pie" style="color:var(--teal);margin-right:8px;"></i>识别类型分布</h3>
+            </div>
+            <div class="card-body">
+              <div class="chart-container"><canvas id="aiTypeChart"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:20px;">
+          <div class="card-header">
+            <h3><i class="fas fa-history" style="color:var(--teal);margin-right:8px;"></i>识别记录</h3>
+          </div>
+          <div class="card-body" style="overflow-x:auto;">
+            <table class="data-table">
+              <thead><tr><th>时间</th><th>图片</th><th>识别结果</th><th>置信度</th><th>复核状态</th><th>操作</th></tr></thead>
+              <tbody id="aiLogTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: 菜品管理 -->
+      <div class="section" id="sec-menu">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-utensils" style="color:var(--teal);margin-right:8px;"></i>商品库管理</h3>
+            <div class="card-actions">
+              <button onclick="openModal('modal-add-product')"><i class="fas fa-plus"></i> 新增商品</button>
+              <button><i class="fas fa-upload"></i> 批量导入</button>
+              <button><i class="fas fa-download"></i> 导出</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div style="display:flex;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+              <input type="text" class="form-control" placeholder="搜索商品名称/编码..." style="max-width:260px;">
+              <select class="form-control" style="max-width:160px;">
+                <option>全部分类</option><option>果蔬</option><option>肉类</option><option>水产</option><option>熟食</option>
+              </select>
+              <select class="form-control" style="max-width:160px;">
+                <option>全部状态</option><option>上架</option><option>下架</option><option>售罄</option>
+              </select>
+            </div>
+            <div style="overflow-x:auto;">
+              <table class="data-table">
+                <thead><tr><th>商品编码</th><th>商品名称</th><th>分类</th><th>单价(元/kg)</th><th>库存(kg)</th><th>状态</th><th>AI模型</th><th>操作</th></tr></thead>
+                <tbody id="productTable"></tbody>
+              </table>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;">
+              <span style="font-size:13px;color:var(--text-light);">共 128 条记录</span>
+              <div style="display:flex;gap:4px;">
+                <button class="btn btn-sm btn-outline">上一页</button>
+                <button class="btn btn-sm btn-primary">1</button>
+                <button class="btn btn-sm btn-outline">2</button>
+                <button class="btn btn-sm btn-outline">3</button>
+                <button class="btn btn-sm btn-outline">下一页</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: 库存管理 -->
+      <div class="section" id="sec-inventory">
+        <div class="kpi-row">
+          <div class="kpi-box">
+            <div class="kpi-label">库存总额(万元)</div>
+            <div class="kpi-value">42.8</div>
+            <div class="kpi-change up"><i class="fas fa-arrow-up"></i> +5.2%</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">低于安全库存</div>
+            <div class="kpi-value" style="color:#E53935;">3</div>
+            <div class="kpi-change down">需立即补货</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">本周采购计划</div>
+            <div class="kpi-value">12</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">临期商品</div>
+            <div class="kpi-value" style="color:#FF9800;">5</div>
+            <div class="kpi-change down">需优先处理</div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:20px;">
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fas fa-boxes-stacked" style="color:var(--teal);margin-right:8px;"></i>库存列表</h3>
+              <button class="primary" onclick="openModal('modal-add-stock')"><i class="fas fa-plus"></i> 入库登记</button>
+            </div>
+            <div class="card-body" style="overflow-x:auto;">
+              <table class="data-table">
+                <thead><tr><th>商品</th><th>分类</th><th>当前库存(kg)</th><th>安全库存(kg)</th><th>状态</th><th>操作</th></tr></thead>
+                <tbody id="inventoryTable"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fas fa-truck" style="color:var(--teal);margin-right:8px;"></i>待入库订单</h3>
+              <button><i class="fas fa-plus"></i> 新增进货</button>
+            </div>
+            <div class="card-body" id="pendingOrders"></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:20px;">
+          <div class="card-header">
+            <h3><i class="fas fa-history" style="color:var(--teal);margin-right:8px;"></i>出入库记录</h3>
+            <div class="card-actions">
+              <button><i class="fas fa-filter"></i> 筛选</button>
+              <button><i class="fas fa-download"></i> 导出</button>
+            </div>
+          </div>
+          <div class="card-body" style="overflow-x:auto;">
+            <table class="data-table">
+              <thead><tr><th>单号</th><th>时间</th><th>类型</th><th>商品</th><th>数量(kg)</th><th>经手人</th><th>备注</th></tr></thead>
+              <tbody id="stockLogTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: 销售报表 -->
+      <div class="section" id="sec-sales">
+        <div class="kpi-row">
+          <div class="kpi-box">
+            <div class="kpi-label">今日销售额</div>
+            <div class="kpi-value">¥28,540</div>
+            <div class="kpi-change up"><i class="fas fa-arrow-up"></i> +12.3%</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">本周销售额</div>
+            <div class="kpi-value">¥168,420</div>
+            <div class="kpi-change up"><i class="fas fa-arrow-up"></i> +8.5%</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">本月销售额</div>
+            <div class="kpi-value">¥612,800</div>
+            <div class="kpi-change up"><i class="fas fa-arrow-up"></i> +15.2%</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">毛利率</div>
+            <div class="kpi-value">24.6%</div>
+            <div class="kpi-change up"><i class="fas fa-arrow-up"></i> +1.2%</div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:20px;">
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fas fa-chart-line" style="color:var(--teal);margin-right:8px;"></i>销售趋势</h3>
+              <div class="card-actions">
+                <button>日</button><button class="primary">周</button><button>月</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="chart-container tall"><canvas id="salesChart"></canvas></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fas fa-chart-pie" style="color:var(--teal);margin-right:8px;"></i>品类销售占比</h3>
+            </div>
+            <div class="card-body">
+              <div class="chart-container tall"><canvas id="categoryChart"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:20px;">
+          <div class="card-header">
+            <h3><i class="fas fa-ranking-star" style="color:var(--teal);margin-right:8px;"></i>销售排行榜</h3>
+          </div>
+          <div class="card-body" style="overflow-x:auto;">
+            <table class="data-table">
+              <thead><tr><th>排名</th><th>商品名称</th><th>分类</th><th>销量(kg)</th><th>销售额(元)</th><th>环比</th><th>操作</th></tr></thead>
+              <tbody id="salesRankTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: 会员管理 -->
+      <div class="section" id="sec-member">
+        <div class="kpi-row">
+          <div class="kpi-box">
+            <div class="kpi-label">会员总数</div>
+            <div class="kpi-value">12,847</div>
+            <div class="kpi-change up"><i class="fas fa-arrow-up"></i> +328 本月</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">活跃会员</div>
+            <div class="kpi-value">4,256</div>
+            <div class="kpi-change">占比 33.1%</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">本月积分发放</div>
+            <div class="kpi-value">¥28,940</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">会员贡献销售额</div>
+            <div class="kpi-value">¥96,420</div>
+            <div class="kpi-change up">占比 48.6%</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:20px;">
+          <div class="card-header">
+            <h3><i class="fas fa-users" style="color:var(--teal);margin-right:8px;"></i>会员列表</h3>
+            <div class="card-actions">
+              <button onclick="openModal('modal-add-member')"><i class="fas fa-plus"></i> 新增会员</button>
+              <button><i class="fas fa-upload"></i> 批量导入</button>
+              <button><i class="fas fa-tags"></i> 标签管理</button>
+            </div>
+          </div>
+          <div class="card-body" style="overflow-x:auto;">
+            <table class="data-table">
+              <thead><tr><th>会员ID</th><th>姓名</th><th>手机号</th><th>等级</th><th>积分</th><th>余额(元)</th><th>消费金额</th><th>注册时间</th><th>操作</th></tr></thead>
+              <tbody id="memberTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:20px;">
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fas fa-chart-bar" style="color:var(--teal);margin-right:8px;"></i>会员消费分布</h3>
+            </div>
+            <div class="card-body">
+              <div class="chart-container"><canvas id="memberLevelChart"></canvas></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fas fa-birthday-cake" style="color:var(--teal);margin-right:8px;"></i>待营销会员</h3>
+              <button class="primary"><i class="fas fa-paper-plane"></i> 发起营销</button>
+            </div>
+            <div class="card-body" id="marketingMembers"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: 设备管理 -->
+      <div class="section" id="sec-device">
+        <div class="kpi-row">
+          <div class="kpi-box">
+            <div class="kpi-label">在线设备</div>
+            <div class="kpi-value" style="color:#4CAF50;">18</div>
+            <div class="kpi-change up">正常运转</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">离线设备</div>
+            <div class="kpi-value" style="color:#9E9E9E;">2</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">异常设备</div>
+            <div class="kpi-value" style="color:#EF5350;">1</div>
+            <div class="kpi-change down">需检修</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">今日总交易</div>
+            <div class="kpi-value">1,284</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:20px;">
+          <div class="card-header">
+            <h3><i class="fas fa-desktop" style="color:var(--teal);margin-right:8px;"></i>设备列表</h3>
+            <div class="card-actions">
+              <button onclick="openModal('modal-add-device')"><i class="fas fa-plus"></i> 添加设备</button>
+              <button><i class="fas fa-sync"></i> 批量检测</button>
+              <button><i class="fas fa-cog"></i> 固件升级</button>
+            </div>
+          </div>
+          <div class="card-body" id="deviceList"></div>
+        </div>
+
+        <div class="grid-2" style="margin-top:20px;">
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fas fa-microchip" style="color:var(--teal);margin-right:8px;"></i>设备性能分布</h3>
+            </div>
+            <div class="card-body">
+              <div class="chart-container"><canvas id="devicePerfChart"></canvas></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fas fa-history" style="color:var(--teal);margin-right:8px;"></i>设备操作日志</h3>
+            </div>
+            <div class="card-body" style="overflow-x:auto;">
+              <table class="data-table">
+                <thead><tr><th>时间</th><th>设备</th><th>操作类型</th><th>操作人</th><th>结果</th></tr></thead>
+                <tbody id="deviceLogTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section: 预警中心 -->
+      <div class="section" id="sec-alert">
+        <div class="kpi-row">
+          <div class="kpi-box">
+            <div class="kpi-label">今日预警总数</div>
+            <div class="kpi-value">5</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label" style="color:#E53935;">紧急</div>
+            <div class="kpi-value" style="color:#E53935;">1</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label" style="color:#FF9800;">重要</div>
+            <div class="kpi-value" style="color:#FF9800;">2</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label" style="color:#2196F3;">一般</div>
+            <div class="kpi-value" style="color:#2196F3;">2</div>
+          </div>
+        </div>
+
+        <div class="grid-2" style="margin-top:20px;">
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fas fa-exclamation-triangle" style="color:#E53935;margin-right:8px;"></i>紧急预警</h3>
+            </div>
+            <div class="card-body">
+              <div class="alert-row critical">
+                <i class="fas fa-exclamation-circle alert-icon" style="color:#EF5350;"></i>
+                <div class="alert-info">
+                  <div class="alert-title">设备故障 - 门店03收银台</div>
+                  <div class="alert-desc">智秤-AI-008 连续称重数据异常，已自动暂停服务</div>
+                </div>
+                <span class="alert-time">10分钟前</span>
+              </div>
+              <div class="alert-row warning">
+                <i class="fas fa-box-open alert-icon" style="color:#FF9800;"></i>
+                <div class="alert-info">
+                  <div class="alert-title">库存不足 - 西红柿</div>
+                  <div class="alert-desc">当前库存 8kg，低于安全库存 20kg，需立即补货</div>
+                </div>
+                <span class="alert-time">25分钟前</span>
+              </div>
+              <div class="alert-row warning">
+                <i class="fas fa-clock alert-icon" style="color:#FF9800;"></i>
+                <div class="alert-info">
+                  <div class="alert-title">临期商品 - 三文鱼刺身</div>
+                  <div class="alert-desc">批次 20260510 剩余保质期 1 天，请优先销售</div>
+                </div>
+                <span class="alert-time">1小时前</span>
+              </div>
+              <div class="alert-row info">
+                <i class="fas fa-info-circle alert-icon" style="color:#2196F3;"></i>
+                <div class="alert-info">
+                  <div class="alert-title">价格异常 - 带皮五花肉</div>
+                  <div class="alert-desc">今日售价 28.5元/kg，低于成本价 32元/kg，请核实</div>
+                </div>
+                <span class="alert-time">2小时前</span>
+              </div>
+              <div class="alert-row info">
+                <i class="fas fa-info-circle alert-icon" style="color:#2196F3;"></i>
+                <div class="alert-info">
+                  <div class="alert-title">账目差异预警</div>
+                  <div class="alert-desc">门店02 昨日盘点差异  ¥127.80，请核实原因</div>
+                </div>
+                <span class="alert-time">3小时前</span>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fas fa-sliders" style="color:var(--teal);margin-right:8px;"></i>预警规则配置</h3>
+              <button class="primary"><i class="fas fa-plus"></i> 新增规则</button>
+            </div>
+            <div class="card-body" style="overflow-x:auto;">
+              <table class="data-table">
+                <thead><tr><th>规则名称</th><th>类型</th><th>阈值</th><th>状态</th><th>最近触发</th><th>操作</th></tr></thead>
+                <tbody id="alertRuleTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:20px;">
+          <div class="card-header">
+            <h3><i class="fas fa-history" style="color:var(--teal);margin-right:8px;"></i>预警记录</h3>
+            <div class="card-actions">
+              <button>已处理</button><button class="primary">全部</button>
+            </div>
+          </div>
+          <div class="card-body" style="overflow-x:auto;">
+            <table class="data-table">
+              <thead><tr><th>时间</th><th>级别</th><th>预警类型</th><th>内容</th><th>处理状态</th><th>处理人</th><th>操作</th></tr></thead>
+              <tbody id="alertLogTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modals -->
+<div class="modal-overlay" id="modal-ai-demo">
+  <div class="modal">
+    <div class="modal-header"><h3><i class="fas fa-camera" style="color:var(--teal);margin-right:8px;"></i>AI识别演示</h3><button class="modal-close" onclick="closeModal('modal-ai-demo')">×</button></div>
+    <div class="modal-body">
+      <div style="background:#1a1a2e;border-radius:12px;padding:32px;text-align:center;margin-bottom:20px;position:relative;overflow:hidden;">
+        <i class="fas fa-spinner fa-spin" style="font-size:64px;color:var(--teal-light);" id="aiSpinner"></i>
+        <div style="position:absolute;bottom:0;left:0;right:0;background:linear-gradient(0,transparent,rgba(0,137,123,.3));height:4px;" id="aiProgress"></div>
+      </div>
+      <div id="aiResult" style="display:none;">
+        <div class="list-item"><div class="item-icon" style="background:var(--teal-pale);color:var(--teal);"><i class="fas fa-lemon"></i></div><div class="item-info"><div class="item-name">有机西红柿</div><div class="item-meta">识别置信度 98.2%</div></div><div class="tag green">匹配成功</div></div>
+        <div class="form-row" style="margin-top:16px;"><div class="form-group"><label>单价 (元/kg)</label><input type="text" class="form-control" value="8.80"></div><div class="form-group"><label>称重重量 (kg)</label><input type="text" class="form-control" value="0.536"></div></div>
+        <div style="background:var(--teal-pale);padding:16px;border-radius:8px;margin-top:12px;display:flex;justify-content:space-between;font-weight:700;"><span>应收金额</span><span style="color:var(--teal);font-size:24px;">¥4.72</span></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-ai-demo')">关闭</button>
+      <button class="btn btn-primary" id="aiRunBtn" onclick="runAIDemo()"><i class="fas fa-play"></i> 开始识别</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-add-product">
+  <div class="modal modal-lg">
+    <div class="modal-header"><h3><i class="fas fa-plus" style="color:var(--teal);margin-right:8px;"></i>新增商品</h3><button class="modal-close" onclick="closeModal('modal-add-product')">×</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>商品名称 <span style="color:#E53935;">*</span></label><input type="text" class="form-control" placeholder="输入商品名称"></div>
+        <div class="form-group"><label>商品编码 <span style="color:#E53935;">*</span></label><input type="text" class="form-control" placeholder="系统自动生成" value="SP20260517001"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>分类 <span style="color:#E53935;">*</span></label><select class="form-control"><option>请选择分类</option><option>果蔬</option><option>肉类</option><option>水产</option><option>熟食</option><option>粮油</option></select></div>
+        <div class="form-group"><label>单位</label><select class="form-control"><option>kg</option><option>g</option><option>个</option><option>盒</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>单价 (元/kg) <span style="color:#E53935;">*</span></label><input type="number" class="form-control" placeholder="0.00"></div>
+        <div class="form-group"><label>成本价 (元/kg)</label><input type="number" class="form-control" placeholder="0.00"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>安全库存 (kg)</label><input type="number" class="form-control" placeholder="10"></div>
+        <div class="form-group"><label>AI模型标签</label><input type="text" class="form-control" placeholder="如：西红柿,番茄,有机番茄"></div>
+      </div>
+      <div class="form-group"><label>备注</label><textarea class="form-control" rows="2" placeholder="可选"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-add-product')">取消</button>
+      <button class="btn btn-primary" onclick="saveProduct()"><i class="fas fa-check"></i> 保存</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-add-stock">
+  <div class="modal">
+    <div class="modal-header"><h3><i class="fas fa-truck-loading" style="color:var(--teal);margin-right:8px;"></i>入库登记</h3><button class="modal-close" onclick="closeModal('modal-add-stock')">×</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>商品 <span style="color:#E53935;">*</span></label><select class="form-control"><option>请选择商品</option><option>有机西红柿</option><option>带皮五花肉</option><option>三文鱼刺身</option><option>东北大米</option></select></div>
+        <div class="form-group"><label>批次号</label><input type="text" class="form-control" placeholder="自动生成"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>入库数量 (kg) <span style="color:#E53935;">*</span></label><input type="number" class="form-control" placeholder="0.00"></div>
+        <div class="form-group"><label>单价 (元/kg)</label><input type="number" class="form-control" placeholder="0.00"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>生产日期</label><input type="date" class="form-control"></div>
+        <div class="form-group"><label>保质期 (天)</label><input type="number" class="form-control" placeholder="7"></div>
+      </div>
+      <div class="form-group"><label>供应商</label><input type="text" class="form-control" placeholder="输入供应商名称"></div>
+      <div class="form-group"><label>备注</label><textarea class="form-control" rows="2"></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-add-stock')">取消</button>
+      <button class="btn btn-primary" onclick="saveStock()"><i class="fas fa-check"></i> 确认入库</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-add-member">
+  <div class="modal">
+    <div class="modal-header"><h3><i class="fas fa-user-plus" style="color:var(--teal);margin-right:8px;"></i>新增会员</h3><button class="modal-close" onclick="closeModal('modal-add-member')">×</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>姓名 <span style="color:#E53935;">*</span></label><input type="text" class="form-control" placeholder="输入姓名"></div>
+        <div class="form-group"><label>手机号 <span style="color:#E53935;">*</span></label><input type="tel" class="form-control" placeholder="11位手机号"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>会员等级</label><select class="form-control"><option>普通会员</option><option>银卡会员</option><option>金卡会员</option><option>钻石会员</option></select></div>
+        <div class="form-group"><label>初始积分</label><input type="number" class="form-control" placeholder="0" value="0"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>生日</label><input type="date" class="form-control"></div>
+        <div class="form-group"><label>备注</label><input type="text" class="form-control" placeholder="可选"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-add-member')">取消</button>
+      <button class="btn btn-primary" onclick="saveMember()"><i class="fas fa-check"></i> 确认开通</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-add-device">
+  <div class="modal">
+    <div class="modal-header"><h3><i class="fas fa-desktop" style="color:var(--teal);margin-right:8px;"></i>添加设备</h3><button class="modal-close" onclick="closeModal('modal-add-device')">×</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label>设备名称 <span style="color:#E53935;">*</span></label><input type="text" class="form-control" placeholder="如：门店01-收银台"></div>
+        <div class="form-group"><label>设备型号</label><select class="form-control"><option>智秤-AI-Pro</option><option>智秤-AI-Standard</option><option>智秤-Basic</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>绑定门店 <span style="color:#E53935;">*</span></label><select class="form-control"><option>门店01 - 总店</option><option>门店02 - 分店</option><option>门店03 - 分店</option></select></div>
+        <div class="form-group"><label>设备编号</label><input type="text" class="form-control" placeholder="硬件序列号"></div>
+      </div>
+      <div class="form-group"><label>安装位置</label><input type="text" class="form-control" placeholder="如：入口左侧第二台"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('modal-add-device')">取消</button>
+      <button class="btn btn-primary" onclick="saveDevice()"><i class="fas fa-check"></i> 确认添加</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i> <span id="toastMsg">操作成功</span></div>
+
+<script>
+// Data
+const tradeData=[
+  {id:'ZCT20260517001',time:'10:23:45',name:'有机西红柿',weight:'0.536kg',price:'4.72',pay:'微信',op:'张三',status:'已完成'},
+  {id:'ZCT20260517002',time:'10:21:12',name:'带皮五花肉',weight:'0.823kg',price:'26.34',pay:'会员卡',op:'李四',status:'已完成'},
+  {id:'ZCT20260517003',time:'10:18:03',name:'三文鱼刺身',weight:'0.312kg',price:'31.20',pay:'支付宝',op:'王五',status:'已完成'},
+  {id:'ZCT20260517004',time:'10:15:28',name:'东北大米',weight:'2.500kg',price:'17.50',pay:'微信',op:'张三',status:'已完成'},
+  {id:'ZCT20260517005',time:'10:12:55',name:'有机西兰花',weight:'0.425kg',price:'3.40',pay:'现金',op:'赵六',status:'已完成'},
+  {id:'ZCT20260517006',time:'10:09:41',name:'智利车厘子',weight:'0.258kg',price:'25.80',pay:'会员卡',op:'李四',status:'已完成'},
+  {id:'ZCT20260517007',time:'10:06:17',name:'鲜牛奶',weight:'1.000L',price:'12.00',pay:'微信',op:'张三',status:'已完成'},
+];
+
+const aiLogData=[
+  {time:'10:23:45',name:'有机西红柿',result:'识别成功',conf:'98.2%',status:'通过'},
+  {time:'10:21:12',name:'带皮五花肉',result:'识别成功',conf:'99.1%',status:'通过'},
+  {time:'10:18:03',name:'三文鱼刺身',result:'识别成功',conf:'97.8%',status:'待复核'},
+  {time:'10:15:28',name:'东北大米',result:'识别成功',conf:'98.9%',status:'通过'},
+  {time:'10:12:55',name:'有机西兰花',result:'识别成功',conf:'96.5%',status:'通过'},
+];
+
+const productData=[
+  {code:'SP001',name:'有机西红柿',cat:'果蔬',price:'8.80',stock:'45.2',status:'上架',ai:'已训练'},
+  {code:'SP002',name:'带皮五花肉',cat:'肉类',price:'32.00',stock:'28.6',status:'上架',ai:'已训练'},
+  {code:'SP003',name:'三文鱼刺身',cat:'水产',price:'100.00',stock:'12.3',status:'上架',ai:'已训练'},
+  {code:'SP004',name:'东北大米',cat:'粮油',price:'7.00',stock:'180.0',status:'上架',ai:'已训练'},
+  {code:'SP005',name:'有机西兰花',cat:'果蔬',price:'8.00',stock:'22.1',status:'上架',ai:'已训练'},
+  {code:'SP006',name:'智利车厘子',cat:'果蔬',price:'100.00',stock:'8.5',status:'上架',ai:'已训练'},
+  {code:'SP007',name:'鲜牛奶',cat:'乳品',price:'12.00',stock:'36.0',status:'上架',ai:'已训练'},
+  {code:'SP009',name:'土鸡蛋',cat:'禽蛋',price:'18.00',stock:'0',status:'售罄',ai:'训练中'},
+];
+
+const inventoryData=[
+  {name:'有机西红柿',cat:'果蔬',stock:'45.2',safe:'20',status:'正常'},
+  {name:'带皮五花肉',cat:'肉类',stock:'28.6',safe:'15',status:'正常'},
+  {name:'三文鱼刺身',cat:'水产',stock:'12.3',safe:'10',status:'正常'},
+  {name:'东北大米',cat:'粮油',stock:'180.0',safe:'50',status:'正常'},
+  {name:'有机西兰花',cat:'果蔬',stock:'22.1',safe:'15',status:'正常'},
+  {name:'智利车厘子',cat:'果蔬',stock:'8.5',safe:'10',status:'偏低'},
+  {name:'鲜牛奶',cat:'乳品',stock:'36.0',safe:'20',status:'正常'},
+  {name:'土鸡蛋',cat:'禽蛋',stock:'0',safe:'20',status:'缺货'},
+];
+
+const stockLogData=[
+  {id:'RK20260517001',time:'08:30',type:'入库',name:'有机西红柿',qty:'50.0',op:'刘采购',note:'今日到货'},
+  {id:'RK20260517002',time:'08:45',type:'入库',name:'带皮五花肉',qty:'30.0',op:'刘采购',note:'冷藏车配送'},
+  {id:'CK20260517001',time:'09:15',type:'出库',name:'三文鱼刺身',qty:'5.0',op:'张店员',note:'报损'},
+  {id:'RK20260517003',time:'09:30',type:'入库',name:'东北大米',qty:'200.0',op:'刘采购',note:'整件入库'},
+];
+
+const salesRankData=[
+  {rank:1,name:'有机西红柿',cat:'果蔬',qty:'128.5',sales:'1,130.80',trend:'up'},
+  {rank:2,name:'带皮五花肉',cat:'肉类',qty:'86.2',sales:'2,758.40',trend:'up'},
+  {rank:3,name:'三文鱼刺身',cat:'水产',qty:'42.3',sales:'4,230.00',trend:'up'},
+  {rank:4,name:'东北大米',cat:'粮油',qty:'256.0',sales:'1,792.00',trend:'down'},
+  {rank:5,name:'有机西兰花',cat:'果蔬',qty:'95.8',sales:'766.40',trend:'up'},
+];
+
+const memberData=[
+  {id:'V001',name:'张明',phone:'138****1234',level:'金卡',point:'8,420',balance:'328.50',consume:'12,840',date:'2024-03-15'},
+  {id:'V002',name:'李华',phone:'139****5678',level:'银卡',point:'3,280',balance:'128.00',consume:'6,520',date:'2024-05-22'},
+  {id:'V003',name:'王芳',phone:'136****9012',level:'钻石',point:'28,640',balance:'1,250.00',consume:'48,200',date:'2023-11-08'},
+  {id:'V004',name:'刘强',phone:'137****3456',level:'普通',point:'820',balance:'50.00',consume:'1,640',date:'2025-01-10'},
+  {id:'V005',name:'陈静',phone:'135****7890',level:'金卡',point:'12,350',balance:'560.00',consume:'28,600',date:'2024-08-30'},
+];
+
+const alertRuleData=[
+  {name:'库存不足预警',type:'库存',val:'低于安全库存20%',state:'启用',last:'10:05'},
+  {name:'临期商品预警',type:'效期',val:'剩余1天',state:'启用',last:'09:30'},
+  {name:'价格异常预警',type:'价格',val:'低于成本价10%',state:'启用',last:'08:15'},
+  {name:'设备故障预警',type:'设备',val:'连续异常5分钟',state:'启用',last:'07:50'},
+  {name:'账目差异预警',type:'财务',val:'日差异>¥100',state:'停用',last:'昨天'},
+];
+
+const alertLogData=[
+  {time:'10:30',level:'紧急',type:'设备故障',content:'智秤-AI-008 数据异常',state:'处理中',op:'李店长'},
+  {time:'10:05',level:'重要',type:'库存不足',content:'西红柿库存8kg，低于安全库存',state:'待处理',op:'刘采购'},
+  {time:'09:30',level:'重要',type:'临期商品',content:'三文鱼刺身批次20260510临期',state:'待处理',op:'张店员'},
+  {time:'08:15',level:'一般',type:'价格异常',content:'带皮五花肉售价低于成本价',state:'已处理',op:'系统'},
+  {time:'07:45',level:'一般',type:'账目差异',content:'门店02昨日盘点差异¥127.80',state:'已处理',op:'王会计'},
+];
+
+// Render functions
+function renderTradeTable(){
+  const tbody=document.getElementById('tradeTable');
+  tbody.innerHTML=tradeData.map(t=>`<tr><td>${t.id}</td><td>${t.time}</td><td>${t.name}</td><td>${t.weight}</td><td>¥${t.price}</td><td>${t.pay}</td><td>${t.op}</td><td><span class="tag green">${t.status}</span></td></tr>`).join('');
+}
+
+function renderAILogTable(){
+  const tbody=document.getElementById('aiLogTable');
+  tbody.innerHTML=aiLogData.map(a=>`<tr><td>${a.time}</td><td><div class="img-cell"><div class="thumb"><i class="fas fa-image"></i></div></div></td><td>${a.name}</td><td>${a.result}</td><td><span class="tag green">${a.conf}</span></td><td><span class="tag ${a.status==='通过'?'green':'orange'}">${a.status}</span></td><td><div class="actions"><button class="view"><i class="fas fa-eye"></i></button></div></td></tr>`).join('');
+}
+
+function renderProductTable(){
+  const tbody=document.getElementById('productTable');
+  tbody.innerHTML=productData.map(p=>`<tr><td>${p.code}</td><td><div class="img-cell"><div class="thumb"><i class="fas fa-lemon"></i></div>${p.name}</div></td><td>${p.cat}</td><td>¥${p.price}</td><td>${p.stock}</td><td><span class="tag ${p.status==='上架'?'green':p.status==='售罄'?'red':'gray'}">${p.status}</span></td><td><span class="tag blue">${p.ai}</span></td><td><div class="actions"><button class="edit"><i class="fas fa-edit"></i></button><button class="del"><i class="fas fa-trash"></i></button></div></td></tr>`).join('');
+}
+
+function renderInventoryTable(){
+  const tbody=document.getElementById('inventoryTable');
+  tbody.innerHTML=inventoryData.map(i=>`<tr><td><div class="img-cell"><div class="thumb"><i class="fas fa-box"></i></div>${i.name}</div></td><td>${i.cat}</td><td>${i.stock}</td><td>${i.safe}</td><td><span class="tag ${i.status==='正常'?'green':i.status==='偏低'?'orange':'red'}">${i.status}</span></td><td><div class="actions"><button class="edit"><i class="fas fa-edit"></i></button></div></td></tr>`).join('');
+}
+
+function renderSalesRankTable(){
+  const tbody=document.getElementById('salesRankTable');
+  tbody.innerHTML=salesRankData.map(s=>`<tr><td><span style="font-weight:900;color:${s.rank===1?'#FFD700':s.rank===2?'#C0C0C0':s.rank===3?'#CD7F32':'#999'}">${s.rank}</span></td><td>${s.name}</td><td>${s.cat}</td><td>${s.qty}</td><td>¥${s.sales}</td><td><span style="color:${s.trend==='up'?'#43A047':'#E53935'}"><i class="fas fa${s.trend==='up'?'fa-arrow-up':'fa-arrow-down'}"></i></span></td><td><div class="actions"><button class="view"><i class="fas fa-eye"></i></button></div></td></tr>`).join('');
+}
+
+function renderMemberTable(){
+  const tbody=document.getElementById('memberTable');
+  tbody.innerHTML=memberData.map(m=>`<tr><td>${m.id}</td><td>${m.name}</td><td>${m.phone}</td><td><span class="tag ${m.level==='钻石'?'purple':m.level==='金卡'?'orange':m.level==='银卡'?'blue':'gray'}">${m.level}</span></td><td>${m.point}</td><td>¥${m.balance}</td><td>¥${m.consume}</td><td>${m.date}</td><td><div class="actions"><button class="edit"><i class="fas fa-edit"></i></button><button class="view"><i class="fas fa-eye"></i></button></div></td></tr>`).join('');
+}
+
+function renderAlertRuleTable(){
+  const tbody=document.getElementById('alertRuleTable');
+  tbody.innerHTML=alertRuleData.map(a=>`<tr><td><i class="fas fa-cog" style="color:var(--teal);margin-right:6px;"></i>${a.name}</td><td><span class="tag blue">${a.type}</span></td><td>${a.val}</td><td><span class="tag ${a.state==='启用'?'green':'gray'}">${a.state}</span></td><td>${a.last}</td><td><div class="actions"><button class="edit"><i class="fas fa-edit"></i></button></div></td></tr>`).join('');
+}
+
+function renderAlertLogTable(){
+  const tbody=document.getElementById('alertLogTable');
+  tbody.innerHTML=alertLogData.map(a=>`<tr><td>${a.time}</td><td><span class="tag ${a.level==='紧急'?'red':a.level==='重要'?'orange':'blue'}">${a.level}</span></td><td>${a.type}</td><td>${a.content}</td><td><span class="tag ${a.state==='已处理'?'green':a.state==='处理中'?'blue':'orange'}">${a.state}</span></td><td>${a.op}</td><td><div class="actions"><button class="view"><i class="fas fa-eye"></i></button></div></td></tr>`).join('');
+}
+
+function renderPendingOrders(){
+  document.getElementById('pendingOrders').innerHTML=`
+    <div class="list-item"><div class="item-icon" style="background:#E3F2FD;color:#1565C0;"><i class="fas fa-truck"></i></div><div class="item-info"><div class="item-name">有机西红柿</div><div class="item-meta">供应商：优选农场 · 数量：50kg</div></div><span class="tag blue">待入库</span></div>
+    <div class="list-item"><div class="item-icon" style="background:#FFF3E0;color:#E65100;"><i class="fas fa-truck"></i></div><div class="item-info"><div class="item-name">智利车厘子</div><div class="item-meta">供应商：进口生鲜 · 数量：20kg</div></div><span class="tag orange">运输中</span></div>
+    <div class="list-item"><div class="item-icon" style="background:#F3E5F5;color:#7B1FA2;"><i class="fas fa-truck"></i></div><div class="item-info"><div class="item-name">三文鱼刺身</div><div class="item-meta">供应商：深海渔场 · 数量：30kg</div></div><span class="tag blue">待入库</span></div>
+  `;
+}
+
+function renderMarketingMembers(){
+  document.getElementById('marketingMembers').innerHTML=`
+    <div class="list-item"><div class="item-icon" style="background:#FFF3E0;color:#FF7043;"><i class="fas fa-birthday-cake"></i></div><div class="item-info"><div class="item-name">王芳</div><div class="item-meta">钻石会员 · 明天生日</div></div><button class="btn btn-sm btn-primary">发送祝福</button></div>
+    <div class="list-item"><div class="item-icon" style="background:#E8F5E9;color:#66BB6A;"><i class="fas fa-clock"></i></div><div class="item-info"><div class="item-name">张明</div><div class="item-meta">金卡会员 · 30天未消费</div></div><button class="btn btn-sm btn-outline">唤醒优惠</button></div>
+    <div class="list-item"><div class="item-icon" style="background:#E3F2FD;color:#42A5F5;"><i class="fas fa-fire"></i></div><div class="item-info"><div class="item-name">李华</div><div class="item-meta">银卡会员 · 高价值用户</div></div><button class="btn btn-sm btn-outline">专属优惠</button></div>
+    <div class="list-item"><div class="item-icon" style="background:#F3E5F5;color:#AB47BC;"><i class="fas fa-star"></i></div><div class="item-info"><div class="item-name">陈静</div><div class="item-meta">金卡会员 · 积分即将过期</div></div><button class="btn btn-sm btn-outline">积分兑换</button></div>
+  `;
+}
+
+function renderDeviceList(){
+  const devs=[
+    {id:'ZC-001',name:'智秤-AI-001',loc:'门店01入口',state:'online',load:'65%',today:142},
+    {id:'ZC-002',name:'智秤-AI-002',loc:'门店01出口',state:'online',load:'82%',today:189},
+    {id:'ZC-003',name:'智秤-AI-003',loc:'门店02入口',state:'online',load:'48%',today:98},
+    {id:'ZC-008',name:'智秤-AI-008',loc:'门店03收银台',state:'error',load:'--',today:0},
+    {id:'ZC-005',name:'智秤-AI-005',loc:'门店02出口',state:'offline',load:'--',today:0},
+  ];
+  const colors={online:'#4CAF50',offline:'#9E9E9E',error:'#EF5350'};
+  document.getElementById('deviceList').innerHTML='<table class="data-table"><thead><tr><th>设备编号</th><th>设备名称</th><th>位置</th><th>状态</th><th>今日负载</th><th>交易量</th><th>操作</th></tr></thead><tbody>'+
+    devs.map(d=>`<tr><td>${d.id}</td><td>${d.name}</td><td>${d.loc}</td><td><span class="inline-flex"><span class="eq-status ${d.state}"></span><span class="tag ${d.state==='online'?'green':d.state==='offline'?'gray':'red'}">${d.state==='online'?'在线':d.state==='offline'?'离线':'故障'}</span></span></td><td>${d.load}</td><td>${d.today}</td><td><div class="actions"><button class="edit"><i class="fas fa-cog"></i></button></div></td></tr>`).join('')+'</tbody></table>';
+}
+
+function renderTopProducts(){
+  const products=[
+    {name:'有机西红柿',sales:'1,130.80',pct:100},{name:'带皮五花肉',sales:'2,758.40',pct:244},{name:'三文鱼刺身',sales:'4,230.00',pct:374},{name:'东北大米',sales:'1,792.00',pct:158},{name:'有机西兰花',sales:'766.40',pct:68}
+  ];
+  document.getElementById('topProducts').innerHTML=products.map((p,i)=>`<div class="list-item"><span style="font-weight:900;color:${i===0?'#FFD700':i===1?'#C0C0C0':i===2?'#CD7F32':'#999'};width:20px;">${i+1}</span><div class="item-info"><div class="item-name">${p.name}</div><div class="progress-bar"><div class="fill" style="width:${p.pct}%;"></div></div></div><div style="text-align:right;"><div style="font-weight:700;">¥${p.sales}</div><div style="font-size:11px;color:var(--text-light);">占比${(p.pct/3.74).toFixed(1)}%</div></div></div>`).join('');
+}
+
+function renderDeviceLogTable(){
+  document.getElementById('deviceLogTable').innerHTML=`
+    <tr><td>10:23:45</td><td>智秤-AI-001</td><td>固件升级</td><td>系统</td><td><span class="tag green">成功</span></td></tr>
+    <tr><td>09:15:30</td><td>智秤-AI-008</td><td>重启</td><td>李店长</td><td><span class="tag red">失败</span></td></tr>
+    <tr><td>08:00:12</td><td>智秤-AI-002</td><td>校准</td><td>张店员</td><td><span class="tag green">成功</span></td></tr>
+  `;
+}
+
+// Charts
+function initCharts(){
+  // Sales trend
+  new Chart(document.getElementById('salesTrendChart'),{
+    type:'line',
+    data:{
+      labels:['06:00','08:00','10:00','12:00','14:00','16:00','18:00','20:00'],
+      datasets:[{
+        label:'销售额',
+        data:[1200,3800,8540,12800,9600,8200,6400,3200],
+        borderColor:'#00897B',
+        backgroundColor:'rgba(0,137,123,0.1)',
+        fill:true,
+        tension:0.4
+      }]
+    },
+    options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
+  });
+
+  // AI type
+  new Chart(document.getElementById('aiTypeChart'),{
+    type:'doughnut',
+    data:{
+      labels:['果蔬','肉类','水产','熟食','其他'],
+      datasets:[{data:[35,25,20,12,8],backgroundColor:['#00897B','#4DB6AC','#80CBC4','#B2DFDB','#E0F2F1']}]
+    },
+    options:{responsive:true,plugins:{legend:{position:'bottom'}}}
+  });
+
+  // Sales chart
+  new Chart(document.getElementById('salesChart'),{
+    type:'bar',
+    data:{
+      labels:['周一','周二','周三','周四','周五','周六','周日'],
+      datasets:[{
+        label:'销售额(千元)',
+        data:[22.4,25.8,23.1,28.6,32.4,38.2,35.8],
+        backgroundColor:'#00897B'
+      }]
+    },
+    options:{responsive:true,plugins:{legend:{display:false}}}
+  });
+
+  // Category
+  new Chart(document.getElementById('categoryChart'),{
+    type:'pie',
+    data:{
+      labels:['果蔬','肉类','水产','熟食','粮油','其他'],
+      datasets:[{data:[30,25,20,12,8,5],backgroundColor:['#00897B','#4DB6AC','#80CBC4','#B2DFDB','#E0F2F1','#FAFAFA']}]
+    },
+    options:{responsive:true,plugins:{legend:{position:'right'}}}
+  });
+
+  // Member level
+  new Chart(document.getElementById('memberLevelChart'),{
+    type:'bar',
+    data:{
+      labels:['普通','银卡','金卡','钻石'],
+      datasets:[{label:'会员人数',data:[8420,2680,1120,627],backgroundColor:'#00897B'}]
+    },
+    options:{responsive:true,plugins:{legend:{display:false}}}
+  });
+
+  // Device performance
+  new Chart(document.getElementById('devicePerfChart'),{
+    type:'line',
+    data:{
+      labels:['00:00','04:00','08:00','12:00','16:00','20:00','24:00'],
+      datasets:[
+        {label:'CPU使用率%',data:[12,8,35,68,55,38,15],borderColor:'#00897B',tension:0.4,fill:false},
+        {label:'内存使用率%',data:[45,42,48,62,58,50,46],borderColor:'#4DB6AC',tension:0.4,fill:false}
+      ]
+    },
+    options:{responsive:true,plugins:{legend:{position:'bottom'}}}
+  });
+}
+
+// Navigation
+const sectionTitles={
+  weighing:'实时称重',ai:'AI识别',menu:'菜品管理',
+  inventory:'库存管理',sales:'销售报表',member:'会员管理',
+  device:'设备管理',alert:'预警中心'
+};
+
+document.querySelectorAll('.nav-item').forEach(item=>{
+  item.addEventListener('click',()=>{
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    item.classList.add('active');
+    const sec=item.dataset.section;
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    document.getElementById('sec-'+sec).classList.add('active');
+    document.getElementById('sectionTitle').textContent=sectionTitles[sec];
+  });
+});
+
+// Modals
+function openModal(id){document.getElementById(id).classList.add('show');}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+
+// AI Demo
+function runAIDemo(){
+  const spinner=document.getElementById('aiSpinner');
+  const result=document.getElementById('aiResult');
+  const btn=document.getElementById('aiRunBtn');
+  spinner.style.display='block';
+  result.style.display='none';
+  btn.disabled=true;
+  let p=0;
+  const interval=setInterval(()=>{
+    p+=Math.random()*15;
+    if(p>=100){p=100;clearInterval(interval);setTimeout(()=>{spinner.style.display='none';result.style.display='block';btn.disabled=false;},300);}
+    document.getElementById('aiProgress').style.width=p+'%';
+  },200);
+}
+
+// Save functions
+function showToast(msg){
+  const t=document.getElementById('toast');
+  document.getElementById('toastMsg').textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+function saveProduct(){closeModal('modal-add-product');showToast('商品添加成功');}
+function saveStock(){closeModal('modal-add-stock');showToast('入库登记成功');}
+function saveMember(){closeModal('modal-add-member');showToast('会员开通成功');}
+function saveDevice(){closeModal('modal-add-device');showToast('设备添加成功');}
+
+// Init
+renderTradeTable();
+renderAILogTable();
+renderProductTable();
+renderInventoryTable();
+renderSalesRankTable();
+renderMemberTable();
+renderAlertRuleTable();
+renderAlertLogTable();
+renderPendingOrders();
+renderMarketingMembers();
+renderDeviceList();
+renderTopProducts();
+renderDeviceLogTable();
+initCharts();
+
+// Close modal on overlay click
+document.querySelectorAll('.modal-overlay').forEach(o=>{
+  o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('show');});
+});
+</script>
+</body>
+</html>

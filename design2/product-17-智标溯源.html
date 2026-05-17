@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智标溯源 - 电子货架标签系统</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans SC',sans-serif;background:#0a0a0f;color:#e5e7eb;line-height:1.6}
+.container{max-width:1200px;margin:0 auto;padding:0 20px}
+
+/* Hero */
+.hero{background:linear-gradient(135deg,#1a0a2e 0%,#2d1b4e 50%,#1a0a2e 100%);padding:100px 0 80px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(167,139,250,0.15) 0%,transparent 70%)}
+.hero-badge{display:inline-block;background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);color:#a78bfa;padding:6px 18px;border-radius:50px;font-size:13px;margin-bottom:24px}
+.hero h1{font-size:52px;font-weight:700;margin-bottom:16px;background:linear-gradient(135deg,#fff 0%,#a78bfa 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:18px;color:#9ca3af;max-width:600px;margin:0 auto 40px}
+.hero-partner{font-size:13px;color:#6b7280;margin-top:30px}
+.hero-partner span{color:#a78bfa}
+.btn-group{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:10px;font-size:15px;font-weight:500;text-decoration:none;transition:all 0.3s;cursor:pointer;border:none}
+.btn-primary{background:#a78bfa;color:#0a0a0f}
+.btn-primary:hover{background:#c4b5fd;transform:translateY(-2px)}
+.btn-secondary{background:rgba(167,139,250,0.1);border:1px solid rgba(167,139,250,0.3);color:#a78bfa}
+.btn-secondary:hover{background:rgba(167,139,250,0.2)}
+.btn-demo{background:transparent;border:1px solid #4b5563;color:#9ca3af}
+.btn-demo:hover{border-color:#a78bfa;color:#a78bfa}
+
+/* Pain */
+.section{padding:80px 0}
+.section-title{text-align:center;margin-bottom:50px}
+.section-title h2{font-size:36px;font-weight:700;margin-bottom:12px}
+.section-title p{color:#9ca3af;font-size:16px}
+.pain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.pain-card{background:linear-gradient(135deg,rgba(167,139,250,0.08) 0%,rgba(167,139,250,0.03) 100%);border:1px solid rgba(167,139,250,0.2);border-radius:16px;padding:32px;text-align:center;transition:all 0.3s}
+.pain-card:hover{border-color:rgba(167,139,250,0.5);transform:translateY(-4px)}
+.pain-icon{font-size:40px;margin-bottom:16px}
+.pain-card h3{font-size:18px;margin-bottom:10px;color:#fff}
+.pain-card p{color:#9ca3af;font-size:14px}
+
+/* Features */
+.feature-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.feature-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:24px;transition:all 0.3s}
+.feature-card:hover{background:rgba(167,139,250,0.08);border-color:rgba(167,139,250,0.3)}
+.feature-icon{font-size:28px;margin-bottom:12px;color:#a78bfa}
+.feature-card h3{font-size:15px;font-weight:600;margin-bottom:8px}
+.feature-card p{color:#6b7280;font-size:13px}
+
+/* Flow */
+.flow-section{background:rgba(255,255,255,0.02)}
+.flow-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:30px;position:relative}
+.flow-steps::before{content:'';position:absolute;top:35px;left:12%;right:12%;height:2px;background:linear-gradient(90deg,rgba(167,139,250,0.3),rgba(167,139,250,0.6),rgba(167,139,250,0.3))}
+.flow-step{text-align:center;position:relative;z-index:1}
+.flow-num{display:width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,#2d1b4e,#1a0a2e);border:2px solid #a78bfa;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:24px;font-weight:700;color:#a78bfa}
+.flow-step h4{font-size:16px;font-weight:600;margin-bottom:8px}
+.flow-step p{color:#6b7280;font-size:13px}
+
+/* Pricing */
+.pricing-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.pricing-card{background:linear-gradient(135deg,rgba(167,139,250,0.05) 0%,rgba(167,139,250,0.02) 100%);border:1px solid rgba(167,139,250,0.2);border-radius:16px;padding:36px;text-align:center}
+.pricing-card.featured{border-color:#a78bfa;position:relative}
+.pricing-card.featured::before{content:'推荐方案';position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#a78bfa;color:#0a0a0f;padding:4px 16px;border-radius:20px;font-size:12px;font-weight:600}
+.pricing-card h3{font-size:20px;font-weight:600;margin-bottom:16px}
+.price{font-size:36px;font-weight:700;color:#a78bfa;margin-bottom:6px}
+.price span{font-size:14px;color:#6b7280;font-weight:400}
+.pricing-card p{color:#9ca3af;font-size:14px;margin-bottom:24px}
+.pricing-list{list-style:none;text-align:left;margin-bottom:24px}
+.pricing-list li{padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);color:#9ca3af;font-size:14px}
+.pricing-list li::before{content:'✓ ';color:#a78bfa;margin-right:8px}
+
+/* Footer CTA */
+.footer-cta{background:linear-gradient(135deg,#1a0a2e 0%,#2d1b4e 100%);padding:80px 0;text-align:center}
+.footer-cta h2{font-size:32px;font-weight:700;margin-bottom:16px}
+.footer-cta p{color:#9ca3af;margin-bottom:32px}
+@media(max-width:900px){.pain-grid,.feature-grid,.pricing-cards{grid-template-columns:1fr}.flow-steps{grid-template-columns:1fr 1fr}.hero h1{font-size:36px}}
+</style>
+</head>
+<body>
+<div class="hero">
+<div class="container">
+<div class="hero-badge">🏷️ 电子货架标签系统</div>
+<h1>智标溯源</h1>
+<p>实时库存监测·缺货自动提醒·扫码智能盘点 — 让货架管理更高效，库存数据一目了然</p>
+<div class="btn-group">
+<a href="demo-17-智标溯源.html" class="btn btn-primary">🚀 在线演示</a>
+<a href="#pricing" class="btn btn-secondary">💰 了解价格</a>
+<a href="#features" class="btn btn-demo">✨ 查看功能</a>
+</div>
+<div class="hero-partner">合作品牌：<span>点货架</span> · <span>宝利恒</span></div>
+</div>
+</div>
+
+<div class="section" id="pain">
+<div class="container">
+<div class="section-title">
+<h2>传统货架管理的痛点</h2>
+<p>人工管理效率低，数据滞后，损失不可估量</p>
+</div>
+<div class="pain-grid">
+<div class="pain-card">
+<div class="pain-icon">⚠️</div>
+<h3>货架缺货不知晓</h3>
+<p>顾客反映缺货才发现，供货断档销售机会白白流失，库存数据滞后数小时甚至数天</p>
+</div>
+<div class="pain-card">
+<div class="pain-icon">⏰</div>
+<h3>补货不及时</h3>
+<p>人工巡检效率低，高峰期无暇顾及，畅销品售罄无法第一时间补货，客户体验差</p>
+</div>
+<div class="pain-card">
+<div class="pain-icon">📋</div>
+<h3>盘点工作量大</h3>
+<p>每月盘点耗时耗力，数据不准、效率低下，店员负担重且容易出错，盘点期间无法正常营业</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="section" id="features">
+<div class="container">
+<div class="section-title">
+<h2>核心功能</h2>
+<p>八大模块覆盖货架管理全场景</p>
+</div>
+<div class="feature-grid">
+<div class="feature-card">
+<div class="feature-icon">🔔</div>
+<h3>缺货提醒</h3>
+<p>库存低于阈值自动推送提醒，第一时间知晓缺货状态</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon">📊</div>
+<h3>实时库存</h3>
+<p>库存数据分钟级更新，管理层随时掌握真实库存</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon">📱</div>
+<h3>扫码盘点</h3>
+<p>移动端扫码快速盘点，准确率99.9%，效率提升10倍</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon">🔄</div>
+<h3>数据同步</h3>
+<p>PMS/ERP/WMS系统无缝对接，数据实时互通</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon">🏷️</div>
+<h3>电子价签</h3>
+<p>电子墨水屏价签，促销变价一键同步，杜绝价格错误</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon">🎯</div>
+<h3>促销同步</h3>
+<p>总部促销政策自动下发，区域差异化定价灵活支持</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon">🔐</div>
+<h3>权限管理</h3>
+<p>多角色多门店分级管理，操作日志全追溯</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon">📈</div>
+<h3>数据分析</h3>
+<p>销售预测、库存周转、滞销分析，决策有据可依</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="section flow-section" id="flow">
+<div class="container">
+<div class="section-title">
+<h2>快速部署流程</h2>
+<p>四步完成智能化升级</p>
+</div>
+<div class="flow-steps">
+<div class="flow-step">
+<div class="flow-num">1</div>
+<h4>需求调研</h4>
+<p>调研门店数量、货架规模、系统现状，定制方案</p>
+</div>
+<div class="flow-step">
+<div class="flow-num">2</div>
+<h4>硬件部署</h4>
+<p>安装电子价签、读写器、网关等设备</p>
+</div>
+<div class="flow-step">
+<div class="flow-num">3</div>
+<h4>系统对接</h4>
+<p>对接现有ERP/POS系统，完成数据打通</p>
+</div>
+<div class="flow-step">
+<div class="flow-num">4</div>
+<h4>培训上线</h4>
+<p>店员培训、系统调试，正式投入使用</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="section" id="pricing">
+<div class="container">
+<div class="section-title">
+<h2>方案报价</h2>
+<p>根据门店规模灵活选配</p>
+</div>
+<div class="pricing-cards">
+<div class="pricing-card">
+<h3>基础版</h3>
+<div class="price">0.1<span>万/货架</span></div>
+<p>单店使用，基础功能</p>
+<ul class="pricing-list">
+<li>电子价签管理</li>
+<li>基础库存查看</li>
+<li>手动盘点</li>
+<li>单门店支持</li>
+<li>基础数据分析</li>
+</ul>
+<a href="#" class="btn btn-secondary">咨询详情</a>
+</div>
+<div class="pricing-card featured">
+<h3>标准版</h3>
+<div class="price">0.2<span>万/货架</span></div>
+<p>连锁便利、超市首选</p>
+<ul class="pricing-list">
+<li>全部基础功能</li>
+<li>缺货自动提醒</li>
+<li>扫码盘点</li>
+<li>多门店管理</li>
+<li>数据同步对接</li>
+</ul>
+<a href="#" class="btn btn-primary">获取方案</a>
+</div>
+<div class="pricing-card">
+<h3>旗舰版</h3>
+<div class="price">0.3<span>万/货架</span></div>
+<p>大型商超、连锁品牌</p>
+<ul class="pricing-list">
+<li>全部标准功能</li>
+<li>电子价签(含促销)</li>
+<li>权限分级管理</li>
+<li>API开放接口</li>
+<li>专属运维支持</li>
+</ul>
+<a href="#" class="btn btn-secondary">联系我们</a>
+</div>
+</div>
+</div>
+</div>
+
+<div class="footer-cta">
+<div class="container">
+<h2>开启智慧货架新时代</h2>
+<p>立即预约演示，体验缺货预警与智能盘点的便捷</p>
+<div class="btn-group">
+<a href="demo-17-智标溯源.html" class="btn btn-primary">🚀 体验在线演示</a>
+<a href="#pricing" class="btn btn-secondary">💬 咨询报价</a>
+</div>
+</div>
+</div>
+</body>
+</html>

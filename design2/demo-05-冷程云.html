@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>冷程云 — 冷链温湿度监控系统</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5/css-all.min.css">
+<style>
+:root{--ice:#0284c7;--ice-dark:#0369a1;--ice-light:#7dd3fc;--ice-pale:#f0f9ff;--ice-gradient:linear-gradient(135deg,#0c4a6e 0%,#0284c7 100%);--bg:#f0f4f8;--text:#1e293b;--text-light:#64748b;--white:#fff;--sidebar-w:240px;--radius:12px;--shadow:0 4px 24px rgba(2,132,199,.12);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Noto Sans SC',sans-serif;color:var(--text);background:var(--bg);height:100vh;overflow:hidden;}
+::selection{background:var(--ice-light);color:#fff;}
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--ice-light);border-radius:3px;}
+
+.layout{display:flex;height:100vh;}
+.sidebar{width:var(--sidebar-w);background:var(--ice-gradient);color:#fff;display:flex;flex-direction:column;flex-shrink:0;position:relative;z-index:10;}
+.sidebar-logo{padding:20px 24px;font-size:20px;font-weight:900;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.12);}
+.sidebar-logo i{font-size:22px;}
+.sidebar-nav{flex:1;overflow-y:auto;padding:12px 0;}
+.nav-item{padding:14px 24px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s;font-size:14px;font-weight:500;border-left:3px solid transparent;}
+.nav-item:hover{background:rgba(255,255,255,.1);}
+.nav-item.active{background:rgba(255,255,255,.15);border-left-color:#fff;}
+.nav-item i{width:20px;text-align:center;font-size:16px;}
+.nav-item .badge{background:rgba(255,255,255,.2);padding:2px 8px;border-radius:10px;font-size:11px;margin-left:auto;}
+.sidebar-footer{padding:16px 24px;border-top:1px solid rgba(255,255,255,.12);font-size:12px;opacity:.7;}
+
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{height:60px;background:#fff;border-bottom:1px solid rgba(2,132,199,.1);display:flex;align-items:center;padding:0 24px;gap:16px;flex-shrink:0;}
+.topbar h1{font-size:20px;font-weight:700;color:var(--ice-dark);}
+.topbar-right{display:flex;align-items:center;gap:16px;margin-left:auto;}
+.topbar-btn{background:rgba(2,132,199,.08);border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;color:var(--ice-dark);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;}
+.topbar-btn:hover{background:var(--ice-pale);}
+.topbar-btn i{font-size:14px;}
+.notif-btn{width:36px;height:36px;border-radius:8px;background:rgba(2,132,199,.08);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;position:relative;color:var(--ice-dark);}
+.notif-btn i{font-size:16px;}
+.notif-btn .notif-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;background:#ef4444;border-radius:50%;border:2px solid #fff;}
+.user-avatar{width:36px;height:36px;border-radius:50%;background:var(--ice-gradient);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;cursor:pointer;}
+
+.content{flex:1;overflow-y:auto;padding:24px;}
+
+.card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:20px;overflow:hidden;}
+.card-header{padding:18px 24px;border-bottom:1px solid rgba(0,0,0,.05);display:flex;align-items:center;justify-content:space-between;}
+.card-header h3{font-size:16px;font-weight:700;color:var(--text);}
+.card-header .card-actions{display:flex;gap:8px;}
+.card-header button{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid rgba(2,132,199,.2);background:transparent;color:var(--ice-dark);transition:all .2s;}
+.card-header button:hover{background:var(--ice-pale);}
+.card-header button.primary{background:var(--ice);color:#fff;border-color:var(--ice);}
+.card-header button.primary:hover{background:var(--ice-dark);}
+.card-body{padding:24px;}
+
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.stat-card{background:#fff;border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);}
+.stat-card .stat-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.stat-card .stat-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.stat-card .stat-icon.ice{background:var(--ice-pale);color:var(--ice);}
+.stat-card .stat-icon.cyan{background:#e0f7fa;color:#00acc1;}
+.stat-card .stat-icon.orange{background:#fff3e0;color:#ff7043;}
+.stat-card .stat-icon.green{background:#e8f5e9;color:#43a047;}
+.stat-card .stat-icon.purple{background:#f3e5f5;color:#ab47bc;}
+.stat-card .stat-trend{font-size:12px;font-weight:600;padding:2px 8px;border-radius:4px;}
+.stat-card .stat-trend.up{background:#e8f5e9;color:#43a047;}
+.stat-card .stat-trend.down{background:#ffebee;color:#e53935;}
+.stat-card .stat-num{font-size:28px;font-weight:900;color:var(--text);}
+.stat-card .stat-label{font-size:13px;color:var(--text-light);margin-top:4px;}
+.stat-card .stat-comp{font-size:12px;color:var(--text-light);margin-top:8px;}
+
+.data-table{width:100%;border-collapse:collapse;font-size:14px;}
+.data-table th{background:var(--ice-pale);color:var(--ice-dark);font-weight:600;padding:12px 16px;text-align:left;font-size:13px;}
+.data-table td{padding:12px 16px;border-bottom:1px solid rgba(0,0,0,.04);color:var(--text);}
+.data-table tr:last-child td{border-bottom:none;}
+.data-table tr:hover td{background:#fafafa;}
+.data-table .tag{padding:3px 10px;border-radius:4px;font-size:12px;font-weight:500;}
+.data-table .tag.green{background:#e8f5e9;color:#2e7d32;}
+.data-table .tag.orange{background:#fff3e0;color:#e65100;}
+.data-table .tag.red{background:#ffebee;color:#c62828;}
+.data-table .tag.blue{background:#e3f2fd;color:#1565c0;}
+.data-table .tag.cyan{background:#e0f7fa;color:#00838f;}
+.data-table .actions{display:flex;gap:6px;}
+.data-table .actions button{width:28px;height:28px;border-radius:6px;border:none;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.data-table .actions .edit{background:var(--ice-pale);color:var(--ice);}
+.data-table .actions .del{background:#ffebee;color:#e53935;}
+.data-table .actions .view{background:#e3f2fd;color:#1565c0;}
+
+.form-row{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:16px;}
+.form-group{margin-bottom:16px;}
+.form-group label{font-size:13px;font-weight:600;color:var(--text);display:block;margin-bottom:6px;}
+.form-control{width:100%;padding:10px 14px;border-radius:8px;border:1px solid rgba(0,0,0,.12);font-size:14px;font-family:inherit;transition:border-color .2s;background:#fff;}
+.form-control:focus{outline:none;border-color:var(--ice);box-shadow:0 0 0 3px rgba(2,132,199,.1);}
+select.form-control{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23546E7A' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;}
+
+.btn{padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .2s;font-family:inherit;display:inline-flex;align-items:center;gap:6px;}
+.btn-primary{background:var(--ice);color:#fff;}
+.btn-primary:hover{background:var(--ice-dark);}
+.btn-outline{background:transparent;border:1px solid var(--ice);color:var(--ice);}
+.btn-outline:hover{background:var(--ice-pale);}
+.btn-danger{background:#ef4444;color:#fff;}
+.btn-danger:hover{background:#dc2626;}
+.btn-sm{padding:6px 12px;font-size:12px;}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:1000;backdrop-filter:blur(4px);}
+.modal-overlay.show{display:flex;}
+.modal{background:#fff;border-radius:var(--radius);width:90%;max-width:560px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;animation:modalIn .3s ease;}
+@keyframes modalIn{from{opacity:0;transform:scale(.95);}to{opacity:1;transform:scale(1);}}
+.modal-lg{max-width:800px;}
+.modal-header{padding:20px 24px;border-bottom:1px solid rgba(0,0,0,.05);display:flex;align-items:center;justify-content:space-between;}
+.modal-header h3{font-size:18px;font-weight:700;color:var(--text);}
+.modal-close{width:32px;height:32px;border-radius:8px;border:none;background:rgba(0,0,0,.05);cursor:pointer;font-size:16px;color:var(--text-light);display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.modal-close:hover{background:rgba(0,0,0,.1);}
+.modal-body{padding:24px;overflow-y:auto;flex:1;}
+.modal-footer{padding:16px 24px;border-top:1px solid rgba(0,0,0,.05);display:flex;gap:12px;justify-content:flex-end;}
+
+.chart-container{position:relative;height:260px;}
+.chart-container.tall{height:340px;}
+
+.tabs{display:flex;gap:4px;background:var(--bg);padding:4px;border-radius:8px;margin-bottom:20px;}
+.tab{padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;color:var(--text-light);cursor:pointer;transition:all .2s;border:none;background:transparent;}
+.tab.active{background:#fff;color:var(--ice-dark);box-shadow:0 1px 4px rgba(0,0,0,.08);}
+.tab:hover:not(.active){color:var(--ice);}
+
+.section{display:none;}
+.section.active{display:block;}
+
+.kpi-row{display:flex;gap:16px;margin-bottom:20px;flex-wrap:wrap;}
+.kpi-box{flex:1;min-width:180px;background:#fff;border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);}
+.kpi-box .kpi-label{font-size:13px;color:var(--text-light);margin-bottom:6px;}
+.kpi-box .kpi-value{font-size:26px;font-weight:900;color:var(--ice-dark);}
+.kpi-box .kpi-change{font-size:12px;margin-top:4px;}
+.kpi-box .kpi-change.up{color:#43a047;}
+.kpi-box .kpi-change.down{color:#e53935;}
+
+.status-dot{width:10px;height:10px;border-radius:50%;display:inline-block;}
+.status-dot.online{background:#22c55e;box-shadow:0 0 0 2px rgba(34,197,94,.2);}
+.status-dot.offline{background:#94a3b8;}
+.status-dot.warning{background:#f59e0b;box-shadow:0 0 0 2px rgba(245,158,11,.2);}
+
+.temp-gauge{display:flex;align-items:center;gap:16px;padding:16px;background:#fff;border-radius:12px;box-shadow:0 4px 24px rgba(2,132,199,.12);}
+.temp-gauge .gauge-icon{width:56px;height:56px;border-radius:12px;background:var(--ice-pale);display:flex;align-items:center;justify-content:center;font-size:24px;}
+.temp-gauge .gauge-info{flex:1;}
+.temp-gauge .gauge-name{font-size:14px;color:var(--text-light);margin-bottom:4px;}
+.temp-gauge .gauge-value{font-size:28px;font-weight:900;color:var(--ice-dark);}
+.temp-gauge .gauge-status{font-size:12px;padding:2px 8px;border-radius:4px;display:inline-block;margin-top:4px;}
+.temp-gauge .gauge-status.normal{background:#e8f5e9;color:#2e7d32;}
+.temp-gauge .gauge-status.warning{background:#fff3e0;color:#e65100;}
+
+.route-map{background:#fff;border-radius:12px;padding:20px;box-shadow:0 4px 24px rgba(2,132,199,.12);}
+.route-map h4{font-size:16px;font-weight:700;color:var(--text);margin-bottom:16px;}
+.route-timeline{display:flex;flex-direction:column;gap:12px;}
+.route-point{display:flex;align-items:center;gap:12px;}
+.route-point .point-dot{width:12px;height:12px;border-radius:50%;background:var(--ice);flex-shrink:0;}
+.route-point .point-info{flex:1;background:var(--ice-pale);padding:12px 16px;border-radius:8px;}
+.route-point .point-time{font-size:12px;color:var(--ice-dark);font-weight:600;}
+.route-point .point-location{font-size:14px;color:var(--text);}
+
+.alert-list{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;}
+.alert-item{padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(0,0,0,.04);}
+.alert-item:last-child{border-bottom:none;}
+.alert-item .alert-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.alert-item.critical .alert-icon{background:#ffebee;color:#ef4444;}
+.alert-item.warning .alert-icon{background:#fff3e0;color:#ff7043;}
+.alert-item.info .alert-icon{background:#e0f7fa;color:#00acc1;}
+.alert-item .alert-content{flex:1;}
+.alert-item .alert-content h4{font-size:14px;font-weight:600;color:var(--text);}
+.alert-item .alert-content p{font-size:12px;color:var(--text-light);}
+.alert-item .alert-time{font-size:12px;color:var(--text-light);white-space:nowrap;}
+.alert-item .alert-action{background:var(--ice-pale);color:var(--ice);border:none;padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;}
+</style>
+</head>
+<body>
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <i class="fas fa-snowflake"></i>
+      <span>冷程云</span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" data-section="overview"><i class="fas fa-chart-line"></i><span>温湿度概览</span><span class="badge">2</span></div>
+      <div class="nav-item" data-section="devices"><i class="fas fa-microchip"></i><span>设备管理</span></div>
+      <div class="nav-item" data-section="alerts"><i class="fas fa-bell"></i><span>报警记录</span></div>
+      <div class="nav-item" data-section="routes"><i class="fas fa-route"></i><span>运输轨迹</span></div>
+      <div class="nav-item" data-section="export"><i class="fas fa-download"></i><span>数据导出</span></div>
+      <div class="nav-item" data-section="reports"><i class="fas fa-chart-bar"></i><span>报表分析</span></div>
+      <div class="nav-item" data-section="coldstores"><i class="fas fa-warehouse"></i><span>冷库管理</span></div>
+      <div class="nav-item" data-section="settings"><i class="fas fa-cog"></i><span>系统设置</span></div>
+    </nav>
+    <div class="sidebar-footer">
+      <p><i class="fas fa-shield-halved"></i> 系统正常</p>
+      <p>v2.3.0 · 在线</p>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <header class="topbar">
+      <h1>温湿度概览</h1>
+      <div class="topbar-right">
+        <button class="topbar-btn"><i class="fas fa-download"></i> 导出报表</button>
+        <button class="topbar-btn" onclick="openModal('addDeviceModal')"><i class="fas fa-plus"></i> 添加设备</button>
+        <button class="notif-btn"><i class="fas fa-bell"></i><span class="notif-dot"></span></button>
+        <div class="user-avatar">李</div>
+      </div>
+    </header>
+
+    <div class="content">
+      <!-- Overview Section -->
+      <div id="section-overview" class="section active">
+        <div class="kpi-row">
+          <div class="kpi-box">
+            <div class="kpi-label">在线设备</div>
+            <div class="kpi-value">28 <span style="font-size:14px;font-weight:400">台</span></div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">今日报警</div>
+            <div class="kpi-value" style="color:#f59e0b">2</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">本月数据</div>
+            <div class="kpi-value">168万 <span style="font-size:14px;font-weight:400">条</span></div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">达标率</div>
+            <div class="kpi-value" style="color:#22c55e">99.2%</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px">
+          <div class="temp-gauge">
+            <div class="gauge-icon">❄️</div>
+            <div class="gauge-info">
+              <div class="gauge-name">冷藏库 A区</div>
+              <div class="gauge-value">-18.2°C</div>
+              <span class="gauge-status normal">正常</span>
+            </div>
+          </div>
+          <div class="temp-gauge">
+            <div class="gauge-icon">🌡️</div>
+            <div class="gauge-info">
+              <div class="gauge-name">冷冻库 B区</div>
+              <div class="gauge-value">-22.1°C</div>
+              <span class="gauge-status normal">正常</span>
+            </div>
+          </div>
+          <div class="temp-gauge">
+            <div class="gauge-icon">📦</div>
+            <div class="gauge-info">
+              <div class="gauge-name">阴凉库 C区</div>
+              <div class="gauge-value">18.5°C</div>
+              <span class="gauge-status warning">偏高</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px">
+          <div class="card">
+            <div class="card-header">
+              <h3>24小时温湿度趋势</h3>
+              <div class="card-actions">
+                <button class="btn-sm">温度</button>
+                <button class="btn-sm">湿度</button>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="chart-container"><canvas id="trendChart"></canvas></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3>实时告警</h3>
+              <button class="btn-sm">查看全部</button>
+            </div>
+            <div class="alert-list">
+              <div class="alert-item warning">
+                <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="alert-content">
+                  <h4>温度偏高 - 阴凉库C区</h4>
+                  <p>当前 18.5°C，超过阈值 18°C</p>
+                </div>
+                <span class="alert-time">15分钟前</span>
+                <button class="alert-action">处理</button>
+              </div>
+              <div class="alert-item info">
+                <div class="alert-icon"><i class="fas fa-info-circle"></i></div>
+                <div class="alert-content">
+                  <h4>设备离线 - 冷藏车 粤B·12345</h4>
+                  <p>GPS信号丢失，已触发离线告警</p>
+                </div>
+                <span class="alert-time">1小时前</span>
+                <button class="alert-action">确认</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:20px">
+          <div class="card-header">
+            <h3>冷库状态概览</h3>
+            <button class="btn-sm primary"><i class="fas fa-plus"></i> 添加冷库</button>
+          </div>
+          <div class="card-body" style="padding:0">
+            <table class="data-table">
+              <thead><tr><th>冷库名称</th><th>类型</th><th>温度设定</th><th>当前温度</th><th>当前湿度</th><th>状态</th><th>最后更新</th></tr></thead>
+              <tbody>
+                <tr><td>冷藏库 A区</td><td><span class="tag cyan">冷藏</span></td><td>-18°C ~ -22°C</td><td><span class="text-blue-600 font-weight-bold">-18.2°C</span></td><td>85%</td><td><span class="status-dot online"></span> 正常</td><td>刚刚</td></tr>
+                <tr><td>冷冻库 B区</td><td><span class="tag blue">冷冻</span></td><td>-20°C ~ -25°C</td><td><span class="text-blue-600 font-weight-bold">-22.1°C</span></td><td>78%</td><td><span class="status-dot online"></span> 正常</td><td>刚刚</td></tr>
+                <tr><td>阴凉库 C区</td><td><span class="tag green">阴凉</span></td><td>10°C ~ 20°C</td><td><span class="text-orange-500 font-weight-bold">18.5°C</span></td><td>62%</td><td><span class="status-dot warning"></span> 告警</td><td>5分钟前</td></tr>
+                <tr><td>常温库 D区</td><td><span class="tag gray">常温</span></td><td>0°C ~ 30°C</td><td><span class="text-green-600 font-weight-bold">22.3°C</span></td><td>55%</td><td><span class="status-dot online"></span> 正常</td><td>刚刚</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Devices Section -->
+      <div id="section-devices" class="section">
+        <div class="kpi-row">
+          <div class="kpi-box">
+            <div class="kpi-label">设备总数</div>
+            <div class="kpi-value">32</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">在线</div>
+            <div class="kpi-value" style="color:#22c55e">28</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-label">离线</div>
+            <div class="kpi-value" style="color:#ef4444">2</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3>设备列表</h3>
+            <button class="btn-sm primary"><i class="fas fa-plus"></i> 添加设备</button>
+          </div>
+          <div class="card-body" style="padding:0">
+            <table class="data-table">
+              <thead><tr><th>设备编号</th><th>设备名称</th><th>所属冷库</th><th>当前温度</th><th>当前湿度</th><th>电量</th><th>状态</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>TH-001</td><td>A区-探头1</td><td>冷藏库 A区</td><td>-18.2°C</td><td>85%</td><td><div class="progress-bar" style="width:80px"><div class="fill ice" style="width:80%"></div></div></td><td><span class="status-dot online"></span> 在线</td><td><div class="actions"><button class="view"><i class="fas fa-eye"></i></button><button class="edit"><i class="fas fa-cog"></i></button></div></td></tr>
+                <tr><td>TH-002</td><td>B区-探头2</td><td>冷冻库 B区</td><td>-22.1°C</td><td>78%</td><td><div class="progress-bar" style="width:80px"><div class="fill ice" style="width:65%"></div></div></td><td><span class="status-dot online"></span> 在线</td><td><div class="actions"><button class="view"><i class="fas fa-eye"></i></button><button class="edit"><i class="fas fa-cog"></i></button></div></td></tr>
+                <tr><td>TH-003</td><td>C区-探头3</td><td>阴凉库 C区</td><td>18.5°C</td><td>62%</td><td><div class="progress-bar" style="width:80px"><div class="fill orange" style="width:45%"></div></div></td><td><span class="status-dot warning"></span> 告警</td><td><div class="actions"><button class="view"><i class="fas fa-eye"></i></button><button class="edit"><i class="fas fa-cog"></i></button></div></td></tr>
+                <tr><td>TH-004</td><td>冷藏车-粤B12345</td><td>运输中</td><td>-19.8°C</td><td>72%</td><td><div class="progress-bar" style="width:80px"><div class="fill green" style="width:90%"></div></div></td><td><span class="status-dot online"></span> 在线</td><td><div class="actions"><button class="view"><i class="fas fa-eye"></i></button><button class="edit"><i class="fas fa-cog"></i></button></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alerts Section -->
+      <div id="section-alerts" class="section">
+        <div class="kpi-row">
+          <div class="kpi-box"><div class="kpi-label">今日报警</div><div class="kpi-value" style="color:#f59e0b">2</div></div>
+          <div class="kpi-box"><div class="kpi-label">待处理</div><div class="kpi-value" style="color:#ef4444">1</div></div>
+          <div class="kpi-box"><div class="kpi-label">本月报警</div><div class="kpi-value">15</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>报警记录</h3><button class="btn-sm">历史记录</button></div>
+          <div class="alert-list">
+            <div class="alert-item warning">
+              <div class="alert-icon"><i class="fas fa-exclamation-triangle"></i></div>
+              <div class="alert-content"><h4>温度偏高 - 阴凉库C区</h4><p>当前 18.5°C，超过阈值 18°C，已持续 15 分钟</p></div>
+              <span class="alert-time">15分钟前</span>
+              <button class="alert-action">处理</button>
+            </div>
+            <div class="alert-item info">
+              <div class="alert-icon"><i class="fas fa-info-circle"></i></div>
+              <div class="alert-content"><h4>设备离线 - 冷藏车 粤B·12345</h4><p>GPS信号丢失，已触发离线告警</p></div>
+              <span class="alert-time">1小时前</span>
+              <button class="alert-action">确认</button>
+            </div>
+            <div class="alert-item critical">
+              <div class="alert-icon"><i class="fas fa-times-circle"></i></div>
+              <div class="alert-content"><h4>湿度偏低 - 阴凉库C区</h4><p>当前湿度 62%，低于阈值 65%</p></div>
+              <span class="alert-time">2小时前</span>
+              <button class="alert-action">处理</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Routes Section -->
+      <div id="section-routes" class="section">
+        <div class="kpi-row">
+          <div class="kpi-box"><div class="kpi-label">当前运输</div><div class="kpi-value">3</div></div>
+          <div class="kpi-box"><div class="kpi-label">今日完成</div><div class="kpi-value">8</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h3>运输轨迹</h3><button class="btn-sm primary"><i class="fas fa-plus"></i> 新增运输</button></div>
+          <div class="card-body">
+            <div class="route-map">
+              <h4>冷藏车 粤B·12345 - 当前运输</h4>
+              <div class="route-timeline">
+                <div class="route-point">
+                  <div class="point-dot"></div>
+                  <div class="point-info"><div class="point-time">08:30 出发</div><div class="point-location">广州市天河区仓库 - 装货完成，温度 -18°C</div></div>
+                </div>
+                <div class="route-point">
+                  <div class="point-dot"></div>
+                  <div class="point-info"><div class="point-time">09:45 到达</div><div class="point-location">佛山市南海区配送点 - 卸货中</div></div>
+                </div>
+                <div class="route-point">
+                  <div class="point-dot" style="background:#94a3b8"></div>
+                  <div class="point-info" style="background:#f5f5f5"><div class="point-time">11:00 预计</div><div class="point-location">深圳市宝安区 - 下一配送点</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Export Section -->
+      <div id="section-export" class="section">
+        <div class="card">
+          <div class="card-header"><h3>数据导出</h3></div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-group"><label>冷库/设备</label><select class="form-control"><option>全部</option><option>冷藏库 A区</option><option>冷冻库 B区</option><option>阴凉库 C区</option></select></div>
+              <div class="form-group"><label>时间范围</label><select class="form-control"><option>今日</option><option>昨日</option><option>近7天</option><option>近30天</option><option>自定义</option></select></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>数据类型</label><select class="form-control"><option>温湿度数据</option><option>报警记录</option><option>设备状态</option><option>全部</option></select></div>
+              <div class="form-group"><label>导出格式</label><select class="form-control"><option>Excel</option><option>CSV</option><option>PDF</option></select></div>
+            </div>
+            <button class="btn btn-primary"><i class="fas fa-download"></i> 开始导出</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reports Section -->
+      <div id="section-reports" class="section">
+        <div class="card">
+          <div class="card-header"><h3>报表分析</h3><button class="btn-sm"><i class="fas fa-download"></i> 导出</button></div>
+          <div class="card-body">
+            <div class="chart-container tall"><canvas id="reportChart"></canvas></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Coldstores Section -->
+      <div id="section-coldstores" class="section">
+        <div class="card">
+          <div class="card-header"><h3>冷库管理</h3><button class="btn-sm primary"><i class="fas fa-plus"></i> 添加冷库</button></div>
+          <div class="card-body" style="padding:0">
+            <table class="data-table">
+              <thead><tr><th>冷库名称</th><th>类型</th><th>面积</th><th>温度范围</th><th>设备数</th><th>负责人</th><th>操作</th></tr></thead>
+              <tbody>
+                <tr><td>冷藏库 A区</td><td><span class="tag cyan">冷藏</span></td><td>200 m²</td><td>-18°C ~ -22°C</td><td>4</td><td>张师傅</td><td><div class="actions"><button class="view"><i class="fas fa-eye"></i></button><button class="edit"><i class="fas fa-edit"></i></button></div></td></tr>
+                <tr><td>冷冻库 B区</td><td><span class="tag blue">冷冻</span></td><td>150 m²</td><td>-20°C ~ -25°C</td><td>3</td><td>李师傅</td><td><div class="actions"><button class="view"><i class="fas fa-eye"></i></button><button class="edit"><i class="fas fa-edit"></i></button></div></td></tr>
+                <tr><td>阴凉库 C区</td><td><span class="tag green">阴凉</span></td><td>100 m²</td><td>10°C ~ 20°C</td><td>2</td><td>王师傅</td><td><div class="actions"><button class="view"><i class="fas fa-eye"></i></button><button class="edit"><i class="fas fa-edit"></i></button></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Section -->
+      <div id="section-settings" class="section">
+        <div class="card">
+          <div class="card-header"><h3>系统设置</h3></div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-group"><label>温度报警阈值 (°C)</label><input type="number" class="form-control" value="18"></div>
+              <div class="form-group"><label>湿度报警阈值 (%)</label><input type="number" class="form-control" value="65"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>数据采集频率 (秒)</label><input type="number" class="form-control" value="60"></div>
+              <div class="form-group"><label>报警延迟 (分钟)</label><input type="number" class="form-control" value="5"></div>
+            </div>
+            <button class="btn btn-primary"><i class="fas fa-save"></i> 保存设置</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Add Device Modal -->
+<div id="addDeviceModal" class="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>添加设备</h3>
+      <button class="modal-close" onclick="closeModal('addDeviceModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label>设备编号</label><input type="text" class="form-control" placeholder="TH-005"></div>
+      <div class="form-group"><label>设备名称</label><input type="text" class="form-control" placeholder="如：A区-探头5"></div>
+      <div class="form-row">
+        <div class="form-group"><label>所属冷库</label><select class="form-control"><option>冷藏库 A区</option><option>冷冻库 B区</option><option>阴凉库 C区</option><option>常温库 D区</option></select></div>
+        <div class="form-group"><label>设备类型</label><select class="form-control"><option>温湿度探头</option><option>冷藏车GPS</option></select></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('addDeviceModal')">取消</button>
+      <button class="btn btn-primary">确认添加</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+    const section = item.dataset.section;
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById('section-' + section).classList.add('active');
+    document.querySelector('.topbar h1').textContent = item.querySelector('span').textContent;
+  });
+});
+
+function openModal(id) { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+// Trend Chart
+const trendCtx = document.getElementById('trendChart').getContext('2d');
+new Chart(trendCtx, {
+  type: 'line',
+  data: {
+    labels: ['00:00','04:00','08:00','12:00','16:00','20:00','24:00'],
+    datasets: [
+      {label:'温度(°C)',data:[-18.2,-18.5,-18.1,-17.8,-18.0,-18.3,-18.2],borderColor:'#0284c7',backgroundColor:'rgba(2,132,199,0.1)',fill:true,tension:0.4},
+      {label:'湿度(%)',data:[85,84,86,87,85,84,85],borderColor:'#06b6d4',backgroundColor:'transparent',fill:false,tension:0.4,borderDash:[5,5]}
+    ]
+  },
+  options: {responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}},scales:{y:{beginAtZero:false}}}
+});
+
+// Report Chart
+const reportCtx = document.getElementById('reportChart').getContext('2d');
+new Chart(reportCtx, {
+  type: 'bar',
+  data: {
+    labels: ['周一','周二','周三','周四','周五','周六','周日'],
+    datasets: [{
+      label:'报警次数',
+      data:[2,1,3,0,1,2,1],
+      backgroundColor:'rgba(2,132,199,0.7)',
+      borderColor:'#0284c7',
+      borderWidth:1
+    }]
+  },
+  options: {responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top'}}}
+});
+</script>
+</body>
+</html>

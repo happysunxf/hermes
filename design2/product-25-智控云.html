@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智控云 - 全屋智能控制</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:#0f0f1a;color:#fff;line-height:1.6}
+.container{max-width:1200px;margin:0 auto;padding:0 20px}
+.hero{background:linear-gradient(135deg,#0d0d1a 0%,#1a1a35 50%,#0d0a1a 100%);padding:80px 0;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(129,140,248,0.12) 0%,transparent 70%)}
+.hero-badge{display:inline-block;background:rgba(129,140,248,0.2);border:1px solid rgba(129,140,248,0.4);color:#818cf8;padding:6px 20px;border-radius:50px;font-size:13px;margin-bottom:20px}
+.hero h1{font-size:52px;font-weight:700;margin-bottom:16px;background:linear-gradient(135deg,#fff 0%,#818cf8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:18px;color:#aaa;max-width:600px;margin:0 auto 30px}
+.ctas{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-block;padding:14px 32px;border-radius:8px;font-weight:600;text-decoration:none;transition:all 0.3s}
+.btn-primary{background:#818cf8;color:#fff}
+.btn-primary:hover{background:#6366f1;transform:translateY(-2px)}
+.btn-secondary{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#fff}
+.btn-secondary:hover{background:rgba(255,255,255,0.2)}
+.section{padding:60px 0}
+.section-title{text-align:center;font-size:32px;font-weight:700;margin-bottom:12px}
+.section-sub{text-align:center;color:#888;margin-bottom:40px}
+.pain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.pain-card{background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid rgba(129,140,248,0.2);border-radius:16px;padding:28px;text-align:center}
+.pain-icon{font-size:40px;margin-bottom:16px}
+.pain-card h3{color:#818cf8;margin-bottom:10px;font-size:18px}
+.pain-card p{color:#aaa;font-size:14px}
+.features-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.feature-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:24px;text-align:center}
+.feature-icon{font-size:32px;margin-bottom:12px}
+.feature-card h4{font-size:15px;margin-bottom:8px;color:#fff}
+.feature-card p{font-size:13px;color:#888}
+.flow-steps{display:flex;justify-content:space-between;gap:20px}
+.flow-step{flex:1;text-align:center}
+.flow-num{width:48px;height:48px;background:#818cf8;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;margin:0 auto 16px}
+.flow-step h4{font-size:16px;margin-bottom:8px}
+.flow-step p{font-size:13px;color:#888}
+.pricing{background:linear-gradient(135deg,#0d0d1a,#1a1a35);border-radius:20px;padding:40px;text-align:center}
+.pricing h3{font-size:24px;margin-bottom:20px}
+.price{display:flex;gap:40px;justify-content:center;flex-wrap:wrap}
+.price-item{text-align:center}
+.price-val{font-size:36px;font-weight:700;color:#818cf8}
+.price-label{color:#888;font-size:14px}
+.footer-cta{background:#818cf8;padding:60px 0;text-align:center;border-radius:20px;margin-top:40px}
+.footer-cta h2{font-size:28px;margin-bottom:12px;color:#000}
+.footer-cta p{color:rgba(0,0,0,0.6);margin-bottom:24px}
+.footer-cta .btn{background:#000;color:#818cf8;font-weight:700}
+</style>
+</head>
+<body>
+<section class="hero">
+<div class="container">
+<div class="hero-badge">🏠 LoRa全屋智能</div>
+<h1>智控云</h1>
+<p>全屋智能控制专家 — 灯光/窗帘/空调/安防一部手机全掌控，场景联动让生活更便捷</p>
+<div class="ctas">
+<a href="demo-25-智控云.html" class="btn btn-primary">查看演示</a>
+<a href="#features" class="btn btn-secondary">了解功能</a>
+<a href="#pricing" class="btn btn-secondary">获取报价</a>
+</div>
+</div>
+</section>
+<section class="section" id="pain">
+<div class="container">
+<h2 class="section-title">核心痛点</h2>
+<p class="section-sub">传统家居使用不便</p>
+<div class="pain-grid">
+<div class="pain-card"><div class="pain-icon">🔌</div><h3>开关不便</h3><p>传统开关位置固定，冬季半夜起身开灯实在麻烦</p></div>
+<div class="pain-card"><div class="pain-icon">📱</div><h3>设备各自为战</h3><p>灯光/窗帘/空调各需一个APP，手机装满APP也管不过来</p></div>
+<div class="pain-card"><div class="pain-icon">⚡</div><h3>离家忘关浪费电</h3><p>出门后才想起空调没关，电费白白浪费，安全隐患大</p></div>
+</div>
+</div>
+</section>
+<section class="section" id="features">
+<div class="container">
+<h2 class="section-title">核心功能</h2>
+<p class="section-sub">八大功能模块，全屋智能联动</p>
+<div class="features-grid">
+<div class="feature-card"><div class="feature-icon">💡</div><h4>灯光控制</h4><p>LoRa调光开关，亮度色温随心调节</p></div>
+<div class="feature-card"><div class="feature-icon">🪟</div><h4>窗帘控制</h4><p>窗帘电机自动开合，晨起自动开启</p></div>
+<div class="feature-card"><div class="feature-icon">❄️</div><h4>空调控制</h4><p>红外/协议双控制，温度定时自动调节</p></div>
+<div class="feature-card"><div class="feature-icon">🛡️</div><h4>安防联动</h4><p>门磁/烟感/摄像头联动，离家自动布防</p></div>
+<div class="feature-card"><div class="feature-icon">🎬</div><h4>场景模式</h4><p>回家/离家/睡眠/影院，一键切换</p></div>
+<div class="feature-card"><div class="feature-icon">📊</div><h4>能耗统计</h4><p>分时分类用电统计，节能有据可依</p></div>
+<div class="feature-card"><div class="feature-icon">🎙️</div><h4>语音控制</h4><p>支持小爱/Siri/小艺，说句话就控制</p></div>
+<div class="feature-card"><div class="feature-icon">⚙️</div><h4>自动化</h4><p>时间/传感器触发，设备自动运行</p></div>
+</div>
+</div>
+</section>
+<section class="section">
+<div class="container">
+<h2 class="section-title">工作流程</h2>
+<p class="section-sub">从安装到智能生活一步到位</p>
+<div class="flow-steps">
+<div class="flow-step"><div class="flow-num">1</div><h4>设备安装</h4><p>LoRa智能开关<br>快速替换</p></div>
+<div class="flow-step"><div class="flow-num">2</div><h4>网关连接</h4><p>一键入网<br>自动发现</p></div>
+<div class="flow-step"><div class="flow-num">3</div><h4>场景配置</h4><p>拖拽配置<br>所见即所得</p></div>
+<div class="flow-step"><div class="flow-num">4</div><h4>智能生活</h4><p>语音/APP<br>随时控制</p></div>
+</div>
+</div>
+</section>
+<section class="section" id="pricing">
+<div class="container">
+<div class="pricing">
+<h3>方案报价</h3>
+<div class="price">
+<div class="price-item"><div class="price-val">¥99起</div><div class="price-label">智能开关/个</div></div>
+<div class="price-item"><div class="price-val">¥299起</div><div class="price-label">窗帘电机/套</div></div>
+<div class="price-item"><div class="price-val">¥0.3-1万</div><div class="price-label">全屋套装</div></div>
+</div>
+</div>
+</div>
+</section>
+<section class="section">
+<div class="container">
+<div class="footer-cta">
+<h2>让家更聪明，让你更轻松</h2>
+<p>已服务 10万+ 家庭，设备在线率 99.5%</p>
+<a href="demo-25-智控云.html" class="btn">进入演示</a>
+</div>
+</div>
+</section>
+</body>
+</html>

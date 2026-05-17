@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>泊位智控 - 功能演示</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5/css/all.min.css">
+<style>
+:root{--blue:#38bdf8;--blue-dark:#0284c7;--blue-light:#7dd3fc;--blue-pale:#f0f9ff;--blue-gradient:linear-gradient(135deg,#38bdf8 0%,#0284c7 100%);--bg:#0f172a;--text:#e2e8f0;--text-light:#94a3b8;--white:#fff;--sidebar-w:240px;--radius:12px;--shadow:0 4px 24px rgba(56,189,248,.15);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Noto Sans SC',sans-serif;color:var(--text);background:var(--bg);height:100vh;overflow:hidden;}
+
+/* Layout */
+.layout{display:flex;height:100vh;}
+.sidebar{width:var(--sidebar-w);background:#1e293b;color:#fff;display:flex;flex-direction:column;flex-shrink:0;position:relative;z-index:10;}
+.sidebar-logo{padding:20px 24px;font-size:20px;font-weight:900;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.08);}
+.sidebar-logo i{font-size:22px;color:var(--blue);}
+.sidebar-nav{flex:1;overflow-y:auto;padding:12px 0;}
+.nav-item{padding:14px 24px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s;font-size:14px;font-weight:500;border-left:3px solid transparent;}
+.nav-item:hover{background:rgba(56,189,248,.1);}
+.nav-item.active{background:rgba(56,189,248,.15);border-left-color:var(--blue);color:var(--blue);}
+.nav-item i{width:20px;text-align:center;font-size:16px;}
+.nav-item .badge{background:var(--blue);color:#fff;padding:2px 8px;border-radius:10px;font-size:11px;margin-left:auto;}
+.sidebar-footer{padding:16px 24px;border-top:1px solid rgba(255,255,255,.08);font-size:12px;color:var(--text-light);}
+.sidebar-footer p{margin-bottom:4px;}
+
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{height:60px;background:#1e293b;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;padding:0 24px;gap:16px;flex-shrink:0;}
+.topbar h1{font-size:20px;font-weight:700;color:var(--blue);}
+.topbar-right{display:flex;align-items:center;gap:16px;margin-left:auto;}
+.topbar-btn{background:rgba(56,189,248,.1);border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;color:var(--blue);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;}
+.topbar-btn:hover{background:var(--blue);color:#fff;}
+.topbar-btn i{font-size:14px;}
+.user-avatar{width:36px;height:36px;border-radius:50%;background:var(--blue-gradient);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;cursor:pointer;}
+
+.content{flex:1;overflow-y:auto;padding:24px;}
+
+.card{background:#1e293b;border-radius:var(--radius);margin-bottom:20px;overflow:hidden;border:1px solid rgba(255,255,255,.06);}
+.card-header{padding:18px 24px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;}
+.card-header h3{font-size:16px;font-weight:700;color:#fff;}
+.card-header .card-actions{display:flex;gap:8px;}
+.card-header button{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid rgba(56,189,248,.3);background:transparent;color:var(--blue);transition:all .2s;}
+.card-header button:hover{background:var(--blue);color:#fff;}
+.card-header button.primary{background:var(--blue);color:#fff;border-color:var(--blue);}
+.card-body{padding:24px;}
+
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.stat-card{background:#1e293b;border-radius:var(--radius);padding:20px;border:1px solid rgba(255,255,255,.06);}
+.stat-card .stat-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.stat-card .stat-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.stat-card .stat-icon.blue{background:rgba(56,189,248,.15);color:var(--blue);}
+.stat-card .stat-icon.green{background:rgba(74,222,128,.15);color:#4ade80;}
+.stat-card .stat-icon.yellow{background:rgba(250,204,21,.15);color:#facc15;}
+.stat-card .stat-icon.purple{background:rgba(167,139,250,.15);color:#a78bfa;}
+.stat-card .stat-num{font-size:28px;font-weight:900;color:#fff;}
+.stat-card .stat-label{font-size:13px;color:var(--text-light);margin-top:4px;}
+
+.data-table{width:100%;border-collapse:collapse;font-size:14px;}
+.data-table th{background:rgba(56,189,248,.1);color:var(--blue);font-weight:600;padding:12px 16px;text-align:left;font-size:13px;}
+.data-table td{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--text);}
+.data-table tr:hover td{background:rgba(56,189,248,.05);}
+.data-table .tag{padding:3px 10px;border-radius:4px;font-size:12px;font-weight:500;}
+.data-table .tag.green{background:rgba(74,222,128,.15);color:#4ade80;}
+.data-table .tag.yellow{background:rgba(250,204,21,.15);color:#facc15;}
+.data-table .tag.red{background:rgba(248,113,113,.15);color:#f87171;}
+.data-table .actions{display:flex;gap:6px;}
+.data-table .actions button{width:28px;height:28px;border-radius:6px;border:none;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .2s;background:rgba(56,189,248,.1);color:var(--blue);}
+.data-table .actions button:hover{background:var(--blue);color:#fff;}
+
+.form-row{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:16px;}
+.form-group{margin-bottom:16px;}
+.form-group label{display:block;font-size:13px;font-weight:500;color:var(--text-light);margin-bottom:6px;}
+.form-group input,.form-group select{width:100%;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:#0f172a;color:#fff;font-size:14px;outline:none;transition:border-color .2s;}
+.form-group input:focus,.form-group select:focus{border-color:var(--blue);}
+.form-group input::placeholder{color:#475569;}
+
+.btn{ padding:10px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:all .2s;}
+.btn-primary{background:var(--blue);color:#fff;}
+.btn-primary:hover{background:var(--blue-dark);}
+.btn-outline{background:transparent;border:1px solid rgba(56,189,248,.3);color:var(--blue);}
+.btn-outline:hover{background:var(--blue);color:#fff;}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:1000;}
+.modal-overlay.show{display:flex;}
+.modal{background:#1e293b;border-radius:var(--radius);width:560px;max-width:95vw;border:1px solid rgba(255,255,255,.1);}
+.modal-header{padding:20px 24px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;}
+.modal-header h3{font-size:18px;font-weight:700;color:#fff;}
+.modal-header .close{width:32px;height:32px;border-radius:8px;border:none;background:rgba(255,255,255,.06);color:#fff;cursor:pointer;font-size:16px;}
+.modal-body{padding:24px;}
+.modal-footer{padding:16px 24px;border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:flex-end;gap:12px;}
+
+.bar-chart{display:flex;align-items:flex-end;gap:12px;height:160px;padding:20px 0;}
+.bar-chart .bar{width:40px;background:var(--blue);border-radius:6px 6px 0 0;position:relative;transition:height 1s ease;}
+.bar-chart .bar span{position:absolute;bottom:-24px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--text-light);}
+.bar-chart .bar::after{content:attr(data-val);position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:600;color:var(--blue);}
+
+.progress-bar{height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;}
+.progress-bar-fill{height:100%;border-radius:4px;background:var(--blue);}
+
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
+.live-dot{width:8px;height:8px;background:#4ade80;border-radius:50%;animation:pulse 2s infinite;}
+</style>
+</head>
+<body>
+<div class="layout">
+<div class="sidebar">
+<div class="sidebar-logo"><i class="fas fa-square-parking"></i> 泊位智控</div>
+<nav class="sidebar-nav">
+<div class="nav-item active"><i class="fas fa-chart-pie"></i> 车位概览</div>
+<div class="nav-item"><i class="fas fa-wave-square"></i> 地磁管理</div>
+<div class="nav-item"><i class="fas fa-money-bill-wave"></i> 收费管理</div>
+<div class="nav-item"><i class="fas fa-receipt"></i> 订单记录</div>
+<div class="nav-item"><i class="fas fa-exclamation-triangle"></i> 违停管理</div>
+<div class="nav-item"><i class="fas fa-chart-bar"></i> 数据报表</div>
+<div class="nav-item"><i class="fas fa-tools"></i> 设备维护</div>
+<div class="nav-item"><i class="fas fa-cog"></i> 系统设置</div>
+</nav>
+<div class="sidebar-footer">
+<p><i class="fas fa-microchip"></i> 设备在线: 318/320</p>
+<p><i class="fas fa-signal"></i> 系统正常</p>
+</div>
+</div>
+
+<div class="main">
+<div class="topbar">
+<h1>车位概览</h1>
+<span class="live-dot"></span>
+<span style="font-size:13px;color:var(--text-light)">实时数据</span>
+<div class="topbar-right">
+<button class="topbar-btn"><i class="fas fa-download"></i> 导出报表</button>
+<button class="topbar-btn" onclick="openModal('addModal')"><i class="fas fa-plus"></i> 添加车位</button>
+<div class="user-avatar">张</div>
+</div>
+</div>
+
+<div class="content">
+<div class="stats-grid">
+<div class="stat-card">
+<div class="stat-top">
+<div class="stat-icon blue"><i class="fas fa-parking"></i></div>
+</div>
+<div class="stat-num">320</div>
+<div class="stat-label">车位总数</div>
+</div>
+<div class="stat-card">
+<div class="stat-top">
+<div class="stat-icon green"><i class="fas fa-percentage"></i></div>
+</div>
+<div class="stat-num">67%</div>
+<div class="stat-label">占用率</div>
+</div>
+<div class="stat-card">
+<div class="stat-top">
+<div class="stat-icon yellow"><i class="fas fa-coins"></i></div>
+</div>
+<div class="stat-num">¥4820</div>
+<div class="stat-label">日收入</div>
+</div>
+<div class="stat-card">
+<div class="stat-top">
+<div class="stat-icon purple"><i class="fas fa-car"></i></div>
+</div>
+<div class="stat-num">214</div>
+<div class="stat-label">当前停车</div>
+</div>
+</div>
+
+<div class="card">
+<div class="card-header">
+<h3>车位状态明细</h3>
+<div class="card-actions">
+<button>刷新</button>
+</div>
+</div>
+<div class="card-body">
+<table class="data-table">
+<thead><tr><th>车位编号</th><th>区域</th><th>状态</th><th>车牌号</th><th>入场时间</th><th>费用(元)</th><th>操作</th></tr></thead>
+<tbody>
+<tr><td>A001</td><td>A区</td><td><span class="tag green">正常</span></td><td>苏A88888</td><td>2024-06-15 09:23</td><td>¥15.00</td><td><div class="actions"><button class="edit" onclick="openModal('editModal')"><i class="fas fa-pen"></i></button><button><i class="fas fa-eye"></i></button></div></td></tr>
+<tr><td>A002</td><td>A区</td><td><span class="tag yellow">欠费</span></td><td>苏B12345</td><td>2024-06-14 22:15</td><td>¥48.00</td><td><div class="actions"><button class="edit" onclick="openModal('editModal')"><i class="fas fa-pen"></i></button><button><i class="fas fa-eye"></i></button></div></td></tr>
+<tr><td>A003</td><td>A区</td><td><span class="tag green">正常</span></td><td>苏C66666</td><td>2024-06-15 11:45</td><td>¥8.00</td><td><div class="actions"><button class="edit" onclick="openModal('editModal')"><i class="fas fa-pen"></i></button><button><i class="fas fa-eye"></i></button></div></td></tr>
+<tr><td>B001</td><td>B区</td><td><span class="tag red">故障</span></td><td>-</td><td>-</td><td>-</td><td><div class="actions"><button class="edit" onclick="openModal('editModal')"><i class="fas fa-pen"></i></button><button><i class="fas fa-wrench"></i></button></div></td></tr>
+<tr><td>B002</td><td>B区</td><td><span class="tag green">正常</span></td><td>苏D98765</td><td>2024-06-15 08:30</td><td>¥20.00</td><td><div class="actions"><button class="edit" onclick="openModal('editModal')"><i class="fas fa-pen"></i></button><button><i class="fas fa-eye"></i></button></div></td></tr>
+<tr><td>B003</td><td>B区</td><td><span class="tag green">正常</span></td><td>苏E11223</td><td>2024-06-15 10:12</td><td>¥12.00</td><td><div class="actions"><button class="edit" onclick="openModal('editModal')"><i class="fas fa-pen"></i></button><button><i class="fas fa-eye"></i></button></div></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div class="card">
+<div class="card-header">
+<h3>今日收入趋势</h3>
+</div>
+<div class="card-body">
+<div class="bar-chart">
+<div class="bar" style="height:40%" data-val="¥320"><span>6h</span></div>
+<div class="bar" style="height:65%" data-val="¥580"><span>8h</span></div>
+<div class="bar" style="height:80%" data-val="¥850"><span>10h</span></div>
+<div class="bar" style="height:95%" data-val="¥1200"><span>12h</span></div>
+<div class="bar" style="height:85%" data-val="¥980"><span>14h</span></div>
+<div class="bar" style="height:70%" data-val="¥690"><span>16h</span></div>
+<div class="bar" style="height:50%" data-val="¥480"><span>18h</span></div>
+</div>
+</div>
+</div>
+
+<div class="card">
+<div class="card-header">
+<h3>最近订单</h3>
+<div class="card-actions"><button>查看全部</button></div>
+</div>
+<div class="card-body">
+<table class="data-table">
+<thead><tr><th>流水号</th><th>车牌</th><th>入场</th><th>出场</th><th>金额</th><th>状态</th></tr></thead>
+<tbody>
+<tr><td>A20240615001</td><td>苏A88888</td><td>09:23</td><td>14:05</td><td>¥15.00</td><td><span class="tag green">已结清</span></td></tr>
+<tr><td>A20240615002</td><td>苏B12345</td><td>22:15</td><td>-</td><td>¥48.00</td><td><span class="tag yellow">欠费</span></td></tr>
+<tr><td>A20240615003</td><td>苏C66666</td><td>11:45</td><td>13:20</td><td>¥8.00</td><td><span class="tag green">已结清</span></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 添加车位弹窗 -->
+<div class="modal-overlay" id="addModal">
+<div class="modal">
+<div class="modal-header">
+<h3>添加车位</h3>
+<button class="close" onclick="closeModal('addModal')">✕</button>
+</div>
+<div class="modal-body">
+<div class="form-row">
+<div class="form-group">
+<label>车位编号</label>
+<input type="text" placeholder="如 A001">
+</div>
+<div class="form-group">
+<label>所属区域</label>
+<select><option>请选择</option><option>A区</option><option>B区</option><option>C区</option></select>
+</div>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label>车位类型</label>
+<select><option>请选择</option><option>普通</option><option>VIP</option><option>新能源</option></select>
+</div>
+<div class="form-group">
+<label>地磁编号</label>
+<input type="text" placeholder="输入地磁设备ID">
+</div>
+</div>
+<div class="form-group">
+<label>备注</label>
+<input type="text" placeholder="选填">
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-outline" onclick="closeModal('addModal')">取消</button>
+<button class="btn btn-primary">确认添加</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 编辑车位弹窗 -->
+<div class="modal-overlay" id="editModal">
+<div class="modal">
+<div class="modal-header">
+<h3>编辑车位</h3>
+<button class="close" onclick="closeModal('editModal')">✕</button>
+</div>
+<div class="modal-body">
+<div class="form-row">
+<div class="form-group">
+<label>车位编号</label>
+<input type="text" value="A001">
+</div>
+<div class="form-group">
+<label>所属区域</label>
+<select><option>A区</option><option>B区</option><option>C区</option></select>
+</div>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label>状态</label>
+<select><option>正常</option><option>故障</option><option>维护中</option></select>
+</div>
+<div class="form-group">
+<label>费用(元/小时)</label>
+<input type="number" value="5">
+</div>
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-outline" onclick="closeModal('editModal')">取消</button>
+<button class="btn btn-primary">保存修改</button>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+function openModal(id){document.getElementById(id).classList.add('show');}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+document.querySelectorAll('.nav-item').forEach(item=>{
+item.addEventListener('click',function(){
+document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+this.classList.add('active');
+});
+});
+</script>
+</body>
+</html>

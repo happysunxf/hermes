@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>客流通 - 景区客流统计平台</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5/css/all.min.css">
+<style>
+:root{--purple:#a78bfa;--purple-dark:#7c3aed;--purple-light:#c4b5fd;--purple-pale:#f5f3ff;--purple-gradient:linear-gradient(135deg,#a78bfa 0%,#7c3aed 100%);--bg:#F5F7FA;--text:#1e293b;--text-light:#64748b;--white:#fff;--radius:12px;--shadow:0 4px 24px rgba(167,139,250,.12);--shadow-lg:0 12px 48px rgba(167,139,250,.18);}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Noto Sans SC',sans-serif;color:var(--text);background:var(--bg);line-height:1.6;}
+
+/* Nav */
+.nav{position:fixed;top:0;left:0;right:0;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);z-index:1000;border-bottom:1px solid rgba(167,139,250,.08);padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:64px;}
+.nav-logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:20px;color:var(--purple-dark);}
+.nav-logo i{font-size:24px;}
+.nav-links{display:flex;gap:32px;align-items:center;}
+.nav-links a{text-decoration:none;color:var(--text);font-size:14px;font-weight:500;transition:color .2s;}
+.nav-links a:hover{color:var(--purple);}
+.nav-cta{background:var(--purple-gradient);color:#fff;border:none;padding:10px 24px;border-radius:50px;font-size:14px;font-weight:600;cursor:pointer;transition:transform .2s,box-shadow .2s;}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:var(--shadow);}
+
+/* Hero */
+.hero{padding:140px 0 80px;text-align:center;background:linear-gradient(180deg,#f5f3ff 0%,var(--bg) 100%);}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--purple-pale);color:var(--purple-dark);padding:6px 16px;border-radius:50px;font-size:13px;font-weight:600;margin-bottom:24px;border:1px solid rgba(167,139,250,.15);}
+.hero h1{font-size:clamp(36px,6vw,60px);font-weight:900;color:var(--purple-dark);line-height:1.15;margin-bottom:16px;}
+.hero h1 span{background:var(--purple-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero p{font-size:18px;color:var(--text-light);max-width:640px;margin:0 auto 40px;}
+.hero-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+.btn-primary{background:var(--purple-gradient);color:#fff;border:none;padding:14px 36px;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;transition:all .3s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);}
+.btn-outline{background:transparent;color:var(--purple-dark);border:2px solid var(--purple);padding:14px 36px;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;transition:all .3s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+.btn-outline:hover{background:var(--purple-pale);}
+
+/* Features */
+.features{padding:80px 0;}
+.section-title{text-align:center;margin-bottom:48px;}
+.section-title h2{font-size:36px;font-weight:900;color:var(--purple-dark);margin-bottom:12px;}
+.section-title p{font-size:16px;color:var(--text-light);}
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;}
+.feature-card{background:#fff;border-radius:var(--radius);padding:32px;box-shadow:var(--shadow);border:1px solid rgba(167,139,250,.06);transition:transform .3s;}
+.feature-card:hover{transform:translateY(-4px);}
+.feature-icon{width:56px;height:56px;border-radius:14px;background:var(--purple-pale);display:flex;align-items:center;justify-content:center;margin-bottom:20px;}
+.feature-icon i{font-size:24px;color:var(--purple);}
+.feature-card h3{font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.feature-card p{font-size:14px;color:var(--text-light);}
+
+/* HIK */
+.hik-section{padding:80px 0;background:linear-gradient(135deg,#1a0a2e 0%,#2d1454 100%);color:#fff;}
+.hik-content{max-width:1200px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;}
+.hik-section h2{font-size:36px;font-weight:900;margin-bottom:20px;}
+.hik-section p{font-size:16px;color:rgba(255,255,255,.7);margin-bottom:32px;line-height:1.8;}
+.hik-stats{display:flex;gap:32px;}
+.hik-stat{}
+.hik-stat .num{font-size:32px;font-weight:900;color:var(--purple-light);}
+.hik-stat .lbl{font-size:13px;color:rgba(255,255,255,.5);}
+.hik-products{background:rgba(167,139,250,.08);border-radius:16px;padding:32px;border:1px solid rgba(167,139,250,.15);}
+.hik-products h3{font-size:18px;font-weight:700;margin-bottom:20px;color:var(--purple-light);}
+.product-item{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06);}
+.product-item:last-child{border:none;}
+.product-name{font-size:14px;color:rgba(255,255,255,.8);}
+.product-val{font-size:14px;font-weight:600;color:var(--purple-light);}
+
+/* Heatmap */
+.heat-section{padding:80px 0;}
+.heat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:32px;}
+.heat-card{background:#fff;border-radius:var(--radius);padding:32px;box-shadow:var(--shadow);border:1px solid rgba(167,139,250,.06);}
+.heat-card h3{font-size:18px;font-weight:700;color:var(--purple-dark);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.heat-bar{height:8px;background:#f1f5f9;border-radius:4px;overflow:hidden;margin-top:16px;}
+.heat-bar-fill{height:100%;border-radius:4px;background:var(--purple-gradient);transition:width 1s ease;}
+.heat-list{list-style:none;margin-top:16px;}
+.heat-list li{padding:10px 0;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;font-size:14px;}
+.heat-list li:last-child{border:none;}
+.heat-zone{font-weight:600;color:var(--text);}
+.heat-val{color:var(--purple);font-weight:600;}
+
+/* CTA */
+.cta-section{padding:80px 0;background:var(--purple-gradient);text-align:center;color:#fff;}
+.cta-section h2{font-size:36px;font-weight:900;margin-bottom:16px;}
+.cta-section p{font-size:18px;opacity:.85;margin-bottom:32px;}
+.cta-section .btn-dark{background:#1e293b;color:#fff;border:none;padding:14px 36px;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;transition:all .3s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+.cta-section .btn-dark:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.2);}
+
+/* Footer */
+.footer{padding:40px 0;background:#1e293b;color:#94a3b8;font-size:14px;text-align:center;}
+.footer a{color:var(--purple-light);text-decoration:none;}
+
+@media(max-width:768px){
+.hik-content{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<nav class="nav">
+<div class="nav-logo"><i class="fas fa-chart-area"></i> 客流通</div>
+<div class="nav-links">
+<a href="#">产品</a><a href="#">方案</a><a href="#">案例</a><a href="#">关于</a>
+</div>
+<button class="nav-cta">预约演示</button>
+</nav>
+
+<section class="hero">
+<div class="container">
+<div class="hero-badge"><i class="fas fa-camera"></i> 海康威视合作</div>
+<h1>景区客流<span>智能统计</span>分析平台</h1>
+<p>基于海康客流统计摄像头，实时监测景区人流密度，AI限流预警保障安全</p>
+<div class="hero-actions">
+<button class="btn-primary"><i class="fas fa-play"></i> 立即体验</button>
+<button class="btn-outline"><i class="fas fa-file-alt"></i> 下载方案</button>
+</div>
+<div class="hero-stats">
+<div class="stat-item"><div class="stat-number">98.5%</div><div class="stat-label">客流识别准确率</div></div>
+<div class="stat-item"><div class="stat-number">实时</div><div class="stat-label">人流密度监测</div></div>
+<div class="stat-item"><div class="stat-number">秒级</div><div class="stat-label">预警响应</div></div>
+</div>
+</div>
+</section>
+
+<section class="features">
+<div class="container">
+<div class="section-title">
+<h2>核心功能</h2>
+<p>从入园到离园，全链路客流大数据分析</p>
+</div>
+<div class="feature-grid">
+<div class="feature-card">
+<div class="feature-icon"><i class="fas fa-users"></i></div>
+<h3>实时客流统计</h3>
+<p>AI双探头精准计数，入园/出园/滞留人数实时展示，分钟级数据刷新</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon"><i class="fas fa-bell"></i></div>
+<h3>限流预警</h3>
+<p>自定义阈值规则，超限自动声光报警/短信通知，联动闸机限流</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon"><i class="fas fa-fire"></i></div>
+<h3>热力图分析</h3>
+<p>热力图直观展示区域拥挤程度，优化导览路线和人员调度</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon"><i class="fas fa-history"></i></div>
+<h3>历史数据挖掘</h3>
+<p>多维度统计分析，高峰期预测，辅助运营决策和营销策略</p>
+</div>
+</div>
+</div>
+</section>
+
+<section class="hik-section">
+<div class="hik-content">
+<div>
+<h2>海康客流统计方案</h2>
+<p>客流通深度集成海康威视客流统计半球和网络摄像机，内置深度学习算法，有效过滤购物车、婴儿车等干扰，准确率行业领先。</p>
+<div class="hik-stats">
+<div class="hik-stat"><div class="num">98%+</div><div class="lbl">识别准确率</div></div>
+<div class="hik-stat"><div class="num">2MP</div><div class="lbl">高清双摄</div></div>
+<div class="hik-stat"><div class="num">POE</div><div class="lbl">供电方式</div></div>
+</div>
+</div>
+<div class="hik-products">
+<h3>推荐设备型号</h3>
+<div class="product-item"><span class="product-name">DS-2CD6425FWD-C1 客流筒机</span><span class="product-val">主推</span></div>
+<div class="product-item"><span class="product-name">DS-2CD3T46FWDV2 海螺半球</span><span class="product-val">性价比</span></div>
+<div class="product-item"><span class="product-name">iDS-2PT9124 鱼眼全景</span><span class="product-val">室内大场景</span></div>
+<div class="product-item"><span class="product-name">NVR 存储服务器</span><span class="product-val">配套</span></div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="heat-section">
+<div class="container">
+<div class="section-title">
+<h2>热力分析与限流配置</h2>
+<p>景区各区域实时拥挤度一目了然</p>
+</div>
+<div class="heat-grid">
+<div class="heat-card">
+<h3><i class="fas fa-fire"></i> 当前热力分布</h3>
+<div class="heat-bar"><div class="heat-bar-fill" style="width:85%"></div></div>
+<div class="heat-list">
+<li><span class="heat-zone">主入口广场</span><span class="heat-val">85% 拥挤</span></li>
+<li><span class="heat-zone">山顶观景台</span><span class="heat-val">67% 适中</span></li>
+<li><span class="heat-zone">漂流起点</span><span class="heat-val">92% 拥挤</span></li>
+<li><span class="heat-zone">停车场</span><span class="heat-val">45% 空闲</span></li>
+</div>
+</div>
+<div class="heat-card">
+<h3><i class="fas fa-cog"></i> 限流阈值配置</h3>
+<div class="heat-bar"><div class="heat-bar-fill" style="width:70%"></div></div>
+<div class="heat-list">
+<li><span class="heat-zone">主入口广场</span><span class="heat-val">上限2000人</span></li>
+<li><span class="heat-zone">漂流区域</span><span class="heat-val">上限500人</span></li>
+<li><span class="heat-zone">缆车车厢</span><span class="heat-val">限80%满载</span></li>
+<li><span class="heat-zone">休息驿站</span><span class="heat-val">上限300人</span></li>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="cta-section">
+<div class="container">
+<h2>提升景区运营与安全管理</h2>
+<p>获取免费景区客流解决方案和设备配置方案</p>
+<a href="#" class="btn-dark"><i class="fas fa-phone"></i> 立即咨询</a>
+</div>
+</section>
+
+<footer class="footer">
+<p>© 2024 客流通 版权所有 | <a href="#">隐私政策</a> | <a href="#">使用条款</a></p>
+</footer>
+</body>
+</html>

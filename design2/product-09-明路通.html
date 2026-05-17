@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>明路通 - 路灯单灯监控专家</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:#0a0a0f;color:#e5e5e5;line-height:1.6}
+.container{max-width:1200px;margin:0 auto;padding:0 20px}
+/* nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,10,15,.95);border-bottom:1px solid rgba(251,191,36,.2);padding:0 20px}
+nav .inner{display:flex;align-items:center;justify-content:space-between;height:64px;max-width:1200px;margin:0 auto}
+.logo{font-size:20px;font-weight:700;color:#fbbf24}
+.logo span{color:#fbbf24}
+.menu{display:flex;gap:32px}
+.menu a{color:#999;text-decoration:none;font-size:14px;transition:color .3s}
+.menu a:hover{color:#fbbf24}
+.btn-nav{background:#fbbf24;color:#0a0a0f!important;padding:8px 20px;border-radius:6px;font-weight:600;text-decoration:none;font-size:14px}
+/* hero */
+.hero{padding:160px 0 100px;text-align:center;background:linear-gradient(180deg,#111118 0%,#0a0a0f 100%)}
+.hero h1{font-size:56px;font-weight:800;margin-bottom:16px}
+.hero h1 .accent{color:#fbbf24}
+.hero p{font-size:20px;color:#999;max-width:700px;margin:0 auto 40px}
+.stats{display:flex;justify-content:center;gap:60px;margin-bottom:50px;flex-wrap:wrap}
+.stat{text-align:center}
+.stat .num{font-size:48px;font-weight:800;color:#fbbf24}
+.stat .label{font-size:14px;color:#888}
+.ctas{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:8px;font-weight:600;font-size:16px;text-decoration:none;transition:all .3s}
+.btn-primary{background:#fbbf24;color:#0a0a0f}
+.btn-primary:hover{background:#f59e0b}
+.btn-outline{background:transparent;border:2px solid #fbbf24;color:#fbbf24}
+.btn-outline:hover{background:rgba(251,191,36,.1)}
+/* pain */
+.pain{padding:80px 0;background:#0f0f16}
+.section-title{text-align:center;font-size:36px;font-weight:700;margin-bottom:16px}
+.section-sub{text-align:center;color:#888;margin-bottom:50px;font-size:16px}
+.pain-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+.pain-card{background:#1a1a24;border-radius:12px;padding:32px;border:1px solid rgba(251,191,36,.15)}
+.pain-card h3{color:#fbbf24;font-size:20px;margin-bottom:12px}
+.pain-card p{color:#999;font-size:14px}
+/* features */
+.features{padding:80px 0}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
+.feature-card{background:#141420;border-radius:10px;padding:28px;border:1px solid rgba(255,255,255,.06)}
+.feature-card .icon{font-size:32px;margin-bottom:16px}
+.feature-card h3{font-size:18px;font-weight:600;margin-bottom:10px;color:#fff}
+.feature-card p{font-size:13px;color:#888;line-height:1.7}
+/* flow */
+.flow{padding:80px 0;background:#0f0f16}
+.flow-steps{display:flex;justify-content:space-between;max-width:900px;margin:0 auto;position:relative;flex-wrap:wrap;gap:20px}
+.flow-steps::before{content:'';position:absolute;top:35px;left:80px;right:80px;height:2px;background:linear-gradient(90deg,#fbbf24,#f59e0b);z-index:0}
+.step{text-align:center;flex:1;min-width:180px;position:relative;z-index:1}
+.step-num{width:70px;height:70px;border-radius:50%;background:#fbbf24;color:#0a0a0f;font-size:24px;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.step h4{font-size:16px;font-weight:600;margin-bottom:8px}
+.step p{font-size:13px;color:#888}
+/* pricing */
+.pricing{padding:80px 0}
+.pricing-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;max-width:900px;margin:0 auto}
+.price-card{background:#141420;border-radius:12px;padding:40px 32px;text-align:center;border:1px solid rgba(251,191,36,.2)}
+.price-card.popular{border-color:#fbbf24;position:relative}
+.price-card.popular::before{content:'推荐';position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#fbbf24;color:#0a0a0f;padding:4px 16px;border-radius:20px;font-size:12px;font-weight:700}
+.price-card h3{font-size:22px;margin-bottom:8px}
+.price-card .price{font-size:36px;font-weight:800;color:#fbbf24;margin:16px 0}
+.price-card .price span{font-size:14px;color:#888;font-weight:400}
+.price-card ul{list-style:none;text-align:left;margin:20px 0}
+.price-card li{padding:8px 0;color:#aaa;font-size:14px;border-bottom:1px solid rgba(255,255,255,.05)}
+.price-card li::before{content:'✓ ';color:#fbbf24;margin-right:8px}
+/* cta footer */
+.cta-footer{padding:100px 0;text-align:center;background:linear-gradient(180deg,#0a0a0f 0%,#1a1a24 100%)}
+.cta-footer h2{font-size:40px;font-weight:700;margin-bottom:16px}
+.cta-footer p{color:#888;margin-bottom:32px;font-size:18px}
+/* footer */
+footer{background:#0a0a0f;border-top:1px solid rgba(255,255,255,.06);padding:40px 0;text-align:center;color:#555;font-size:13px}
+</style>
+</head>
+<body>
+<nav>
+<div class="inner">
+<div class="logo">智慧城市<span>方案</span></div>
+<div class="menu">
+<a href="#">产品</a>
+<a href="#">方案</a>
+<a href="#">案例</a>
+<a href="#">资讯</a>
+</div>
+<a href="#" class="btn-nav">获取方案</a>
+</div>
+</nav>
+<section class="hero">
+<div class="container">
+<h1>明路通 <span class="accent">路灯单灯监控专家</span></h1>
+<p>基于顺舟/佰润单灯控制器，实现路灯按需开关灯、故障报警与节能调光，助您打造智慧路灯管理新模式</p>
+<div class="stats">
+<div class="stat"><div class="num">95%</div><div class="label">故障检出率</div></div>
+<div class="stat"><div class="num">50%</div><div class="label">综合节能率</div></div>
+<div class="stat"><div class="num">24h</div><div class="label">全天候监控</div></div>
+</div>
+<div class="ctas">
+<a href="#" class="btn btn-primary">获取方案报价</a>
+<a href="#" class="btn btn-outline">查看功能详情</a>
+<a href="#" class="btn btn-outline">在线演示</a>
+</div>
+</div>
+</section>
+<section class="pain">
+<div class="container">
+<h2 class="section-title">面临的挑战</h2>
+<p class="section-sub">市政、路灯处、物业管理部门共同面临的难题</p>
+<div class="pain-grid">
+<div class="pain-card">
+<h3>市政管理部门</h3>
+<p>路灯分布广、数量多，传统人工巡检效率低、成本高，难以及时发现故障，无法掌握整体运行状态</p>
+</div>
+<div class="pain-card">
+<h3>路灯管理处</h3>
+<p>开关灯时间固定，无法根据天气、人流动态调整，照明过亮或不足影响市民体验，存在能源浪费</p>
+</div>
+<div class="pain-card">
+<h3>物业管理单位</h3>
+<p>路灯故障响应慢、维修周期长，缺乏数据支撑的维保决策，路灯寿命难以预测，运维成本居高不下</p>
+</div>
+</div>
+</div>
+</section>
+<section class="features">
+<div class="container">
+<h2 class="section-title">核心功能</h2>
+<p class="section-sub">8大核心功能模块，覆盖路灯管理全场景</p>
+<div class="features-grid">
+<div class="feature-card">
+<div class="icon">💡</div>
+<h3>单灯控制器</h3>
+<p>支持顺舟、佰润等主流单灯控制器，兼容NEMA接口，实现单盏路灯独立开关与调光</p>
+</div>
+<div class="feature-card">
+<div class="icon">🗺️</div>
+<h3>GIS地图管理</h3>
+<p>基于电子地图展示路灯位置、状态与分组信息，支持框选、区域批量控制操作</p>
+</div>
+<div class="feature-card">
+<div class="icon">📡</div>
+<h3>无线通信集成</h3>
+<p>支持LoRa、NB-IoT、4G多种通信方式，灵活适应不同部署场景与成本需求</p>
+</div>
+<div class="feature-card">
+<div class="icon">⚡</div>
+<h3>按需开关灯</h3>
+<p>根据经纬度日出日落时间表自动开关灯，支持节假日、特殊天气临时策略调整</p>
+</div>
+<div class="feature-card">
+<div class="icon">📊</div>
+<h3>能耗统计</h3>
+<p>实时采集各路段、每盏灯的用电数据，自动生成日报、月报、年报，支撑节能分析</p>
+</div>
+<div class="feature-card">
+<div class="icon">🚨</div>
+<h3>故障报警</h3>
+<p>实时监测电流、电压、功率异常，5秒内触发短信、APP、语音多渠道报警通知</p>
+</div>
+<div class="feature-card">
+<div class="icon">🌙</div>
+<h3>节能调光</h3>
+<p>支持分时段、分区域调光策略，深夜自动降低亮度，综合节能率高达50%以上</p>
+</div>
+<div class="feature-card">
+<div class="icon">📱</div>
+<h3>移动运维</h3>
+<p>手机APP/小程序支持故障查看、定位导航、维修派单、拍照上传全流程移动化运维</p>
+</div>
+</div>
+</div>
+</section>
+<section class="flow">
+<div class="container">
+<h2 class="section-title">快速部署流程</h2>
+<p class="section-sub">4步完成智慧路灯系统建设</p>
+<div class="flow-steps">
+<div class="step">
+<div class="step-num">1</div>
+<h4>现场勘测</h4>
+<p>勘察路灯类型、杆距、供电条件确定通信方案</p>
+</div>
+<div class="step">
+<div class="step-num">2</div>
+<h4>设备安装</h4>
+<p>加装单灯控制器与集中器，改造工作量小</p>
+</div>
+<div class="step">
+<div class="step-num">3</div>
+<h4>平台接入</h4>
+<p>配置通信参数，接入云平台完成数据绑定</p>
+</div>
+<div class="step">
+<div class="step-num">4</div>
+<h4>交付运维</h4>
+<p>培训运维人员，提供持续技术支持</p>
+</div>
+</div>
+</div>
+</section>
+<section class="pricing">
+<div class="container">
+<h2 class="section-title">灵活定价方案</h2>
+<p class="section-sub">按实际路段规模灵活选择，适合不同项目预算</p>
+<div class="pricing-cards">
+<div class="price-card">
+<h3>基础版</h3>
+<div class="price">3万<span>/路段</span></div>
+<p>≤50盏灯，适合社区、园区路灯改造</p>
+<ul>
+<li>单灯控制器接入</li>
+<li>基础开关灯策略</li>
+<li>故障短信报警</li>
+<li>移动端查看</li>
+<li>月度数据报表</li>
+</ul>
+<a href="#" class="btn btn-outline" style="width:100%;margin-top:20px">了解更多</a>
+</div>
+<div class="price-card popular">
+<h3>标准版</h3>
+<div class="price">6万<span>/路段</span></div>
+<p>≤150盏灯，适合城区街道照明管理</p>
+<ul>
+<li>全部基础功能</li>
+<li>GIS地图管理</li>
+<li>节能调光策略</li>
+<li>能耗统计分析</li>
+<li>移动运维派单</li>
+</ul>
+<a href="#" class="btn btn-primary" style="width:100%;margin-top:20px">获取报价</a>
+</div>
+<div class="price-card">
+<h3>高级版</h3>
+<div class="price">10万<span>/路段</span></div>
+<p>≤500盏灯，适合城市级路灯统一管控</p>
+<ul>
+<li>全部标准功能</li>
+<li>多级组织管理</li>
+<li>多通信方式混合组网</li>
+<li>开放API接口</li>
+<li>专属运维服务</li>
+</ul>
+<a href="#" class="btn btn-outline" style="width:100%;margin-top:20px">联系我们</a>
+</div>
+</div>
+</div>
+</section>
+<section class="cta-footer">
+<div class="container">
+<h2>让每一盏路灯都智能可控</h2>
+<p>立即申请免费演示，体验智慧路灯管理平台</p>
+<div class="ctas">
+<a href="#" class="btn btn-primary">预约产品演示</a>
+<a href="#" class="btn btn-outline">下载产品资料</a>
+</div>
+</div>
+</section>
+<footer>
+<div class="container">
+<p>© 2024 明路通智慧路灯管理系统 | 智慧城市照明解决方案供应商</p>
+</div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>净塘卫士 — 水产养殖智能监控系统</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  *{font-family:'Noto Sans SC',sans-serif}
+  :root{--blue-50:#eff6ff;--blue-100:#dbeafe;--blue-200:#bfdbfe;--blue-300:#93c5fd;--blue-400:#60a5fa;--blue-500:#3b82f6;--blue-600:#2563eb;--blue-700:#1d4ed8;--blue-800:#1e3a8a;--blue-900:#1e1b4b}
+  body{min-height:100vh;background:#f8fcff}
+  .hero-gradient{background:linear-gradient(135deg,#1e3a5f 0%,#1d4ed8 40%,#3b82f6 100%)}
+  .card-hover{transition:all .3s ease}
+  .card-hover:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(37,99,235,.15)}
+  .feature-icon{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px}
+  .pricing-card{transition:all .3s ease}
+  .pricing-card:hover{transform:translateY(-6px);box-shadow:0 20px 60px rgba(37,99,235,.12)}
+  .pricing-popular{border:2px solid #3b82f6;position:relative}
+  .nav-blur{backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+  .text-gradient{background:linear-gradient(135deg,#3b82f6,#1d4ed8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  @keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+  .animate-fadeInUp{animation:fadeInUp .8s ease forwards}
+  .stat-counter{font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body class="text-gray-800">
+
+<!-- Nav -->
+<nav class="fixed top-0 w-full z-50 nav-blur bg-white/80 border-b border-blue-100">
+  <div class="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm">净</div>
+      <span class="font-bold text-lg text-blue-800">净塘卫士</span>
+    </div>
+    <div class="hidden md:flex items-center gap-8 text-sm text-gray-600">
+      <a href="#pain" class="hover:text-blue-600 transition">痛点</a>
+      <a href="#features" class="hover:text-blue-600 transition">功能</a>
+      <a href="#flow" class="hover:text-blue-600 transition">流程</a>
+      <a href="#pricing" class="hover:text-blue-600 transition">定价</a>
+    </div>
+    <div class="flex items-center gap-3">
+      <button class="px-4 py-2 text-sm text-blue-700 font-medium hover:bg-blue-50 rounded-lg transition">登录</button>
+      <button class="px-4 py-2 text-sm bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition">免费试用</button>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero-gradient min-h-screen flex items-center pt-16 relative overflow-hidden">
+  <div class="absolute inset-0 opacity-10" style="background-image:url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.4\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')"></div>
+  <div class="max-w-7xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center relative z-10">
+    <div class="text-white animate-fadeInUp">
+      <div class="inline-flex items-center gap-2 bg-white/20 rounded-full px-4 py-1.5 text-sm mb-6">
+        <span class="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></span>
+        水产养殖智能监控平台
+      </div>
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-black leading-tight mb-6">
+        养好每一塘鱼<br>从智能监控开始
+      </h1>
+      <p class="text-lg text-blue-100 leading-relaxed mb-8 max-w-lg">
+        净塘卫士融合物联网与AI技术，对溶解氧、水温、pH等关键指标进行24小时实时监测与智能预警，自动联动增氧机等设备，让养殖更轻松、更高效。
+      </p>
+      <div class="flex flex-wrap gap-4">
+        <button class="px-8 py-3.5 bg-white text-blue-700 font-bold rounded-xl hover:bg-blue-50 transition shadow-lg shadow-blue-900/20">
+          获取方案
+        </button>
+        <button class="px-8 py-3.5 border-2 border-white/40 text-white font-bold rounded-xl hover:bg-white/10 transition flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          查看功能
+        </button>
+        <button class="px-8 py-3.5 border-2 border-blue-400/40 text-white font-bold rounded-xl hover:bg-blue-500/20 transition flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          在线演示
+        </button>
+      </div>
+      <div class="flex gap-8 mt-10 text-sm text-blue-100">
+        <div><div class="text-2xl font-bold text-white stat-counter">2000+</div><div>接入塘口</div></div>
+        <div><div class="text-2xl font-bold text-white stat-counter">99.2%</div><div>设备在线率</div></div>
+        <div><div class="text-2xl font-bold text-white stat-counter">30%</div><div>降低增氧能耗</div></div>
+      </div>
+    </div>
+    <div class="hidden md:flex justify-center animate-fadeInUp" style="animation-delay:.3s">
+      <div class="relative w-96 h-96">
+        <div class="absolute inset-0 bg-white/10 rounded-3xl backdrop-blur-sm border border-white/20 flex items-center justify-center">
+          <div class="text-center text-white p-8">
+            <div class="text-7xl mb-4">🐟</div>
+            <div class="text-xl font-bold mb-2">水质监控中心</div>
+            <div class="text-blue-200 text-sm">实时监测 · 智能预警 · 自动增氧</div>
+            <div class="mt-6 grid grid-cols-2 gap-3 text-left text-sm">
+              <div class="bg-white/10 rounded-lg p-3"><div class="text-xs text-blue-200">溶解氧 DO</div><div class="font-bold text-blue-300">7.2 mg/L</div></div>
+              <div class="bg-white/10 rounded-lg p-3"><div class="text-xs text-blue-200">水温</div><div class="font-bold text-blue-300">26.4°C</div></div>
+              <div class="bg-white/10 rounded-lg p-3"><div class="text-xs text-blue-200">pH值</div><div class="font-bold text-blue-300">7.3</div></div>
+              <div class="bg-white/10 rounded-lg p-3"><div class="text-xs text-blue-200">氨氮</div><div class="font-bold text-green-400">0.12 mg/L</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="absolute -top-4 -right-4 w-20 h-20 bg-blue-400/30 rounded-full animate-pulse"></div>
+        <div class="absolute -bottom-6 -left-6 w-32 h-32 bg-cyan-400/20 rounded-full"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pain Points -->
+<section id="pain" class="py-24 bg-white">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <div class="text-blue-600 font-medium mb-3">传统养殖的困境</div>
+      <h2 class="text-3xl md:text-4xl font-black text-gray-900 mb-4">您是否面临这些挑战？</h2>
+      <p class="text-gray-500 max-w-2xl mx-auto">凭经验养鱼、巡塘累、预警滞后、设备联动差，养殖风险高，效率低。</p>
+    </div>
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="bg-red-50 border border-red-100 rounded-2xl p-6 card-hover">
+        <div class="text-4xl mb-4">🌡️</div>
+        <h3 class="font-bold text-gray-900 mb-2">水质看不见</h3>
+        <p class="text-sm text-gray-500">溶解氧、pH等关键指标靠经验判断，问题发现时已造成损失。</p>
+      </div>
+      <div class="bg-orange-50 border border-orange-100 rounded-2xl p-6 card-hover">
+        <div class="text-4xl mb-4">⏰</div>
+        <h3 class="font-bold text-gray-900 mb-2">巡塘累死人</h3>
+        <p class="text-sm text-gray-500">每天多次巡塘，凌晨也要查看，增氧机启停全凭感觉。</p>
+      </div>
+      <div class="bg-yellow-50 border border-yellow-100 rounded-2xl p-6 card-hover">
+        <div class="text-4xl mb-4">⚠️</div>
+        <h3 class="font-bold text-gray-900 mb-2">预警总是晚</h3>
+        <p class="text-sm text-gray-500">鱼浮头才知道缺氧，损失已经发生，预警机制形同虚设。</p>
+      </div>
+      <div class="bg-purple-50 border border-purple-100 rounded-2xl p-6 card-hover">
+        <div class="text-4xl mb-4">💸</div>
+        <h3 class="font-bold text-gray-900 mb-2">电费成本高</h3>
+        <p class="text-sm text-gray-500">增氧机24小时运行，无人根据实际需求调控，能耗居高不下。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section id="features" class="py-24 bg-blue-50/50">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <div class="text-blue-600 font-medium mb-3">核心能力</div>
+      <h2 class="text-3xl md:text-4xl font-black text-gray-900 mb-4">六大模块，全方位守护</h2>
+      <p class="text-gray-500 max-w-2xl mx-auto">从实时监测到智能联动，净塘卫士提供一站式水产养殖监控解决方案。</p>
+    </div>
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div class="bg-white rounded-2xl p-8 shadow-sm border border-blue-100 card-hover">
+        <div class="feature-icon bg-blue-100 text-blue-600 mb-5">📊</div>
+        <h3 class="font-bold text-lg text-gray-900 mb-3">溶解氧实时监测</h3>
+        <p class="text-sm text-gray-500 mb-4">多参数水质传感器实时采集DO、温度、pH、氨氮等，数据分钟级更新。</p>
+        <ul class="space-y-2 text-sm text-gray-600">
+          <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>多塘口集中监控</li>
+          <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>历史数据追溯</li>
+          <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>GIS地图可视化</li>
+        </ul>
+      </div>
+      <div class="bg-white rounded-2xl p-8 shadow-sm border border-blue-100 card-hover">
+        <div class="feature-icon bg-cyan-100 text-cyan-600 mb-5">🔔</div>
+        <h3 class="font-bold text-lg text-gray-900 mb-3">多级智能预警</h3>
+        <p class="text-sm text-gray-500 mb-4">阈值预警、趋势预警、AI预测预警三位一体，微信/短信/电话多渠道触达。</p>
+        <ul class="space-y-2 text-sm text-gray-600">
+          <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>三级预警等级</li>
+          <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>告警收敛避免轰炸</li>
+          <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>预警闭环处理</li>
+        </ul>
+      </div>
+      <div class="bg-white rounded-2xl p-8 shadow-sm border border-blue-100 card-hover">
+        <div class="feature-icon bg-emerald-100 text-emerald-600 mb-5">⚡</div>
+        <h3 class="font-bold text-lg text-gray-900 mb-3">增氧机自动联动</h3>
+        <p class="text-sm text-gray-500 mb-4">根据溶氧阈值自动控制增氧机启停，支持定时、调速、轮换等模式。</p>
+        <ul class="space-y-2 text-sm text-gray-600">
+          <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>DO&lt;5自动开启</li>
+          <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>功率自动调节</li>
+          <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>设备轮换保护</li>
+        </ul>
+      </div>
+      <div class="bg-white rounded-2xl p-8 shadow-sm border border-blue-100 card-hover">
+        <div class="feature-icon bg-amber-100 text-amber-600 mb-5">🐟</div>
+        <h3 class="font-bold text-lg text-gray-900 mb-3">投喂管理辅助</h3>
+        <p class="text-sm text-gray-500 mb-4">根据水温、溶氧、养殖周期智能推荐投喂量，记录投喂日志，减少浪费。</p>
+        <ul class="space-y-2 text-sm text-gray-600">
+          <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>投喂量智能推荐</li>
+          <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>投喂记录可追溯</li>
+          <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>饵料系数统计</li>
+        </ul>
+      </div>
+      <div class="bg-white rounded-2xl p-8 shadow-sm border border-blue-100 card-hover">
+        <div class="feature-icon bg-violet-100 text-violet-600 mb-5">🗺️</div>
+        <h3 class="font-bold text-lg text-gray-900 mb-3">塘口精细管理</h3>
+        <p class="text-sm text-gray-500 mb-4">塘口电子档案、养殖品种、密度、苗种来源全程记录，溯源养殖全过程。</p>
+        <ul class="space-y-2 text-sm text-gray-600">
+          <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>塘口电子地图</li>
+          <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>养殖档案管理</li>
+          <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>苗种溯源记录</li>
+        </ul>
+      </div>
+      <div class="bg-white rounded-2xl p-8 shadow-sm border border-blue-100 card-hover">
+        <div class="feature-icon bg-rose-100 text-rose-600 mb-5">📈</div>
+        <h3 class="font-bold text-lg text-gray-900 mb-3">数据报表中心</h3>
+        <p class="text-sm text-gray-500 mb-4">可视化大屏与自定义报表，数据驱动养殖管理决策。</p>
+        <ul class="space-y-2 text-sm text-gray-600">
+          <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>驾驶舱大屏</li>
+          <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>自定义报表导出</li>
+          <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>同比环比分析</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Flow -->
+<section id="flow" class="py-24 bg-white">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="text-center mb-16">
+      <div class="text-blue-600 font-medium mb-3">工作流程</div>
+      <h2 class="text-3xl md:text-4xl font-black text-gray-900 mb-4">三步实现智能养殖</h2>
+      <p class="text-gray-500 max-w-2xl mx-auto">从设备部署到智能联动，全程标准化实施，最快 3 天上线。</p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-8">
+      <div class="text-center relative">
+        <div class="w-20 h-20 mx-auto rounded-2xl bg-blue-100 flex items-center justify-center text-3xl mb-5 shadow-inner">📡</div>
+        <div class="text-xs font-bold text-blue-600 bg-blue-100 rounded-full px-3 py-1 inline-block mb-3">STEP 1</div>
+        <h4 class="font-bold text-gray-900 mb-2">探头部署</h4>
+        <p class="text-sm text-gray-500">水质探头、溶氧传感器快速安装，接电即用，数据上云。</p>
+      </div>
+      <div class="text-center relative">
+        <div class="w-20 h-20 mx-auto rounded-2xl bg-blue-100 flex items-center justify-center text-3xl mb-5 shadow-inner">🔗</div>
+        <div class="text-xs font-bold text-blue-600 bg-blue-100 rounded-full px-3 py-1 inline-block mb-3">STEP 2</div>
+        <h4 class="font-bold text-gray-900 mb-2">联动配置</h4>
+        <p class="text-sm text-gray-500">设置溶氧阈值、增氧机联动规则，系统自动执行。</p>
+      </div>
+      <div class="text-center">
+        <div class="w-20 h-20 mx-auto rounded-2xl bg-blue-600 flex items-center justify-center text-3xl mb-5 shadow-lg shadow-blue-500/30">✅</div>
+        <div class="text-xs font-bold text-white bg-blue-600 rounded-full px-3 py-1 inline-block mb-3">STEP 3</div>
+        <h4 class="font-bold text-gray-900 mb-2">智能运行</h4>
+        <p class="text-sm text-gray-500">24小时监控，自动预警与设备联动，微信实时推送。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section id="pricing" class="py-24 hero-gradient relative">
+  <div class="absolute inset-0 opacity-5" style="background-image:url('data:image/svg+xml,%3Csvg width=\'40\' height=\'40\' viewBox=\'0 0 40 40\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.4\' fill-rule=\'evenodd\'%3E%3Cpath d=\'M0 40L40 0H20L0 20M40 40V20L20 40\'/%3E%3C/g%3E%3C/svg%3E')"></div>
+  <div class="max-w-7xl mx-auto px-6 relative z-10">
+    <div class="text-center mb-16">
+      <div class="text-blue-300 font-medium mb-3">灵活定价</div>
+      <h2 class="text-3xl md:text-4xl font-black text-white mb-4">选择适合您的方案</h2>
+      <p class="text-blue-200 max-w-2xl mx-auto">按塘口数计费，无隐藏费用，专业团队全程支持。</p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+      <div class="bg-white rounded-2xl p-8 pricing-card">
+        <div class="text-sm font-bold text-blue-600 mb-2">基础版</div>
+        <div class="text-4xl font-black text-gray-900 mb-1">¥399<span class="text-base font-normal text-gray-400">/月</span></div>
+        <div class="text-sm text-gray-400 mb-6">适合小规模养殖户</div>
+        <ul class="space-y-3 mb-8 text-sm text-gray-600">
+          <li class="flex items-center gap-2"><span class="text-blue-500">✓</span>3个塘口接入</li>
+          <li class="flex items-center gap-2"><span class="text-blue-500">✓</span>DO/温度/pH监测</li>
+          <li class="flex items-center gap-2"><span class="text-blue-500">✓</span>基础预警通知</li>
+          <li class="flex items-center gap-2"><span class="text-blue-500">✓</span>微信报警推送</li>
+          <li class="flex items-center gap-2"><span class="text-blue-500">✓</span>7天历史数据</li>
+          <li class="flex items-center gap-2 text-gray-300"><span>×</span>增氧联动</li>
+          <li class="flex items-center gap-2 text-gray-300"><span>×</span>投喂管理</li>
+        </ul>
+        <button class="w-full py-3 border-2 border-blue-600 text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition">立即试用</button>
+      </div>
+      <div class="bg-white rounded-2xl p-8 pricing-card pricing-popular">
+        <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs font-bold px-4 py-1 rounded-full">最受欢迎</div>
+        <div class="text-sm font-bold text-blue-600 mb-2">标准版</div>
+        <div class="text-4xl font-black text-gray-900 mb-1">¥799<span class="text-base font-normal text-gray-400">/月</span></div>
+        <div class="text-sm text-gray-400 mb-6">适合中型养殖企业</div>
+        <ul class="space-y-3 mb-8 text-sm text-gray-600">
+          <li class="flex items-center gap-2"><span class="text-blue-500">✓</span>10个塘口接入</li>
+          <li class="flex items-center gap-2"><span class="text-blue-500">✓</span>全参数+氨氮监测</li>
+          <li class="flex items-center gap-2"><span class="text-blue-500">✓</span>AI智能预警</li>
+          <li class="flex items-center gap-2"><span class="text-blue-500">✓</span>增氧机自动联动</li>
+          <li class="flex items-center gap-2"><span class="text-blue-500">✓</span>投喂管理辅助</li>
+          <li class="flex items-center gap-2"><span class="text-blue-500">✓</span>1年历史数据</li>
+          <li class="flex items-center gap-2 text-gray-300"><span>×</span>专属运维支持</li>
+        </ul>
+        <button class="w-full py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition shadow-lg shadow-blue-600/30">立即试用</button>
+      </div>
+      <div class="bg-white rounded-2xl p-8 pricing-card">
+        <div class="text-sm font-bold text-blue-600 mb-2">企业版</div>
+        <div class="text-4xl font-black text-gray-900 mb-1">¥1999<span class="text-base font-normal text-gray-400">/月</span></div>
+        <div class="text-sm text-gray-400 mb-6">适合大型养殖集团</div>
+        <ul class="space-y-3 mb-8 text-sm text-gray-600">
+          <li class="flex items-center gap-2"><span class="text-blue-500">✓</span>无限塘口接入</li>
+          <li class="flex items-center gap-2"><span class="text-blue-500">✓</span>全参数+水质分析</li>
+          <li class="flex items-center gap-2"><span class="text-blue-500">✓</span>AI产量预测</li>
+          <li class="flex items-center gap-2"><span class="text-blue-500">✓</span>增氧机群控管理</li>
+          <li class="flex items-center gap-2"><span class="text-blue-500">✓</span>溯源一体化</li>
+          <li class="flex items-center gap-2"><span class="text-blue-500">✓</span>3年数据存储</li>
+          <li class="flex items-center gap-2"><span class="text-blue-500">✓</span>7×24专属运维</li>
+        </ul>
+        <button class="w-full py-3 border-2 border-blue-600 text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition">联系销售</button>
+      </div>
+    </div>
+    <div class="text-center mt-10 text-blue-200 text-sm">所有方案均含 14 天免费试用，不满意全额退款</div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="py-20 bg-white">
+  <div class="max-w-3xl mx-auto px-6 text-center">
+    <h2 class="text-3xl font-black text-gray-900 mb-4">准备升级您的养殖场了吗？</h2>
+    <p class="text-gray-500 mb-8">加入 2000+ 养殖户的选择，让每一塘鱼都在智慧守护下成长。</p>
+    <div class="flex flex-wrap justify-center gap-4">
+      <button class="px-10 py-4 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition shadow-lg shadow-blue-600/20 text-lg">免费开始试用</button>
+      <button class="px-10 py-4 border-2 border-gray-200 text-gray-600 font-bold rounded-xl hover:bg-gray-50 transition text-lg">预约 demo</button>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-gray-900 text-gray-400 py-12">
+  <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-8">
+    <div>
+      <div class="flex items-center gap-2 mb-4">
+        <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm">净</div>
+        <span class="font-bold text-lg text-white">净塘卫士</span>
+      </div>
+      <p class="text-sm leading-relaxed">养好每一塘鱼，从智能监控开始。净塘卫士——您身边的水产养殖智能管家。</p>
+    </div>
+    <div>
+      <h4 class="font-bold text-white mb-4">产品</h4>
+      <ul class="space-y-2 text-sm"><li>水质监测</li><li>增氧联动</li><li>投喂管理</li><li>预警系统</li></ul>
+    </div>
+    <div>
+      <h4 class="font-bold text-white mb-4">支持</h4>
+      <ul class="space-y-2 text-sm"><li>帮助文档</li><li>API 文档</li><li>视频教程</li><li>常见问题</li></ul>
+    </div>
+    <div>
+      <h4 class="font-bold text-white mb-4">联系我们</h4>
+      <ul class="space-y-2 text-sm"><li>400-888-7777</li><li>support@jingtangweishi.com</li><li>广州市番禺区海鸥岛水产园</li></ul>
+    </div>
+  </div>
+  <div class="max-w-7xl mx-auto px-6 border-t border-gray-800 mt-8 pt-8 text-sm text-center">
+    © 2026 净塘卫士 Jingtang Weishi. 保留所有权利. 粤ICP备12345678号
+  </div>
+</footer>
+
+</body>
+</html>

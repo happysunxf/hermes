@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>养殖宝 - 在线演示</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Noto Sans SC',sans-serif;background:#0f0f14;color:#e5e7eb;height:100vh;overflow:hidden}
+.dashboard{display:flex;height:100vh}
+
+/* Sidebar */
+.sidebar{width:240px;background:#13131a;border-right:1px solid rgba(255,255,255,0.06);display:flex;flex-direction:column;flex-shrink:0}
+.sidebar-header{padding:20px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;gap:12px}
+.sidebar-logo{width:36px;height:36px;background:linear-gradient(135deg,#2dd4bf,#0d9488);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.sidebar-title{font-size:16px;font-weight:600}
+.sidebar-title span{display:block;font-size:11px;color:#6b7280;font-weight:400}
+.sidebar-nav{flex:1;padding:12px 0;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:10px;padding:11px 16px;color:#9ca3af;text-decoration:none;font-size:14px;cursor:pointer;transition:all 0.2s;border-radius:8px;margin:2px 8px}
+.nav-item:hover,.nav-item.active{background:rgba(45,212,191,0.1);color:#2dd4bf}
+.nav-item.active{border-left:3px solid #2dd4bf}
+.nav-item .badge{background:#fbbf24;color:#0a0a0f;font-size:10px;padding:2px 6px;border-radius:10px;margin-left:auto}
+.nav-divider{height:1px;background:rgba(255,255,255,0.06);margin:8px 16px}
+
+/* Main */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{background:#13131a;border-bottom:1px solid rgba(255,255,255,0.06);padding:14px 24px;display:flex;justify-content:space-between;align-items:center}
+.topbar h1{font-size:18px;font-weight:600}
+.topbar-right{display:flex;align-items:center;gap:16px}
+.topbar-time{color:#6b7280;font-size:13px}
+.topbar-user{display:flex;align-items:center;gap:8px;color:#9ca3af;font-size:13px}
+.topbar-user .avatar{width:32px;height:32px;background:linear-gradient(135deg,#2dd4bf,#0d9488);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px}
+
+/* Content */
+.content{flex:1;overflow-y:auto;padding:24px;background:#0f0f14}
+
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:#1a1a24;border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:20px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#2dd4bf,transparent)}
+.stat-label{color:#6b7280;font-size:13px;margin-bottom:8px}
+.stat-value{font-size:28px;font-weight:700;color:#fff;margin-bottom:4px}
+.stat-change{font-size:12px;color:#4ade80}
+.stat-change.down{color:#ef4444}
+.stat-icon{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:32px;opacity:0.3}
+.stat-value.warn{color:#fbbf24}
+
+/* Charts */
+.charts-grid{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:24px}
+.chart-card{background:#1a1a24;border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:20px}
+.chart-card h3{font-size:15px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.chart-card h3 span{color:#6b7280;font-weight:400;font-size:12px}
+.bar-chart{display:flex;align-items:flex-end;gap:12px;height:160px;padding-top:20px}
+.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px}
+.bar{width:100%;background:linear-gradient(180deg,#2dd4bf,#0d9488);border-radius:4px 4px 0 0;transition:height 0.5s}
+.bar-label{font-size:11px;color:#6b7280}
+
+/* Tables */
+.table-card{background:#1a1a24;border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:20px}
+.table-card h3{font-size:15px;font-weight:600;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.table-card h3 button{background:rgba(45,212,191,0.1);border:1px solid rgba(45,212,191,0.3);color:#2dd4bf;padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:12px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.04)}
+th{color:#6b7280;font-weight:500;font-size:12px}
+td{color:#d1d5db}
+.status{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:20px;font-size:11px}
+.status.normal{background:rgba(74,222,128,0.1);color:#4ade80}
+.status.warn{background:rgba(251,191,36,0.1);color:#fbbf24}
+.status.danger{background:rgba(239,68,68,0.1);color:#ef4444}
+.tag{background:rgba(45,212,191,0.15);color:#2dd4bf;padding:2px 8px;border-radius:4px;font-size:11px}
+.progress-bar{height:6px;background:#2d2d3a;border-radius:3px;overflow:hidden}
+.progress-bar div{height:100%;background:linear-gradient(90deg,#2dd4bf,#0d9488);border-radius:3px}
+
+/* Grid layouts */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:none;align-items:center;justify-content:center;z-index:1000}
+.modal-overlay.show{display:flex}
+.modal{background:#1a1a24;border:1px solid rgba(255,255,255,0.1);border-radius:16px;width:500px;max-width:90vw}
+.modal-header{padding:20px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center}
+.modal-header h2{font-size:16px;font-weight:600}
+.modal-close{background:none;border:none;color:#6b7280;font-size:20px;cursor:pointer}
+.modal-body{padding:20px}
+.modal-footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:flex-end;gap:10px}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:13px;color:#9ca3af;margin-bottom:6px}
+.form-group input,.form-group select{width:100%;padding:10px 12px;background:#0f0f14;border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#e5e7eb;font-size:14px}
+.form-group input:focus{outline:none;border-color:#2dd4bf}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn{padding:10px 20px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;border:none;transition:all 0.2s}
+.btn-primary{background:#2dd4bf;color:#0a0a0f}
+.btn-secondary{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#9ca3af}
+
+/* Legend */
+.legend{display:flex;gap:16px;margin-bottom:12px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#9ca3af}
+.legend-dot{width:10px;height:10px;border-radius:50%}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#0f0f14}
+::-webkit-scrollbar-thumb{background:#2d2d3a;border-radius:3px}
+</style>
+</head>
+<body>
+<div class="dashboard">
+<div class="sidebar">
+<div class="sidebar-header">
+<div class="sidebar-logo">🐟</div>
+<div class="sidebar-title">养殖宝<span>水产养殖智能柜系统</span></div>
+</div>
+<nav class="sidebar-nav">
+<a class="nav-item active" onclick="switchPage(this)">📊 养殖概览</a>
+<a class="nav-item" onclick="switchPage(this)">🗄️ 柜体管理</a>
+<a class="nav-item" onclick="switchPage(this)">🌡️ 环境监测</a>
+<a class="nav-item" onclick="switchPage(this)">🍽️ 投喂管理</a>
+<a class="nav-item" onclick="switchPage(this)">⚠️ 疾病预警<span class="badge">2</span></a>
+<a class="nav-item" onclick="switchPage(this)">📊 数据报表</a>
+<div class="nav-divider"></div>
+<a class="nav-item" onclick="switchPage(this)">⚙️ 设备管理</a>
+<a class="nav-item" onclick="switchPage(this)">🔧 系统设置</a>
+</nav>
+</div>
+
+<div class="main">
+<div class="topbar">
+<h1>📊 养殖概览</h1>
+<div class="topbar-right">
+<div class="topbar-time" id="time">2026-05-17 19:11:32</div>
+<div class="topbar-user">
+<div class="avatar">张</div>
+<span>张伟明</span>
+</div>
+</div>
+</div>
+
+<div class="content">
+<div class="stats-grid">
+<div class="stat-card">
+<div class="stat-label">在养柜体</div>
+<div class="stat-value">48</div>
+<div class="stat-change">↑ 3 本月新增</div>
+<div class="stat-icon">🗄️</div>
+</div>
+<div class="stat-card">
+<div class="stat-label">养殖品种</div>
+<div class="stat-value" style="font-size:18px;padding-top:8px">石斑鱼</div>
+<div class="stat-change">优质品种</div>
+<div class="stat-icon">🐟</div>
+</div>
+<div class="stat-card">
+<div class="stat-label">温度范围</div>
+<div class="stat-value" style="font-size:20px;padding-top:6px">24-26°C</div>
+<div class="stat-change">正常</div>
+<div class="stat-icon">🌡️</div>
+</div>
+<div class="stat-card">
+<div class="stat-label">溶解氧</div>
+<div class="stat-value" style="color:#4ade80">6.2<span style="font-size:14px">mg/L</span></div>
+<div class="stat-change">充足</div>
+<div class="stat-icon">🧪</div>
+</div>
+<div class="stat-card">
+<div class="stat-label">今日投料</div>
+<div class="stat-value">320<span style="font-size:14px">kg</span></div>
+<div class="stat-change">↓ 5% 昨日</div>
+<div class="stat-icon">🍽️</div>
+</div>
+</div>
+
+<div class="charts-grid">
+<div class="chart-card">
+<h3>📈 投料趋势 <span>近7天投料量统计</span></h3>
+<div class="legend">
+<span class="legend-item"><span class="legend-dot" style="background:#2dd4bf"></span>实际投料</span>
+<span class="legend-item"><span class="legend-dot" style="background:#fbbf24"></span>标准投料</span>
+</div>
+<div class="bar-chart">
+<div class="bar-wrap"><div class="bar" style="height:70%"></div><span class="bar-label">周一</span></div>
+<div class="bar-wrap"><div class="bar" style="height:85%"></div><span class="bar-label">周二</span></div>
+<div class="bar-wrap"><div class="bar" style="height:65%;background:linear-gradient(180deg,#fbbf24,#d97706)"></div><span class="bar-label">周三</span></div>
+<div class="bar-wrap"><div class="bar" style="height:90%"></div><span class="bar-label">周四</span></div>
+<div class="bar-wrap"><div class="bar" style="height:75%"></div><span class="bar-label">周五</span></div>
+<div class="bar-wrap"><div class="bar" style="height:80%"></div><span class="bar-label">周六</span></div>
+<div class="bar-wrap"><div class="bar" style="height:60%;background:linear-gradient(180deg,#2dd4bf,#0d9488)"></div><span class="bar-label">周日</span></div>
+</div>
+</div>
+<div class="chart-card">
+<h3>🌡️ 环境状态</h3>
+<div style="margin-top:16px">
+<div style="margin-bottom:20px">
+<div style="display:flex;justify-content:space-between;margin-bottom:4px">
+<span class="legend-item">温度</span><span style="color:#2dd4bf">25.2°C</span>
+</div>
+<div class="progress-bar"><div style="width:63%"></div></div>
+<div style="font-size:11px;color:#6b7280;margin-top:4px">正常 (18-28°C)</div>
+</div>
+<div style="margin-bottom:20px">
+<div style="display:flex;justify-content:space-between;margin-bottom:4px">
+<span class="legend-item">溶解氧</span><span style="color:#4ade80">6.2mg/L</span>
+</div>
+<div class="progress-bar"><div style="width:82%"></div></div>
+<div style="font-size:11px;color:#6b7280;margin-top:4px">充足 (>5mg/L)</div>
+</div>
+<div style="margin-bottom:20px">
+<div style="display:flex;justify-content:space-between;margin-bottom:4px">
+<span class="legend-item">pH值</span><span style="color:#60a5fa">7.4</span>
+</div>
+<div class="progress-bar"><div style="width:74%;background:linear-gradient(90deg,#60a5fa,#2563eb)"></div></div>
+<div style="font-size:11px;color:#6b7280;margin-top:4px">正常 (6.5-8.5)</div>
+</div>
+<div>
+<div style="display:flex;justify-content:space-between;margin-bottom:4px">
+<span class="legend-item">氨氮</span><span style="color:#4ade80">0.12mg/L</span>
+</div>
+<div class="progress-bar"><div style="width:12%"></div></div>
+<div style="font-size:11px;color:#6b7280;margin-top:4px">正常 (<1.0mg/L)</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="two-col">
+<div class="table-card">
+<h3>🗄️ 柜体状态 <button onclick="openModal()">+ 添加柜体</button></h3>
+<table>
+<thead><tr><th>柜体编号</th><th>品种</th><th>存栏量</th><th>水温</th><th>状态</th></tr></thead>
+<tbody>
+<tr><td>柜体-01</td><td>石斑鱼</td><td>1,200尾</td><td>25.2°C</td><td><span class="status normal">● 正常</span></td></tr>
+<tr><td>柜体-02</td><td>石斑鱼</td><td>1,150尾</td><td>24.8°C</td><td><span class="status normal">● 正常</span></td></tr>
+<tr><td>柜体-03</td><td>石斑鱼</td><td>1,100尾</td><td>26.1°C</td><td><span class="status warn">● 偏高</span></td></tr>
+<tr><td>柜体-04</td><td>石斑鱼</td><td>1,180尾</td><td>25.0°C</td><td><span class="status normal">● 正常</span></td></tr>
+<tr><td>柜体-05</td><td>石斑鱼</td><td>950尾</td><td>25.5°C</td><td><span class="status warn">● 预警</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="table-card">
+<h3>⚠️ 疾病预警</h3>
+<table>
+<thead><tr><th>时间</th><th>柜体</th><th>预警类型</th><th>风险等级</th><th>处理状态</th></tr></thead>
+<tbody>
+<tr><td>今日 14:32</td><td>柜体-05</td><td>食欲下降</td><td><span style="color:#fbbf24">中风险</span></td><td><span class="tag">待处理</span></td></tr>
+<tr><td>今日 09:15</td><td>柜体-12</td><td>体色异常</td><td><span style="color:#fbbf24">中风险</span></td><td><span style="color:#4ade80">已处理</span></td></tr>
+<tr><td>昨日 16:48</td><td>柜体-03</td><td>游动异常</td><td><span style="color:#ef4444">高风险</span></td><td><span style="color:#4ade80">已处理</span></td></tr>
+<tr><td>昨日 11:20</td><td>柜体-08</td><td>轻微烂鳍</td><td><span style="color:#fbbf24">中风险</span></td><td><span style="color:#4ade80">已治愈</span></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div class="table-card" style="margin-top:16px">
+<h3>📋 投喂记录 <button onclick="openFeedModal()">+ 添加投料</button></h3>
+<table>
+<thead><tr><th>时间</th><th>柜体</th><th>投料量(kg)</th><th>操作员</th><th>备注</th></tr></thead>
+<tbody>
+<tr><td>今日 19:00</td><td>柜体-01~05</td><td>80</td><td>系统自动</td><td>晚餐投喂</td></tr>
+<tr><td>今日 12:00</td><td>柜体-01~05</td><td>75</td><td>李师傅</td><td>午餐投喂</td></tr>
+<tr><td>今日 07:00</td><td>柜体-01~05</td><td>60</td><td>系统自动</td><td>早餐投喂</td></tr>
+<tr><td>昨日 19:00</td><td>柜体-01~05</td><td>78</td><td>系统自动</td><td>晚餐投喂</td></tr>
+<tr><td>昨日 12:00</td><td>柜体-01~05</td><td>72</td><td>王师傅</td><td>午餐投喂</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="two-col" style="margin-top:16px">
+<div class="table-card">
+<h3>💰 成本统计（本月）</h3>
+<table>
+<thead><tr><th>项目</th><th>金额</th><th>占比</th></tr></thead>
+<tbody>
+<tr><td>饵料成本</td><td>¥28,560</td><td>68%</td></tr>
+<tr><td>电费</td><td>¥8,420</td><td>20%</td></tr>
+<tr><td>药品费</td><td>¥3,120</td><td>7%</td></tr>
+<tr><td>人工费</td><td>¥2,000</td><td>5%</td></tr>
+<tr><td><strong>合计</strong></td><td><strong>¥42,100</strong></td><td>100%</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="table-card">
+<h3>📊 生长数据</h3>
+<table>
+<thead><tr><th>柜体</th><th>平均体长</th><th>平均体重</th><th>存活率</th></tr></thead>
+<tbody>
+<tr><td>柜体-01</td><td>18.5cm</td><td>186g</td><td><span style="color:#4ade80">96.2%</span></td></tr>
+<tr><td>柜体-02</td><td>18.2cm</td><td>178g</td><td><span style="color:#4ade80">95.8%</span></td></tr>
+<tr><td>柜体-03</td><td>17.8cm</td><td>172g</td><td><span style="color:#fbbf24">94.1%</span></td></tr>
+<tr><td>柜体-04</td><td>18.6cm</td><td>190g</td><td><span style="color:#4ade80">96.5%</span></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="modal-overlay" id="modal">
+<div class="modal">
+<div class="modal-header">
+<h2>添加养殖柜体</h2>
+<button class="modal-close" onclick="closeModal()">×</button>
+</div>
+<div class="modal-body">
+<form onsubmit="event.preventDefault();closeModal()">
+<div class="form-row">
+<div class="form-group">
+<label>柜体编号</label>
+<input placeholder="柜体-XX">
+</div>
+<div class="form-group">
+<label>养殖品种</label>
+<select><option>石斑鱼</option><option>罗非鱼</option><option>鲈鱼</option><option>对虾</option></select>
+</div>
+</div>
+<div class="form-group">
+<label>存栏数量</label>
+<input type="number" placeholder="0">
+</div>
+<div class="form-group">
+<label>投放日期</label>
+<input type="date">
+</div>
+</form>
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" onclick="closeModal()">取消</button>
+<button class="btn btn-primary" onclick="closeModal()">确认添加</button>
+</div>
+</div>
+</div>
+
+<script>
+function openModal(){document.getElementById('modal').classList.add('show')}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+function openFeedModal(){openModal()}
+function switchPage(el){document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));el.classList.add('active');document.querySelector('.topbar h1').textContent=el.textContent.trim()}
+function updateTime(){const now=new Date();document.getElementById('time').textContent=now.toLocaleString('zh-CN',{year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'})}
+setInterval(updateTime,1000);updateTime();
+</script>
+</body>
+</html>

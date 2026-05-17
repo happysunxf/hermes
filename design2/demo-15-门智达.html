@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>门智达 - 健身房智能门禁管理平台</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5/css/all.min.css">
+<style>
+:root{--green:#4ade80;--green-dark:#16a34a;--green-light:#86efac;--green-pale:#f0fdf4;--green-dim:#166534;--bg:#0f172a;--bg2:#1e293b;--text:#e2e8f0;--text-light:#94a3b8;--white:#fff;--sidebar-w:240px;--radius:12px;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Noto Sans SC',sans-serif;color:var(--text);background:#0f172a;height:100vh;overflow:hidden;}
+
+.layout{display:flex;height:100vh;}
+.sidebar{width:var(--sidebar-w);background:#1e293b;color:#fff;display:flex;flex-direction:column;flex-shrink:0;border-right:1px solid rgba(74,222,128,.1);}
+.sidebar-logo{padding:20px 24px;font-size:20px;font-weight:900;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.06);}
+.sidebar-logo i{font-size:22px;color:var(--green);}
+.sidebar-logo span{color:var(--green);}
+.sidebar-nav{flex:1;overflow-y:auto;padding:12px 0;}
+.nav-item{padding:14px 24px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s;font-size:14px;font-weight:500;border-left:3px solid transparent;color:var(--text-light);}
+.nav-item:hover{background:rgba(74,222,128,.08);color:var(--text);}
+.nav-item.active{background:rgba(74,222,128,.12);border-left-color:var(--green);color:var(--green);}
+.nav-item i{width:20px;text-align:center;font-size:16px;}
+.nav-item .arrow{margin-left:auto;font-size:12px;}
+.sidebar-footer{padding:16px 24px;border-top:1px solid rgba(255,255,255,.06);font-size:12px;color:var(--text-light);}
+.sidebar-footer p{margin-bottom:4px;}
+
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.topbar{height:60px;background:#1e293b;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;padding:0 24px;gap:16px;flex-shrink:0;}
+.topbar h1{font-size:20px;font-weight:700;color:var(--green);}
+.topbar-sub{font-size:13px;color:var(--text-light);margin-left:12px;padding-left:12px;border-left:1px solid rgba(255,255,255,.1);}
+.topbar-right{display:flex;align-items:center;gap:12px;margin-left:auto;}
+.topbar-btn{background:rgba(74,222,128,.1);border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;color:var(--green);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;}
+.topbar-btn:hover{background:var(--green);color:#fff;}
+.topbar-btn i{font-size:14px;}
+.user-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#4ade80,#16a34a);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;cursor:pointer;}
+
+.content{flex:1;overflow-y:auto;padding:24px;}
+
+.card{background:#1e293b;border-radius:var(--radius);margin-bottom:20px;overflow:hidden;border:1px solid rgba(255,255,255,.06);}
+.card-header{padding:16px 20px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;}
+.card-header h3{font-size:15px;font-weight:700;color:#fff;}
+.card-header .tag{display:inline-block;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:600;background:rgba(74,222,128,.15);color:var(--green);}
+.card-body{padding:20px;}
+
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.stat-card{background:#1e293b;border-radius:var(--radius);padding:20px;border:1px solid rgba(255,255,255,.06);}
+.stat-card .stat-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.stat-card .stat-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.stat-card .stat-icon.green{background:rgba(74,222,128,.15);color:var(--green);}
+.stat-card .stat-icon.blue{background:rgba(56,189,248,.15);color:#38bdf8;}
+.stat-card .stat-icon.yellow{background:rgba(250,204,21,.15);color:#facc15;}
+.stat-card .stat-icon.purple{background:rgba(167,139,250,.15);color:#a78bfa;}
+.stat-card .stat-num{font-size:26px;font-weight:900;color:#fff;}
+.stat-card .stat-label{font-size:13px;color:var(--text-light);margin-top:4px;}
+.stat-card .stat-trend{font-size:12px;margin-top:6px;}
+.stat-card .stat-trend.up{color:var(--green);}
+.stat-card .stat-trend.down{color:#f87171;}
+
+.card-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+
+.bar-chart{display:flex;align-items:flex-end;gap:10px;height:140px;padding:20px 0 30px;}
+.bar-chart .bar{width:36px;background:linear-gradient(180deg,#4ade80,#16a34a);border-radius:6px 6px 0 0;position:relative;transition:height .8s ease;}
+.bar-chart .bar span{position:absolute;bottom:-24px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--text-light);}
+.bar-chart .bar::after{content:attr(data-val);position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:11px;font-weight:600;color:var(--green);}
+
+.progress-wrap{margin-top:16px;}
+.progress-label{display:flex;justify-content:space-between;font-size:13px;color:var(--text-light);margin-bottom:6px;}
+.progress-bar{height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;}
+.progress-bar-fill{height:100%;border-radius:4px;background:var(--green);}
+
+.data-table{width:100%;border-collapse:collapse;font-size:13px;}
+.data-table th{background:rgba(74,222,128,.08);color:var(--green);font-weight:600;padding:10px 14px;text-align:left;font-size:12px;}
+.data-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--text);}
+.data-table tr:hover td{background:rgba(74,222,128,.04);}
+.data-table .tag{padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;}
+.data-table .tag.green{background:rgba(74,222,128,.15);color:#4ade80;}
+.data-table .tag.yellow{background:rgba(250,204,21,.15);color:#facc15;}
+.data-table .tag.gray{background:rgba(148,163,184,.15);color:#94a3b8;}
+.data-table .actions{display:flex;gap:6px;}
+.data-table .actions button{width:26px;height:26px;border-radius:6px;border:none;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;transition:all .2s;background:rgba(74,222,128,.1);color:var(--green);}
+.data-table .actions button:hover{background:var(--green);color:#fff;}
+
+.locker-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;}
+.locker-item{background:rgba(0,0,0,.2);border-radius:8px;padding:14px;text-align:center;border:1px solid rgba(255,255,255,.04);}
+.locker-item.used{border-color:rgba(74,222,128,.3);background:rgba(74,222,128,.08);}
+.locker-item .locker-num{font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;}
+.locker-item .locker-status{font-size:11px;}
+.locker-item.used .locker-status{color:var(--green);}
+.locker-item.empty .locker-status{color:var(--text-light);}
+
+.branch-list{list-style:none;}
+.branch-list li{padding:12px 0;border-bottom:1px solid rgba(255,255,255,.04);display:flex;align-items:center;justify-content:space-between;}
+.branch-list li:last-child{border:none;}
+.branch-name{font-size:14px;font-weight:600;color:#fff;}
+.branch-meta{font-size:12px;color:var(--text-light);margin-top:2px;}
+.branch-stats{display:flex;gap:16px;font-size:12px;}
+.branch-stats span{color:var(--green);}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:1000;}
+.modal-overlay.show{display:flex;}
+.modal{background:#1e293b;border-radius:var(--radius);width:520px;max-width:95vw;border:1px solid rgba(255,255,255,.1);}
+.modal-header{padding:18px 22px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;}
+.modal-header h3{font-size:17px;font-weight:700;color:#fff;}
+.modal-header .close{width:30px;height:30px;border-radius:8px;border:none;background:rgba(255,255,255,.06);color:#fff;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;}
+.modal-body{padding:22px;}
+.modal-footer{padding:14px 22px;border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:flex-end;gap:10px;}
+
+.form-group{margin-bottom:14px;}
+.form-group label{display:block;font-size:13px;font-weight:500;color:var(--text-light);margin-bottom:6px;}
+.form-group input,.form-group select{width:100%;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,.1);background:#0f172a;color:#fff;font-size:14px;outline:none;transition:border-color .2s;}
+.form-group input:focus,.form-group select:focus{border-color:var(--green);}
+.form-group input::placeholder{color:#475569;}
+
+.btn{padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s;}
+.btn-primary{background:var(--green);color:#0f172a;}
+.btn-primary:hover{background:var(--green-light);}
+.btn-outline{background:transparent;border:1px solid rgba(74,222,128,.3);color:var(--green);}
+.btn-outline:hover{background:rgba(74,222,128,.1);}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="sidebar">
+<div class="sidebar-logo"><i class="fas fa-door-open"></i> <span>门智达</span></div>
+<nav class="sidebar-nav">
+<div class="nav-item active"><i class="fas fa-home"></i> 门禁概览</div>
+<div class="nav-item"><i class="fas fa-users"></i> 会员管理</div>
+<div class="nav-item"><i class="fas fa-boxes-stacked"></i> 储物柜</div>
+<div class="nav-item"><i class="fas fa-clipboard-check"></i> 签到记录</div>
+<div class="nav-item"><i class="fas fa-microchip"></i> 设备管理</div>
+<div class="nav-item"><i class="fas fa-chart-bar"></i> 数据报表</div>
+<div class="nav-item"><i class="fas fa-shield-halved"></i> 权限管理</div>
+<div class="nav-item"><i class="fas fa-gear"></i> 系统设置 <span class="arrow">›</span></div>
+</nav>
+<div class="sidebar-footer">
+<p><i class="fas fa-building"></i> 门智达健身</p>
+<p style="color:var(--green);font-weight:600;">在线</p>
+</div>
+</aside>
+
+<main class="main">
+<div class="topbar">
+<h1><i class="fas fa-door-open"></i> 门禁概览</h1>
+<span class="topbar-sub">健身房智能门禁管理平台</span>
+<div class="topbar-right">
+<button class="topbar-btn"><i class="fas fa-bell"></i> 通知</button>
+<button class="topbar-btn"><i class="fas fa-plus"></i> 添加会员</button>
+<div class="user-avatar">李</div>
+</div>
+</div>
+
+<div class="content">
+<div class="stats-grid">
+<div class="stat-card">
+<div class="stat-top">
+<div class="stat-icon green"><i class="fas fa-users"></i></div>
+</div>
+<div class="stat-num">1,247</div>
+<div class="stat-label">会员总数</div>
+<div class="stat-trend up"><i class="fas fa-arrow-up"></i> 本月新增 38人</div>
+</div>
+<div class="stat-card">
+<div class="stat-top">
+<div class="stat-icon blue"><i class="fas fa-user-check"></i></div>
+</div>
+<div class="stat-num">89</div>
+<div class="stat-label">今日签到</div>
+<div class="stat-trend up"><i class="fas fa-arrow-up"></i> 较昨日 +12</div>
+</div>
+<div class="stat-card">
+<div class="stat-top">
+<div class="stat-icon yellow"><i class="fas fa-person"></i></div>
+</div>
+<div class="stat-num">56</div>
+<div class="stat-label">当前在场</div>
+<div class="stat-trend">占用储物柜 23个</div>
+</div>
+<div class="stat-card">
+<div class="stat-top">
+<div class="stat-icon purple"><i class="fas fa-boxes-stacked"></i></div>
+</div>
+<div class="stat-num">78%</div>
+<div class="stat-label">储物柜使用率</div>
+<div class="stat-trend">可用 12格 / 共 54格</div>
+</div>
+</div>
+
+<div class="card-row">
+<div class="card">
+<div class="card-header">
+<h3><i class="fas fa-chart-line" style="color:var(--green);margin-right:8px;"></i>本周签到趋势</h3>
+<span class="tag">本周</span>
+</div>
+<div class="card-body">
+<div class="bar-chart">
+<div class="bar" style="height:45%;" data-val="64"><span>周一</span></div>
+<div class="bar" style="height:70%;" data-val="98"><span>周二</span></div>
+<div class="bar" style="height:55%;" data-val="78"><span>周三</span></div>
+<div class="bar" style="height:80%;" data-val="112"><span>周四</span></div>
+<div class="bar" style="height:90%;" data-val="126"><span>周五</span></div>
+<div class="bar" style="height:60%;" data-val="85"><span>周六</span></div>
+<div class="bar" style="height:40%;" data-val="56"><span>周日</span></div>
+</div>
+</div>
+</div>
+
+<div class="card">
+<div class="card-header">
+<h3><i class="fas fa-building" style="color:var(--green);margin-right:8px;"></i>门店分布</h3>
+<span class="tag">3个场馆</span>
+</div>
+<div class="card-body">
+<ul class="branch-list">
+<li>
+<div>
+<div class="branch-name">门智达健身</div>
+<div class="branch-meta">朝阳区建国路88号 &bull; 会员 523人</div>
+</div>
+<div class="branch-stats">
+<span><i class="fas fa-user-check"></i> 32在场</span>
+<span><i class="fas fa-box"></i> 89%</span>
+</div>
+</li>
+<li>
+<div>
+<div class="branch-name">竞峰游泳</div>
+<div class="branch-meta">海淀区中关村南大街 &bull; 会员 412人</div>
+</div>
+<div class="branch-stats">
+<span><i class="fas fa-user-check"></i> 18在场</span>
+<span><i class="fas fa-box"></i> 72%</span>
+</div>
+</li>
+<li>
+<div>
+<div class="branch-name">静舍瑜伽</div>
+<div class="branch-meta">东城区东直门外大街 &bull; 会员 312人</div>
+</div>
+<div class="branch-stats">
+<span><i class="fas fa-user-check"></i> 6在场</span>
+<span><i class="fas fa-box"></i> 65%</span>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div class="card-row">
+<div class="card">
+<div class="card-header">
+<h3><i class="fas fa-boxes-stacked" style="color:var(--green);margin-right:8px;"></i>储物柜 A区</h3>
+<button class="btn-outline" style="padding:5px 12px;font-size:12px;" onclick="openModal('lockerModal')"><i class="fas fa-plus"></i> 开柜</button>
+</div>
+<div class="card-body">
+<div class="locker-grid">
+<div class="locker-item used"><div class="locker-num">A-01</div><div class="locker-status">使用中 15:32</div></div>
+<div class="locker-item empty"><div class="locker-num">A-02</div><div class="locker-status">空闲</div></div>
+<div class="locker-item used"><div class="locker-num">A-03</div><div class="locker-status">使用中 45min</div></div>
+<div class="locker-item empty"><div class="locker-num">A-04</div><div class="locker-status">空闲</div></div>
+<div class="locker-item used"><div class="locker-num">A-05</div><div class="locker-status">使用中 1h20m</div></div>
+<div class="locker-item empty"><div class="locker-num">A-06</div><div class="locker-status">空闲</div></div>
+<div class="locker-item used"><div class="locker-num">A-07</div><div class="locker-status">使用中 2h05m</div></div>
+<div class="locker-item empty"><div class="locker-num">A-08</div><div class="locker-status">空闲</div></div>
+</div>
+<div class="progress-wrap">
+<div class="progress-label"><span>总使用率</span><span style="color:var(--green);">78%</span></div>
+<div class="progress-bar"><div class="progress-bar-fill" style="width:78%;"></div></div>
+</div>
+</div>
+</div>
+
+<div class="card">
+<div class="card-header">
+<h3><i class="fas fa-clipboard-list" style="color:var(--green);margin-right:8px;"></i>实时签到记录</h3>
+<span class="tag">今日 89条</span>
+</div>
+<div class="card-body" style="padding:0;">
+<table class="data-table">
+<thead><tr><th>会员</th><th>方式</th><th>场馆</th><th>时间</th><th>状态</th></tr></thead>
+<tbody>
+<tr><td>张伟</td><td><i class="fas fa-face-smile" style="color:var(--green);"></i> 人脸</td><td>门智达健身</td><td>14:32</td><td><span class="tag green">入场</span></td></tr>
+<tr><td>李娜</td><td><i class="fas fa-qrcode" style="color:#38bdf8;"></i> 扫码</td><td>门智达健身</td><td>14:28</td><td><span class="tag green">入场</span></td></tr>
+<tr><td>王磊</td><td><i class="fas fa-face-smile" style="color:var(--green);"></i> 人脸</td><td>竞峰游泳</td><td>14:15</td><td><span class="tag green">入场</span></td></tr>
+<tr><td>陈静</td><td><i class="fas fa-credit-card" style="color:#a78bfa;"></i> 刷卡</td><td>静舍瑜伽</td><td>13:56</td><td><span class="tag green">入场</span></td></tr>
+<tr><td>刘洋</td><td><i class="fas fa-face-smile" style="color:var(--green);"></i> 人脸</td><td>门智达健身</td><td>13:42</td><td><span class="tag yellow">出场</span></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+<div class="card">
+<div class="card-header">
+<h3><i class="fas fa-microchip" style="color:var(--green);margin-right:8px;"></i>门禁设备状态</h3>
+<span class="tag">4台在线</span>
+</div>
+<div class="card-body" style="padding:0;">
+<table class="data-table">
+<thead><tr><th>设备名称</th><th>类型</th><th>位置</th><th>状态</th><th>最后活动</th><th>操作</th></tr></thead>
+<tbody>
+<tr><td>FPAD50-001</td><td>人脸面板</td><td>门智达-正门</td><td><span class="tag green">在线</span></td><td>14:32</td><td><div class="actions"><button title="远程开门"><i class="fas fa-door-open"></i></button><button title="详情"><i class="fas fa-info"></i></button></div></td></tr>
+<tr><td>FPAD50-002</td><td>人脸面板</td><td>门智达-后门</td><td><span class="tag green">在线</span></td><td>13:45</td><td><div class="actions"><button title="远程开门"><i class="fas fa-door-open"></i></button><button title="详情"><i class="fas fa-info"></i></button></div></td></tr>
+<tr><td>FRTM200-001</td><td>通道闸机</td><td>竞峰游泳-入口</td><td><span class="tag green">在线</span></td><td>14:15</td><td><div class="actions"><button title="远程开门"><i class="fas fa-door-open"></i></button><button title="详情"><i class="fas fa-info"></i></button></div></td></tr>
+<tr><td>LKT100-001</td><td>储物柜主控</td><td>门智达-A区</td><td><span class="tag green">在线</span></td><td>14:20</td><td><div class="actions"><button title="开柜"><i class="fas fa-box-open"></i></button><button title="详情"><i class="fas fa-info"></i></button></div></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- 开柜弹窗 -->
+<div class="modal-overlay" id="lockerModal">
+<div class="modal">
+<div class="modal-header">
+<h3><i class="fas fa-box-open" style="color:var(--green);margin-right:8px;"></i>开柜操作</h3>
+<button class="close" onclick="closeModal('lockerModal')">✕</button>
+</div>
+<div class="modal-body">
+<div class="form-group">
+<label>选择储物柜</label>
+<select>
+<option>A-01 - 使用中 (会员: 张伟)</option>
+<option>A-03 - 使用中 (会员: 李娜)</option>
+<option>A-05 - 使用中 (会员: 王磊)</option>
+<option>A-07 - 使用中 (会员: 陈静)</option>
+</select>
+</div>
+<div class="form-group">
+<label>操作类型</label>
+<select>
+<option>临时开柜 - 让会员取出物品</option>
+<option>强制开柜 - 管理原因</option>
+<option>结束使用 - 释放储物柜</option>
+</select>
+</div>
+<div class="form-group">
+<label>备注</label>
+<input type="text" placeholder="输入操作原因（可选）">
+</div>
+</div>
+<div class="modal-footer">
+<button class="btn btn-outline" onclick="closeModal('lockerModal')">取消</button>
+<button class="btn btn-primary" onclick="closeModal('lockerModal')"><i class="fas fa-check"></i> 确认开柜</button>
+</div>
+</div>
+</div>
+
+<script>
+function openModal(id){document.getElementById(id).classList.add('show');}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+document.querySelectorAll('.nav-item').forEach((item,idx)=>{
+item.addEventListener('click',function(){
+document.querySelectorAll('.nav-item').forEach(i=>i.classList.remove('active'));
+this.classList.add('active');
+});
+});
+</script>
+</body>
+</html>

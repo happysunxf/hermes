@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>门智达 - 健身房智能门禁平台</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5/css/all.min.css">
+<style>
+:root{--green:#4ade80;--green-dark:#16a34a;--green-light:#86efac;--green-pale:#f0fdf4;--green-gradient:linear-gradient(135deg,#4ade80 0%,#16a34a 100%);--bg:#F5F7FA;--text:#1e293b;--text-light:#64748b;--white:#fff;--radius:12px;--shadow:0 4px 24px rgba(74,222,128,.12);--shadow-lg:0 12px 48px rgba(74,222,128,.18);}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Noto Sans SC',sans-serif;color:var(--text);background:var(--bg);line-height:1.6;}
+
+/* Nav */
+.nav{position:fixed;top:0;left:0;right:0;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);z-index:1000;border-bottom:1px solid rgba(74,222,128,.08);padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:64px;}
+.nav-logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:20px;color:var(--green-dark);}
+.nav-logo i{font-size:24px;}
+.nav-links{display:flex;gap:32px;align-items:center;}
+.nav-links a{text-decoration:none;color:var(--text);font-size:14px;font-weight:500;transition:color .2s;}
+.nav-links a:hover{color:var(--green);}
+.nav-cta{background:var(--green-gradient);color:#fff;border:none;padding:10px 24px;border-radius:50px;font-size:14px;font-weight:600;cursor:pointer;transition:transform .2s,box-shadow .2s;}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:var(--shadow);}
+
+/* Hero */
+.hero{padding:140px 0 80px;text-align:center;background:linear-gradient(180deg,#f0fdf4 0%,var(--bg) 100%);}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--green-pale);color:var(--green-dark);padding:6px 16px;border-radius:50px;font-size:13px;font-weight:600;margin-bottom:24px;border:1px solid rgba(74,222,128,.15);}
+.hero h1{font-size:clamp(36px,6vw,60px);font-weight:900;color:var(--green-dark);line-height:1.15;margin-bottom:16px;}
+.hero h1 span{background:var(--green-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero p{font-size:18px;color:var(--text-light);max-width:640px;margin:0 auto 40px;}
+.hero-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;}
+.btn-primary{background:var(--green-gradient);color:#fff;border:none;padding:14px 36px;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;transition:all .3s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);}
+.btn-outline{background:transparent;color:var(--green-dark);border:2px solid var(--green);padding:14px 36px;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;transition:all .3s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+.btn-outline:hover{background:var(--green-pale);}
+
+/* Features */
+.features{padding:80px 0;}
+.section-title{text-align:center;margin-bottom:48px;}
+.section-title h2{font-size:36px;font-weight:900;color:var(--green-dark);margin-bottom:12px;}
+.section-title p{font-size:16px;color:var(--text-light);}
+.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;}
+.feature-card{background:#fff;border-radius:var(--radius);padding:32px;box-shadow:var(--shadow);border:1px solid rgba(74,222,128,.06);transition:transform .3s;}
+.feature-card:hover{transform:translateY(-4px);}
+.feature-icon{width:56px;height:56px;border-radius:14px;background:var(--green-pale);display:flex;align-items:center;justify-content:center;margin-bottom:20px;}
+.feature-icon i{font-size:24px;color:var(--green);}
+.feature-card h3{font-size:18px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.feature-card p{font-size:14px;color:var(--text-light);}
+
+/* Access */
+.access-section{padding:80px 0;background:linear-gradient(135deg,#0a1a0e 0%,#142b16 100%);color:#fff;}
+.access-content{max-width:1200px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;}
+.access-section h2{font-size:36px;font-weight:900;margin-bottom:20px;}
+.access-section p{font-size:16px;color:rgba(255,255,255,.7);margin-bottom:32px;line-height:1.8;}
+.access-stats{display:flex;gap:32px;}
+.access-stat{}
+.access-stat .num{font-size:32px;font-weight:900;color:var(--green-light);}
+.access-stat .lbl{font-size:13px;color:rgba(255,255,255,.5);}
+.access-devices{background:rgba(74,222,128,.08);border-radius:16px;padding:32px;border:1px solid rgba(74,222,128,.15);}
+.access-devices h3{font-size:18px;font-weight:700;margin-bottom:20px;color:var(--green-light);}
+.device-item{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06);}
+.device-item:last-child{border:none;}
+.device-name{font-size:14px;color:rgba(255,255,255,.8);}
+.device-val{font-size:14px;font-weight:600;color:var(--green-light);}
+
+/* Lockers */
+.locker-section{padding:80px 0;}
+.locker-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:32px;}
+.locker-card{background:#fff;border-radius:var(--radius);padding:32px;box-shadow:var(--shadow);border:1px solid rgba(74,222,128,.06);}
+.locker-card h3{font-size:18px;font-weight:700;color:var(--green-dark);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.locker-list{list-style:none;margin-top:16px;}
+.locker-list li{padding:12px 0;border-bottom:1px solid #f1f5f9;display:flex;justify-content:space-between;font-size:14px;}
+.locker-list li:last-child{border:none;}
+.locker-num{font-weight:600;color:var(--text);}
+.locker-status{font-weight:600;}
+.locker-status.used{color:#16a34a;}
+.locker-status.empty{color:#94a3b8;}
+
+/* CTA */
+.cta-section{padding:80px 0;background:var(--green-gradient);text-align:center;color:#fff;}
+.cta-section h2{font-size:36px;font-weight:900;margin-bottom:16px;}
+.cta-section p{font-size:18px;opacity:.85;margin-bottom:32px;}
+.cta-section .btn-dark{background:#1e293b;color:#fff;border:none;padding:14px 36px;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;transition:all .3s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;}
+.cta-section .btn-dark:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,0,0,.2);}
+
+/* Footer */
+.footer{padding:40px 0;background:#1e293b;color:#94a3b8;font-size:14px;text-align:center;}
+.footer a{color:var(--green-light);text-decoration:none;}
+
+@media(max-width:768px){
+.access-content{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<nav class="nav">
+<div class="nav-logo"><i class="fas fa-door-open"></i> 门智达</div>
+<div class="nav-links">
+<a href="#">产品</a><a href="#">方案</a><a href="#">案例</a><a href="#">关于</a>
+</div>
+<button class="nav-cta">预约演示</button>
+</nav>
+
+<section class="hero">
+<div class="container">
+<div class="hero-badge"><i class="fas fa-id-card"></i> 人脸识别专家</div>
+<h1>健身房<span>智能门禁</span>管理平台</h1>
+<p>人脸/二维码/刷卡多模态识别，智能储物柜管理，助您打造现代化健身房</p>
+<div class="hero-actions">
+<button class="btn-primary"><i class="fas fa-play"></i> 立即体验</button>
+<button class="btn-outline"><i class="fas fa-file-alt"></i> 下载方案</button>
+</div>
+<div class="hero-stats">
+<div class="stat-item"><div class="stat-number">0.3s</div><div class="stat-label">识别开锁速度</div></div>
+<div class="stat-item"><div class="stat-number">99.8%</div><div class="stat-label">识别准确率</div></div>
+<div class="stat-item"><div class="stat-number">24/7</div><div class="stat-label">无人值守运营</div></div>
+</div>
+</div>
+</section>
+
+<section class="features">
+<div class="container">
+<div class="section-title">
+<h2>核心功能</h2>
+<p>覆盖健身房运营全场景，降本增效提升体验</p>
+</div>
+<div class="feature-grid">
+<div class="feature-card">
+<div class="feature-icon"><i class="fas fa-face-smile"></i></div>
+<h3>人脸识别开门</h3>
+<p>红外活体检测防照片/视频攻击，0.3秒极速识别，会员刷脸无感通行</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon"><i class="fas fa-qrcode"></i></div>
+<h3>二维码通行</h3>
+<p>手机小程序生成动态二维码，有效期30秒，安全便捷</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon"><i class="fas fa-door-closed"></i></div>
+<h3>储物柜管理</h3>
+<p>按次/按时长计费储物柜，一人一柜一码，支持微信支付开柜</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon"><i class="fas fa-user-gear"></i></div>
+<h3>会员管理</h3>
+<p>会员到期自动失效，访客临时授权，会员入场记录全追踪</p>
+</div>
+</div>
+</div>
+</section>
+
+<section class="access-section">
+<div class="access-content">
+<div>
+<h2>多模态门禁硬件</h2>
+<p>门智达配套高性能门禁控制器和识别模组，支持人脸/二维码/IC卡/指纹多种开门方式，可对接主流健身管理系统，实时上传出入记录。</p>
+<div class="access-stats">
+<div class="access-stat"><div class="num">0.3s</div><div class="lbl">识别速度</div></div>
+<div class="access-stat"><div class="num">20000</div><div class="lbl">人脸库容</div></div>
+<div class="access-stat"><div class="num">IP65</div><div class="lbl">防护等级</div></div>
+</div>
+</div>
+<div class="access-devices">
+<h3>推荐设备型号</h3>
+<div class="device-item"><span class="device-name">速通门 FRTM200</span><span class="device-val">通道闸机</span></div>
+<div class="device-item"><span class="device-name">门禁读卡器 FRU45</span><span class="device-val">IC/身份证</span></div>
+<div class="device-item"><span class="device-name">人脸识别面板 FPAD50</span><span class="device-val">人脸终端</span></div>
+<div class="device-item"><span class="device-name">储物柜控制器 LKT100</span><span class="device-val">智能柜主控</span></div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="locker-section">
+<div class="container">
+<div class="section-title">
+<h2>智能储物柜状态</h2>
+<p>实时监控储物柜使用情况</p>
+</div>
+<div class="locker-grid">
+<div class="locker-card">
+<h3><i class="fas fa-box"></i> A区储物柜 (20格)</h3>
+<ul class="locker-list">
+<li><span class="locker-num">A-01</span><span class="locker-status used">使用中 15:32</span></li>
+<li><span class="locker-num">A-02</span><span class="locker-status empty">空闲</span></li>
+<li><span class="locker-num">A-03</span><span class="locker-status used">使用中 45min</span></li>
+<li><span class="locker-num">A-04</span><span class="locker-status empty">空闲</span></li>
+<li><span class="locker-num">A-05</span><span class="locker-status used">使用中 1h20m</span></li>
+</ul>
+</div>
+<div class="locker-card">
+<h3><i class="fas fa-box"></i> B区储物柜 (20格)</h3>
+<ul class="locker-list">
+<li><span class="locker-num">B-01</span><span class="locker-status empty">空闲</span></li>
+<li><span class="locker-num">B-02</span><span class="locker-status used">使用中 22min</span></li>
+<li><span class="locker-num">B-03</span><span class="locker-status empty">空闲</span></li>
+<li><span class="locker-num">B-04</span><span class="locker-status used">使用中 1h05m</span></li>
+<li><span class="locker-num">B-05</span><span class="locker-status empty">空闲</span></li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+
+<section class="cta-section">
+<div class="container">
+<h2>打造智能化健身房</h2>
+<p>获取免费门禁解决方案和设备配置方案</p>
+<a href="#" class="btn-dark"><i class="fas fa-phone"></i> 立即咨询</a>
+</div>
+</section>
+
+<footer class="footer">
+<p>© 2024 门智达 版权所有 | <a href="#">隐私政策</a> | <a href="#">使用条款</a></p>
+</footer>
+</body>
+</html>

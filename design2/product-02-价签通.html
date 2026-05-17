@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>价签通 - 新零售电子价签解决方案</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--orange:#FF6B00;--orange-dark:#E55A00;--orange-light:#FFF4E6;
+--bg:#FAFAFA;--white:#FFFFFF;--text:#1A1A2E;--text-secondary:#666680;
+--border:#EAEAF0;--shadow:0 4px 24px rgba(0,0,0,0.08);
+--radius:12px;--radius-lg:20px;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+
+/* HEADER */
+header{background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100}
+nav{display:flex;align-items:center;justify-content:space-between;height:72px}
+.logo{display:flex;align-items:center;gap:12px;font-size:22px;font-weight:700;color:var(--orange)}
+.logo span{background:var(--orange);color:#fff;padding:4px 10px;border-radius:8px;font-size:14px}
+.menu{display:flex;gap:32px}
+.menu a{text-decoration:none;color:var(--text);font-weight:500;transition:.2s}
+.menu a:hover{color:var(--orange)}
+.btns{display:flex;gap:12px}
+.btn{border-radius:var(--radius);padding:10px 24px;font-weight:600;cursor:pointer;transition:.2s;border:none;font-size:15px}
+.btn-orange{background:var(--orange);color:#fff}
+.btn-orange:hover{background:var(--orange-dark)}
+.btn-outline{background:transparent;border:2px solid var(--orange);color:var(--orange)}
+.btn-outline:hover{background:var(--orange);color:#fff}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,#FF6B00 0%,#FF8C33 100%);color:#fff;padding:80px 0 100px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-50%;right:-20%;width:600px;height:600px;background:rgba(255,255,255,0.1);border-radius:50%}
+.hero::after{content:'';position:absolute;bottom:-30%;left:-10%;width:400px;height:400px;background:rgba(255,255,255,0.08);border-radius:50%}
+.hero-inner{display:flex;align-items:center;justify-content:space-between;gap:60px;position:relative;z-index:1}
+.hero-content{max-width:580px}
+.hero h1{font-size:52px;font-weight:800;line-height:1.15;margin-bottom:20px}
+.hero p{font-size:20px;opacity:.9;margin-bottom:40px;line-height:1.7}
+.hero-btns{display:flex;gap:16px;margin-bottom:50px}
+.hero-btns .btn{font-size:16px;padding:14px 32px}
+.hero-stats{display:flex;gap:48px}
+.stat{text-align:left}
+.stat .num{font-size:36px;font-weight:800}
+.stat .label{font-size:14px;opacity:.85}
+.hero-visual{width:420px;height:340px;background:rgba(255,255,255,0.15);border-radius:20px;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.2)}
+.hero-visual .price-tag-demo{display:flex;flex-direction:column;align-items:center;justify-content:center;width:180px;height:220px;background:#fff;color:#333;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,0.2)}
+.hero-visual .pt-old{font-size:14px;color:#999;text-decoration:line-through}
+.hero-visual .pt-new{font-size:42px;font-weight:800;color:var(--orange);margin:8px 0}
+.hero-visual .pt-name{font-size:13px;color:#555;font-weight:500;text-align:center}
+.hero-visual .pt-barcode{font-size:11px;color:#aaa;margin-top:8px}
+
+/* PAIN POINTS */
+.section{padding:80px 0}
+.section-title{text-align:center;margin-bottom:16px;font-size:38px;font-weight:700}
+.section-sub{text-align:center;color:var(--text-secondary);font-size:18px;margin-bottom:56px}
+.pain-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.pain-card{background:var(--white);border-radius:var(--radius-lg);padding:32px;border:1px solid var(--border);transition:.3s}
+.pain-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--orange)}
+.pain-icon{width:56px;height:56px;background:var(--orange-light);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:20px}
+.pain-card h3{font-size:20px;margin-bottom:12px}
+.pain-card p{color:var(--text-secondary);font-size:15px}
+
+/* FEATURES */
+.features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.feature-card{background:var(--white);border-radius:var(--radius-lg);padding:32px;border:1px solid var(--border)}
+.feature-icon{width:48px;height:48px;background:linear-gradient(135deg,var(--orange),#FF8C33);border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;margin-bottom:20px}
+.feature-card h3{font-size:18px;margin-bottom:10px}
+.feature-card p{color:var(--text-secondary);font-size:14px}
+
+/* FLOW */
+.flow-section{background:var(--white)}
+.flow-steps{display:flex;align-items:center;justify-content:center;gap:0}
+.flow-step{text-align:center;position:relative;flex:1}
+.flow-step::after{content:'→';position:absolute;right:-10px;top:30px;font-size:24px;color:var(--orange);font-weight:700}
+.flow-step:last-child::after{display:none}
+.flow-num{width:60px;height:60px;background:var(--orange);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;margin:0 auto 16px}
+.flow-step h4{font-size:16px;margin-bottom:8px}
+.flow-step p{color:var(--text-secondary);font-size:13px;max-width:160px;margin:0 auto}
+
+/* PRICING */
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.price-card{background:var(--white);border-radius:var(--radius-lg);padding:40px 32px;border:2px solid var(--border);position:relative;transition:.3s}
+.price-card.popular{border-color:var(--orange);transform:scale(1.05)}
+.price-card.popular::before{content:'最受欢迎';position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--orange);color:#fff;padding:6px 20px;border-radius:20px;font-size:13px;font-weight:600}
+.price-card h3{font-size:22px;margin-bottom:8px}
+.price-card .desc{color:var(--text-secondary);font-size:14px;margin-bottom:24px}
+.price-card .price{font-size:48px;font-weight:800;color:var(--orange);margin-bottom:4px}
+.price-card .price span{font-size:18px;font-weight:400;color:var(--text-secondary)}
+.price-card .period{color:var(--text-secondary);font-size:13px;margin-bottom:28px}
+.price-card ul{list-style:none;margin-bottom:32px}
+.price-card li{padding:10px 0;font-size:14px;color:var(--text-secondary);border-bottom:1px solid var(--border)}
+.price-card li::before{content:'✓ ';color:var(--orange);font-weight:700}
+.price-card .btn{width:100%}
+
+/* CTA */
+.cta-section{background:linear-gradient(135deg,var(--orange),#FF8C33);color:#fff;text-align:center;padding:80px 0}
+.cta-section h2{font-size:40px;font-weight:700;margin-bottom:16px}
+.cta-section p{font-size:18px;opacity:.9;margin-bottom:32px}
+.cta-section .btn{background:#fff;color:var(--orange);font-size:18px;padding:16px 48px}
+.cta-section .btn:hover{background:#f0f0f0}
+
+/* FOOTER */
+footer{background:#1A1A2E;color:#fff;padding:48px 0;text-align:center}
+footer p{color:rgba(255,255,255,0.6);font-size:14px}
+</style>
+</head>
+<body>
+<header>
+<nav class="container">
+<div class="logo">价签通<span>ESL</span></div>
+<div class="menu">
+<a href="#features">功能</a>
+<a href="#flow">流程</a>
+<a href="#pricing">定价</a>
+<a href="#contact">联系</a>
+</div>
+<div class="btns">
+<button class="btn btn-outline">登录</button>
+<button class="btn btn-orange">免费试用</button>
+</div>
+</nav>
+</header>
+
+<section class="hero">
+<div class="container hero-inner">
+<div class="hero-content">
+<h1>新零售电子价签<br>一站式解决方案</h1>
+<p>价签通致力于为零售行业提供高效的电子价签管理平台，打通线上线下价格统一，实时更新商品信息，降低运营成本，提升门店效率。</p>
+<div class="hero-btns">
+<button class="btn btn-orange">免费试用14天</button>
+<button class="btn" style="background:rgba(255,255,255,0.2);color:#fff;border:2px solid rgba(255,255,255,0.4)">观看演示</button>
+</div>
+<div class="hero-stats">
+<div class="stat"><div class="num">50万+</div><div class="label">电子价签部署</div></div>
+<div class="stat"><div class="num">2000+</div><div class="label">合作门店</div></div>
+<div class="stat"><div class="num">99.9%</div><div class="label">系统稳定性</div></div>
+</div>
+</div>
+<div class="hero-visual">
+<div class="price-tag-demo">
+<div class="pt-old">¥299.00</div>
+<div class="pt-new">¥199.00</div>
+<div class="pt-name">小米手环7 智能运动手表</div>
+<div class="pt-barcode">6923456789012</div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="section" id="pain">
+<div class="container">
+<h2 class="section-title">传统纸质价签的痛点</h2>
+<p class="section-sub">为什么越来越多的零售商选择电子价签？</p>
+<div class="pain-grid">
+<div class="pain-card">
+<div class="pain-icon">📝</div>
+<h3>人工更换耗时</h3>
+<p>促销活动频繁，店员每天花费2-3小时更换价签，效率低且容易出错，影响顾客体验。</p>
+</div>
+<div class="pain-card">
+<div class="pain-icon">💰</div>
+<h3>成本居高不下</h3>
+<p>每月打印耗材、纸张费用高昂，大型门店年消耗价签超10万张，成本难以控制。</p>
+</div>
+<div class="pain-card">
+<div class="pain-icon">🔄</div>
+<h3>价格不同步</h3>
+<p>线上线下价格割裂，促销时线上改价线下未改，造成顾客投诉，品牌信誉受损。</p>
+</div>
+<div class="pain-card">
+<div class="pain-icon">📊</div>
+<h3>数据孤岛</h3>
+<p>纸质价签无法承载更多商品信息，库存、促销、会员价等数据无法实时呈现。</p>
+</div>
+<div class="pain-card">
+<div="pain-icon">❌</div>
+<h3>错标价格风险</h3>
+<p>人工手写或打印价签容易出现价格错误，导致结账纠纷，面临监管处罚风险。</p>
+</div>
+<div class="pain-card">
+<div class="pain-icon">📦</div>
+<h3>陈列效率低</h3>
+<p>商品上架、促销陈列需要大量人力整理价签，新品上架周期长，影响销售。</p>
+</div>
+</div>
+</div>
+</section>
+
+<section class="section" id="features" style="background:#fff">
+<div class="container">
+<h2 class="section-title">价签通核心功能</h2>
+<p class="section-sub">一站式管理平台，覆盖零售全场景</p>
+<div class="features-grid">
+<div class="feature-card">
+<div class="feature-icon">⚡</div>
+<h3>实时价格更新</h3>
+<p>云端一键同步，0.5秒内完成全店价签更新，支持定时自动调价，促销活动轻松管理。</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon">📱</div>
+<h3>多端协同管理</h3>
+<p>支持PC端、移动端、平板多设备访问，店长可随时随地在手机端审批价格变更。</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon">🔗</div>
+<h3>系统无缝对接</h3>
+<p>已对接SAP、Oracle、金蝶、用友等主流ERP，以及美团、饿了么等O2O平台。</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon">📊</div>
+<h3>大数据分析</h3>
+<p>实时监控价签状态、电池寿命、促销效果，生成可视化报表，辅助经营决策。</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon">🏷️</div>
+<h3>多规格模板</h3>
+<p>提供50+行业模板，支持自定义样式，一键生成个性化价签，提升品牌形象。</p>
+</div>
+<div class="feature-card">
+<div class="feature-icon">🔒</div>
+<h3>权限分级管控</h3>
+<p>总部-区域-门店三级权限体系，敏感操作需上级审批，保障价格合规安全。</p>
+</div>
+</div>
+</div>
+</section>
+
+<section class="section flow-section" id="flow">
+<div class="container">
+<h2 class="section-title">极简部署流程</h2>
+<p class="section-sub">从入驻到上线，最快3天完成</p>
+<div class="flow-steps">
+<div class="flow-step">
+<div class="flow-num">1</div>
+<h4>注册账号</h4>
+<p>5分钟完成企业认证，获取试用权限</p>
+</div>
+<div class="flow-step">
+<div class="flow-num">2</div>
+<h4>导入商品</h4>
+<p>Excel批量导入或API对接ERP系统</p>
+</div>
+<div class="flow-step">
+<div class="flow-num">3</div>
+<h4>配置模板</h4>
+<p>选择行业模板，自定义价签样式</p>
+</div>
+<div class="flow-step">
+<div class="flow-num">4</div>
+<h4>批量下发</h4>
+<p>一键同步价格，价签即改即显</p>
+</div>
+</div>
+</div>
+</section>
+
+<section class="section" id="pricing">
+<div class="container">
+<h2 class="section-title">灵活定价方案</h2>
+<p class="section-sub">按需选择， scalable grow with your business</p>
+<div class="pricing-grid">
+<div class="price-card">
+<h3>基础版</h3>
+<p class="desc">适合小型门店起步</p>
+<div class="price">¥299<span>/月</span></div>
+<p class="period">按年付费享8折优惠</p>
+<ul>
+<li>最多管理500个价签</li>
+<li>基础模板库</li>
+<li>3个门店授权</li>
+<li>邮件支持</li>
+<li>API基础接口</li>
+</ul>
+<button class="btn btn-outline">立即购买</button>
+</div>
+<div class="price-card popular">
+<h3>专业版</h3>
+<p class="desc">适合连锁门店</p>
+<div class="price">¥799<span>/月</span></div>
+<p class="period">按年付费享8折优惠</p>
+<ul>
+<li>无限价签数量</li>
+<li>全部行业模板</li>
+<li>10个门店授权</li>
+<li>7×12小时客服</li>
+<li>完整API接口</li>
+<li>数据分析报表</li>
+</ul>
+<button class="btn btn-orange">立即购买</button>
+</div>
+<div class="price-card">
+<h3>企业版</h3>
+<p class="desc">适合大型零售集团</p>
+<div class="price">¥1999<span>/月</span></div>
+<p class="period">按年付费享8折优惠</p>
+<ul>
+<li>无限价签+门店</li>
+<li>定制开发服务</li>
+<li>专属客户成功经理</li>
+<li>24×7优先支持</li>
+<li>私有化部署</li>
+<li>ERP深度对接</li>
+</ul>
+<button class="btn btn-outline">联系销售</button>
+</div>
+</div>
+</div>
+</section>
+
+<section class="cta-section" id="contact">
+<div class="container">
+<h2>准备提升门店效率了吗？</h2>
+<p>免费试用14天，无任何费用，体验完整功能</p>
+<button class="btn">立即开始免费试用</button>
+</div>
+</section>
+
+<footer>
+<div class="container">
+<p>© 2024 价签通 Jetag. 新零售电子价签解决方案服务商</p>
+</div>
+</footer>
+</body>
+</html>
